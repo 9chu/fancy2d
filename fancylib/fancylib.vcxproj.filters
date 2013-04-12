@@ -1,0 +1,279 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="extern">
+      <UniqueIdentifier>{13eedada-1f09-4eaa-934f-169c505c1993}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern\zlib">
+      <UniqueIdentifier>{81108a39-a39e-436b-9643-1a72476a3219}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern\zlib\include">
+      <UniqueIdentifier>{4a082ce6-c598-4810-9adf-9db9af27839b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern\zlib\src">
+      <UniqueIdentifier>{5731a0cc-5c9c-4257-a504-98417656953a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyIO">
+      <UniqueIdentifier>{21de6404-8d51-41b7-946f-aef23f22ec20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyIO\header">
+      <UniqueIdentifier>{e5719550-5c97-4bd6-8a14-affc6cb308c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyIO\source">
+      <UniqueIdentifier>{00eac06b-2b5d-46c7-ae9d-ddcae6c40f45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyMisc">
+      <UniqueIdentifier>{dde56d9e-9582-4e1a-90db-b69a78c49155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyMisc\header">
+      <UniqueIdentifier>{74ab3524-a055-49dc-b4e8-1d51ee5053d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyMisc\source">
+      <UniqueIdentifier>{1ef2314d-8d3c-49bb-939f-447e3f86c9ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyFile">
+      <UniqueIdentifier>{93285213-d062-4335-9e8b-bd47fe4a2c72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyFile\header">
+      <UniqueIdentifier>{8ffd5227-f0f9-4b53-897b-fb7bb4ee3812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyFile\source">
+      <UniqueIdentifier>{efa72ac5-512c-44b9-bdad-bab3deb6d7eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyParser">
+      <UniqueIdentifier>{eb6aa0bd-3fba-45a9-9f51-aa4ad113add7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyParser\header">
+      <UniqueIdentifier>{21c2230e-d91d-4a9e-af0e-12eb6ece8a37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyParser\source">
+      <UniqueIdentifier>{1d3f6dea-f00b-4881-800b-507f5e327224}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyOS">
+      <UniqueIdentifier>{60a664d0-18b9-49d9-9fdc-a4e439f6dadc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyOS\header">
+      <UniqueIdentifier>{2c5a9170-1ac5-48d6-866e-44e93d179a0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyOS\source">
+      <UniqueIdentifier>{c14d81ab-ca69-4a77-a7d9-f40752f756ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyNet">
+      <UniqueIdentifier>{b27c8c95-8478-431d-a5fd-ff809ec153cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyNet\header">
+      <UniqueIdentifier>{dbc1ee59-7430-4af5-852c-6a4622a9463f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyNet\source">
+      <UniqueIdentifier>{f54d6217-a0e8-4157-9e78-ab22fbb80822}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="extern\zlib\deflate.h">
+      <Filter>extern\zlib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\zlib\gzguts.h">
+      <Filter>extern\zlib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\zlib\inffast.h">
+      <Filter>extern\zlib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\zlib\inffixed.h">
+      <Filter>extern\zlib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\zlib\inflate.h">
+      <Filter>extern\zlib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\zlib\inftrees.h">
+      <Filter>extern\zlib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\zlib\trees.h">
+      <Filter>extern\zlib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\zlib\zconf.h">
+      <Filter>extern\zlib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\zlib\zlib.h">
+      <Filter>extern\zlib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\zlib\zutil.h">
+      <Filter>extern\zlib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\zlib\crc32.h">
+      <Filter>extern\zlib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyType.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyRefObj.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyException.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyIO\fcyBinaryHelper.h">
+      <Filter>fcyIO\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyIO\fcyDeflate.h">
+      <Filter>fcyIO\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyIO\fcyStream.h">
+      <Filter>fcyIO\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyMisc\fcyStopWatch.h">
+      <Filter>fcyMisc\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyMisc\fcyStringHelper.h">
+      <Filter>fcyMisc\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyFile\fcyResPackage.h">
+      <Filter>fcyFile\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyParser\fcyJson.h">
+      <Filter>fcyParser\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyParser\fcyLexicalParser.h">
+      <Filter>fcyParser\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyParser\fcyPathParser.h">
+      <Filter>fcyParser\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyParser\fcyXml.h">
+      <Filter>fcyParser\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyOS\fcyDebug.h">
+      <Filter>fcyOS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyOS\fcyMemPool.h">
+      <Filter>fcyOS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyOS\fcyMultiThread.h">
+      <Filter>fcyOS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyMath.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyParser\fcyIni.h">
+      <Filter>fcyParser\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyOS\fcySocket.h">
+      <Filter>fcyOS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyNet\fcyHTTP.h">
+      <Filter>fcyNet\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyMisc\fcyRandom.h">
+      <Filter>fcyMisc\header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="extern\zlib\gzclose.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\gzlib.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\gzread.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\gzwrite.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\infback.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\inffast.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\inflate.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\inftrees.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\trees.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\uncompr.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\zutil.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\adler32.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\compress.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\crc32.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\zlib\deflate.c">
+      <Filter>extern\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyIO\fcyBinaryHelper.cpp">
+      <Filter>fcyIO\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyIO\fcyDeflate.cpp">
+      <Filter>fcyIO\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyIO\fcyStream.cpp">
+      <Filter>fcyIO\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyMisc\fcyStopWatch.cpp">
+      <Filter>fcyMisc\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyMisc\fcyStringHelper.cpp">
+      <Filter>fcyMisc\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyFile\fcyResPackage.cpp">
+      <Filter>fcyFile\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyParser\fcyJson.cpp">
+      <Filter>fcyParser\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyParser\fcyLexicalParser.cpp">
+      <Filter>fcyParser\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyParser\fcyPathParser.cpp">
+      <Filter>fcyParser\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyParser\fcyXml.cpp">
+      <Filter>fcyParser\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyOS\fcyDebug.cpp">
+      <Filter>fcyOS\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyOS\fcyMultiThread.cpp">
+      <Filter>fcyOS\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyException.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyParser\fcyIni.cpp">
+      <Filter>fcyParser\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyOS\fcySocket.cpp">
+      <Filter>fcyOS\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyNet\fcyHTTP.cpp">
+      <Filter>fcyNet\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyMisc\fcyRandom.cpp">
+      <Filter>fcyMisc\source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

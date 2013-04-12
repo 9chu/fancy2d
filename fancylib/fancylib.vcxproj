@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="extern\zlib\crc32.h" />
+    <ClInclude Include="extern\zlib\deflate.h" />
+    <ClInclude Include="extern\zlib\gzguts.h" />
+    <ClInclude Include="extern\zlib\inffast.h" />
+    <ClInclude Include="extern\zlib\inffixed.h" />
+    <ClInclude Include="extern\zlib\inflate.h" />
+    <ClInclude Include="extern\zlib\inftrees.h" />
+    <ClInclude Include="extern\zlib\trees.h" />
+    <ClInclude Include="extern\zlib\zconf.h" />
+    <ClInclude Include="extern\zlib\zlib.h" />
+    <ClInclude Include="extern\zlib\zutil.h" />
+    <ClInclude Include="fcyMath.h" />
+    <ClInclude Include="fcyMisc\fcyRandom.h" />
+    <ClInclude Include="fcyNet\fcyHTTP.h" />
+    <ClInclude Include="fcyOS\fcySocket.h" />
+    <ClInclude Include="fcyParser\fcyIni.h" />
+    <ClInclude Include="fcyRefObj.h" />
+    <ClInclude Include="fcyType.h" />
+    <ClInclude Include="fcyIO\fcyBinaryHelper.h" />
+    <ClInclude Include="fcyIO\fcyDeflate.h" />
+    <ClInclude Include="fcyIO\fcyStream.h" />
+    <ClInclude Include="fcyFile\fcyResPackage.h" />
+    <ClInclude Include="fcyMisc\fcyStopWatch.h" />
+    <ClInclude Include="fcyMisc\fcyStringHelper.h" />
+    <ClInclude Include="fcyOS\fcyDebug.h" />
+    <ClInclude Include="fcyException.h" />
+    <ClInclude Include="fcyOS\fcyMemPool.h" />
+    <ClInclude Include="fcyOS\fcyMultiThread.h" />
+    <ClInclude Include="fcyParser\fcyJson.h" />
+    <ClInclude Include="fcyParser\fcyLexicalParser.h" />
+    <ClInclude Include="fcyParser\fcyPathParser.h" />
+    <ClInclude Include="fcyParser\fcyXml.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="extern\zlib\adler32.c" />
+    <ClCompile Include="extern\zlib\compress.c" />
+    <ClCompile Include="extern\zlib\crc32.c" />
+    <ClCompile Include="extern\zlib\deflate.c" />
+    <ClCompile Include="extern\zlib\gzclose.c" />
+    <ClCompile Include="extern\zlib\gzlib.c" />
+    <ClCompile Include="extern\zlib\gzread.c" />
+    <ClCompile Include="extern\zlib\gzwrite.c" />
+    <ClCompile Include="extern\zlib\infback.c" />
+    <ClCompile Include="extern\zlib\inffast.c" />
+    <ClCompile Include="extern\zlib\inflate.c" />
+    <ClCompile Include="extern\zlib\inftrees.c" />
+    <ClCompile Include="extern\zlib\trees.c" />
+    <ClCompile Include="extern\zlib\uncompr.c" />
+    <ClCompile Include="extern\zlib\zutil.c" />
+    <ClCompile Include="fcyException.cpp" />
+    <ClCompile Include="fcyFile\fcyResPackage.cpp" />
+    <ClCompile Include="fcyIO\fcyBinaryHelper.cpp" />
+    <ClCompile Include="fcyIO\fcyDeflate.cpp" />
+    <ClCompile Include="fcyIO\fcyStream.cpp" />
+    <ClCompile Include="fcyMisc\fcyRandom.cpp" />
+    <ClCompile Include="fcyMisc\fcyStopWatch.cpp" />
+    <ClCompile Include="fcyMisc\fcyStringHelper.cpp" />
+    <ClCompile Include="fcyNet\fcyHTTP.cpp" />
+    <ClCompile Include="fcyOS\fcyDebug.cpp" />
+    <ClCompile Include="fcyOS\fcyMultiThread.cpp" />
+    <ClCompile Include="fcyOS\fcySocket.cpp" />
+    <ClCompile Include="fcyParser\fcyIni.cpp" />
+    <ClCompile Include="fcyParser\fcyJson.cpp" />
+    <ClCompile Include="fcyParser\fcyLexicalParser.cpp" />
+    <ClCompile Include="fcyParser\fcyPathParser.cpp" />
+    <ClCompile Include="fcyParser\fcyXml.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D6F0F22B-302F-4447-B206-48BAE2F770C1}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>fancylib</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>extern\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <MinimalRebuild>true</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>extern\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

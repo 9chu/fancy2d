@@ -1,0 +1,59 @@
+﻿<fancyUIStyle>
+  <!-- 边框 -->
+  <Board StyleName="Default">
+    <!-- Margin = 控件左边,控件顶边,控件右边,控件底边 -->
+    <!-- BoardMargin = 左边空隙,顶边空隙,右边空隙,下方空隙 -->
+    <!-- SpriteMargin = 精灵左边空隙,精灵顶边空隙,精灵右边空隙,精灵下方空隙 -->
+    <Style Margin="8,8,8,8" BoardMargin="16,16,16,16" SpriteMargin="16,16,16,16" />
+    <Sprite Board="Board" />
+  </Board>
+  
+  <!-- 水平进度条 -->
+  <HProgressBar StyleName="Default">
+    <Style RightToLeft="false" Height="32" Margin="16,16" BarHeight="32" BarMargin="16,16" />
+    <Sprite Left="HProgBar_Left"
+            Center="HProgBar_Center"
+            Right="HProgBar_Right"
+            BarLeft="HProgBar_Bar_Left"
+            BarCenter="HProgBar_Bar_Center"
+            BarRight="HProgBar_Bar_Right"
+            />
+  </HProgressBar>
+  
+  <!-- 垂直进度条 -->
+  <VProgressBar StyleName="Default">
+    <Style TopToBottom="false" Width="32" Margin="16,16" BarWidth="32" BarMargin="16,16" />
+    <Sprite Top="VProgBar_Top"
+            Center="VProgBar_Center"
+            Bottom="VProgBar_Bottom"
+            BarTop="VProgBar_Bar_Top"
+            BarCenter="VProgBar_Bar_Center"
+            BarBottom="VProgBar_Bar_Bottom"
+            />
+  </VProgressBar>
+  
+  <!-- 图形按钮 -->
+  <SpriteButton StyleName="PlayButton">
+    <Style Size="24,24" />
+    <Sprite Default="SButton_Play_Default"
+            MouseOn="SButton_Play_On"
+            MouseDown="SButton_Play_Down" />
+  </SpriteButton>
+  
+  <!-- 水平滑动条 -->
+  <HSliderBar StyleName="Default">
+    <SpriteButton Style="PlayButton" Margin="8,8" />
+    <HProgressBar Style="Default" Margin="10,10" />
+  </HSliderBar>
+  
+  <!-- 文本框 -->
+  <Label StyleName="Default">
+    <Style HStyle="2" VStyle="1" Font="Default" FontColor="FFFF0000" />
+  </Label>
+  
+  <!-- 编辑框 -->
+  <EditBox StyleName="Default">
+    <Style Font="Default" FontColor="FFFF0000" PointerFreq="1" PointerSize="4,36" />
+    <Sprite Pointer="EditBox_Pointer" />
+  </EditBox>
+</fancyUIStyle>

@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="fcyUIBase">
+      <UniqueIdentifier>{431f33bf-2a04-448e-b6a6-35d0da6135be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyUIBase\header">
+      <UniqueIdentifier>{fa9aa127-2aa3-487a-ab57-a21f5afe6cff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyUIBase\source">
+      <UniqueIdentifier>{1959c9a7-91fc-46ae-abc0-0a06a9a4a1d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyUIControl">
+      <UniqueIdentifier>{659659c1-0d09-4b0e-9da4-d086b033a928}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyUIControl\header">
+      <UniqueIdentifier>{bc7fca1f-5da3-460d-8710-6bd373a613a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fcyUIControl\source">
+      <UniqueIdentifier>{4f082473-d486-4a63-8b3e-9f7e13ee23a8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fcyUIBase\fuiContainer.h">
+      <Filter>fcyUIBase\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIBase\fuiContext.h">
+      <Filter>fcyUIBase\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIBase\fuiControl.h">
+      <Filter>fcyUIBase\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIBase\fuiRenderer.h">
+      <Filter>fcyUIBase\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiBoard.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiHProgressBar.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiVProgressBar.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiSpriteButton.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiHSliderBar.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiLabel.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiEditBox.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="fcyUIBase\fuiContainer.cpp">
+      <Filter>fcyUIBase\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIBase\fuiContext.cpp">
+      <Filter>fcyUIBase\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIBase\fuiControl.cpp">
+      <Filter>fcyUIBase\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIBase\fuiRenderer.cpp">
+      <Filter>fcyUIBase\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiBoard.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiHProgressBar.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiVProgressBar.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiSpriteButton.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiHSliderBar.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiLabel.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiEditBox.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

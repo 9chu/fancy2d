@@ -1,0 +1,81 @@
+fancy2D 0.4
+
+BUG修正：
+  - 修正fcyXml的BUG
+  - 修正窗口消息的问题（涉及所有鼠标坐标参数）
+  - 修复VS2010无法编译问题
+
+变化：
+  - 修改了fcyXml，支持utf8编码
+  - 暴露了窗口句柄和D3D设备句柄
+  - fontRenderer可以不指定Graphics进行绘制，此时只用作采集绘制信息
+  - 纹理使用D3DX_DEFAULT_NONPOW2标志创建
+  - 引擎接口增加OnException事件
+  
+新增：
+  - 追加ini支持
+  - f2dSprite追加一些接口
+  - fcyMath追加一元运算符
+  - 测试性部件：fancyUI\Socket\HTTPReadFile
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+fancy2D 0.3
+
+BUG修正：
+  - 修正 fcyRefObjImpl::Release 可能的不安全隐患
+  - 其他修正
+  
+变化：
+  - 如有需要，使用 f2dGraphics2D::SyncStates 手动将Graphics2D的渲染状态(仅限混合选项)同步到设备
+  - f2dSoundBuffer::SetVolume、f2dSoundBuffer::SetPan 函数在给出错误的值时不会返回错误
+  - f2dFileFolderNodeForReal::Contain、f2dFileFolderNodeForReal::GetSubNode 不再区分大小写
+  - 调整内部循环，现行单帧渲染过程为：应用程序循环(不计入ElpasedTime) -> FPS限制/更新 -> 绘制 -> 
+    逻辑 -> 提交绘制
+    - 由于FPS限制下存在撕裂的问题，建议开启垂直同步(一般是60fps)，关闭FPS限制
+  - fcyStopWatch::GetElpased、f2dEngineEventListener::Render、f2dEngineEventListener::Update 改为
+    double时间间隔
+    - 请注意修改框架以防止函数不能覆写Render和Update函数
+  - 扩大了f2dFontRenderer缓冲区的大小，目前情况下最多会缓存20*20=400个文字，纹理最大上限为2048*20
+    48
+    
+新增：
+  - f2dVideo 视频渲染模块
+  - 追加 f2dWindowEventListener::OnGetFocus、f2dWindowEventListener::OnLostFocus 消息
+  - 追加 f2dWindow::IsTopMost、f2dWindow::SetTopMost 函数用于设置置顶
+    PS：该函数用以在从全屏模式切换到窗口模式时改变置顶状态
+  - 追加 f2dRenderDevice::SaveTexture 函数用以保存纹理数据
+  - 追加 f2dSoundBuffer::GetFrequency、f2dSoundBuffer::SetFrequency 函数用以调节播放频率
+  - 追加 f2dRenderDevice::GetScissorRect、f2dRenderDevice::SetScissorRect 用以裁剪绘制区域
+  - 追加 f2dFontRenderer::DrawTextInRect (2重载) 允许限定矩形渲染文字
+  - 追加 f2dFontRenderer::DrawAdvancedText 支持内嵌命令来绘制文字
+    - [c:#FFAAAAAA]   将字体颜色设置为FFAAAAAA
+    - [c:0,#FFAAAAAA] 将下标为0的字体顶点颜色设置为FFAAAAAA
+    - [f:0]           设置翻转样式 0 取值为 F2DSPRITEFLIP
+    - [b:0.1]         倾斜0.1弧度，不可取tan无意义值
+    - [o:10,10]       偏移(10,10)坐标
+    - [j:10]          跳过N行的同一位置
+    - [n]             回到行首
+    - [s]             回到开始位置
+    - [+:0]           把当前位置记录到0号坐标缓冲中
+    - [-:0]           把0号坐标缓冲中位置设置到当前笔触位置
+  - 追加 f2dFontRenderer::DrawAdvancedTextInRect 允许限定矩形绘制文字
+    
+额外：
+  - 发布时附带DEBUG版DLL，对f2d中异常将输出到输出面板(你可以在debug版DLL中使用CRT函数诊断内存泄露
+    ，仅限VS2012)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+fancy2D 0.2
+
+BUG修正：
+  - 修正f2dVorbisDecoder::SetPosition寻址问题
+  - 修正f2dFileFolderNodeForReal::~f2dFileFolderNodeForReal内存泄漏问题
+  
+变化：
+  - 重新定义了FileSys部分的接口：
+    - 为资源节点增加GetName函数
+    - 隐藏部分接口
+    
+  - 创建字体时可以指定face索引
