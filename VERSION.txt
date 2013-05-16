@@ -1,3 +1,18 @@
+fancy2D 0.5
+
+BUG修正：
+
+变化：
+  - 修改数学库
+  - Renderer\RenderDev部分完全重写
+  - Sprite\GeometryRenderer默认z值设为1.0
+
+新增：
+  - f2dSoundSys::CreateSharedStaticBuffer 暴露SoundSprite细节，创建共享内存音频
+  - fancylib增加 fcyFunctor，用以绑定静态函数或者类成员函数
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 fancy2D 0.4
 
 BUG修正：
