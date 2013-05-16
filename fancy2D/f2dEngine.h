@@ -19,6 +19,15 @@
 /// @{
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @brief fancy2D CPU信息
+////////////////////////////////////////////////////////////////////////////////
+struct f2dCPUInfo
+{
+	fcStr CPUString;
+	fcStr CPUBrandString;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 /// @brief fancy2D引擎事件监听器
 /// @note  通过覆写这个类来实现消息回调
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,10 +114,11 @@ struct f2dEngine : f2dInterface
 	virtual void Run()=0;   ///< @brief 执行程序循环
 
 	// --- 属性 ---
-	virtual fFloat GetFPS()=0;           ///< @brief 获得FPS
-	virtual fuInt GetMaxFPS()=0;         ///< @brief 获得最大FPS
-	virtual void SetMaxFPS(fuInt FPS)=0; ///< @brief 设置最大FPS
-	                                     ///< @note  设为0表示不限速
-	virtual void DisablePresent()=0;     ///< @brief 关闭Present
+	virtual void GetCPUInfo(f2dCPUInfo& tInfo)=0; ///< @brief 返回CPU信息
+	virtual fFloat GetFPS()=0;                    ///< @brief 获得FPS
+	virtual fuInt GetMaxFPS()=0;                  ///< @brief 获得最大FPS
+	virtual void SetMaxFPS(fuInt FPS)=0;          ///< @brief 设置最大FPS
+	                                              ///< @note  设为0表示不限速
+	virtual void DisablePresent()=0;              ///< @brief 关闭Present
 };
 /// @}

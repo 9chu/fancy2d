@@ -5,6 +5,8 @@
 #pragma once
 #include "f2dInterface.h"
 
+#include "f2dRenderer.h"
+
 /// @addtogroup f2d视频支持
 /// @brief fancy2d视频播放支持
 /// @{
@@ -79,7 +81,7 @@ struct f2dVideo : public f2dInterface
 
 	/// @brief     复制视频数据到动态纹理
 	/// @param[in] pTex 动态纹理指针
-	virtual fResult CopyDataToTexture(f2dTexture* pTex)=0;
+	virtual fResult CopyDataToTexture(f2dTexture2D* pTex)=0;
 
 	/// @brief 获得状态
 	virtual F2DVIDEOSTATE GetState()=0;

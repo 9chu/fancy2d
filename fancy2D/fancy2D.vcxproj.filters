@@ -22,6 +22,51 @@
     <Filter Include="Engine\source">
       <UniqueIdentifier>{b4021d30-c904-453a-b4f5-a10e65edb662}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sound">
+      <UniqueIdentifier>{26375a1c-39a2-41f9-9054-22fd9d5f96e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound\header">
+      <UniqueIdentifier>{409660f1-9fa6-4b86-98ce-3afe3876ebf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound\source">
+      <UniqueIdentifier>{bb332936-ec01-4220-9c58-ebe2360e329c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Video">
+      <UniqueIdentifier>{ad3db7bb-fc79-4807-9a73-8b4821af3e0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Video\header">
+      <UniqueIdentifier>{143ec847-e92b-44e7-9063-b83e5c89eedd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Video\source">
+      <UniqueIdentifier>{2f1b85a2-2ebf-4d4d-a738-d4592ffd7640}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{a9b94fc3-2743-4d86-b142-9bb071df097a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\header">
+      <UniqueIdentifier>{ac932367-8aa9-484e-b769-e53c7fe510e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\source">
+      <UniqueIdentifier>{c494b0f0-5f78-4ff8-a5c8-92f2a9e4dda2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{608acaa5-1e57-4d57-9e7d-845477fc1676}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\header">
+      <UniqueIdentifier>{a6b37660-556e-4243-9ef9-4d3524794606}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\source">
+      <UniqueIdentifier>{e3ceec9e-6392-4437-b22c-fd201aedd35c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderDev">
+      <UniqueIdentifier>{792d25b8-b0af-469b-85e9-72016f5f8f0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderDev\header">
+      <UniqueIdentifier>{20cdb76e-b9b2-49c7-ae6e-986d9f908003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderDev\source">
+      <UniqueIdentifier>{4305a1be-5eb5-4a3f-ab40-685166a3243a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="f2d.h">
@@ -54,35 +99,101 @@
     <ClInclude Include="Engine\f2dWindowImpl.h">
       <Filter>Engine\header</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\f2dInputSysImpl.h">
-      <Filter>Engine\header</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\f2dSoundSysImpl.h">
-      <Filter>Engine\header</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\f2dSoundDecoder.h">
-      <Filter>Engine\header</Filter>
-    </ClInclude>
-    <ClInclude Include="f2dRenderer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\f2dRenderDeviceImpl.h">
-      <Filter>Engine\header</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\f2dRendererImpl.h">
-      <Filter>Engine\header</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\f2dVideoStream.h">
-      <Filter>Engine\header</Filter>
     </ClInclude>
     <ClInclude Include="f2dVideoSys.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\f2dVideoSysImpl.h">
-      <Filter>Engine\header</Filter>
+    <ClInclude Include="Sound\f2dWaveDecoder.h">
+      <Filter>Sound\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound\f2dVorbisDecoder.h">
+      <Filter>Sound\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound\f2dSoundBufferStatic.h">
+      <Filter>Sound\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound\f2dSoundBufferDynamic.h">
+      <Filter>Sound\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound\f2dSoundSpriteImpl.h">
+      <Filter>Sound\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound\f2dSoundSysImpl.h">
+      <Filter>Sound\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound\f2dSoundSysAPI.h">
+      <Filter>Sound\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\f2dVideoSysImpl.h">
+      <Filter>Video\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\f2dVideoStream.h">
+      <Filter>Video\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\f2dVideoRenderer.h">
+      <Filter>Video\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Video\f2dVideoImpl.h">
+      <Filter>Video\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\f2dInputSysAPI.h">
+      <Filter>Input\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\f2dInputMouseImpl.h">
+      <Filter>Input\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\f2dInputKeyboardImpl.h">
+      <Filter>Input\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\f2dInputJoystickImpl.h">
+      <Filter>Input\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\f2dInputSysImpl.h">
+      <Filter>Input\header</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderDev\f2dRenderDeviceAPI.h">
+      <Filter>RenderDev\header</Filter>
+    </ClInclude>
+    <ClInclude Include="f2dRenderDevice.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderDev\f2dEffectImpl.h">
+      <Filter>RenderDev\header</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderDev\f2dRenderDeviceImpl.h">
+      <Filter>RenderDev\header</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderDev\f2dTextureImpl.h">
+      <Filter>RenderDev\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\f2dRendererImpl.h">
+      <Filter>Renderer\header</Filter>
+    </ClInclude>
+    <ClInclude Include="f2dRenderer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderDev\f2dGraphicsImpl.h">
+      <Filter>RenderDev\header</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderDev\f2dGraphics2DImpl.h">
+      <Filter>RenderDev\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\f2dSpriteImpl.h">
+      <Filter>Renderer\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\f2dGeometryRendererImpl.h">
+      <Filter>Renderer\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\f2dFontFileProvider.h">
+      <Filter>Renderer\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\f2dFontTexProvider.h">
+      <Filter>Renderer\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\f2dFontRendererImpl.h">
+      <Filter>Renderer\header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -95,26 +206,86 @@
     <ClCompile Include="Engine\f2dWindowImpl.cpp">
       <Filter>Engine\source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\f2dInputSysImpl.cpp">
-      <Filter>Engine\source</Filter>
+    <ClCompile Include="Sound\f2dWaveDecoder.cpp">
+      <Filter>Sound\source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\f2dSoundSysImpl.cpp">
-      <Filter>Engine\source</Filter>
+    <ClCompile Include="Sound\f2dVorbisDecoder.cpp">
+      <Filter>Sound\source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\f2dSoundDecoder.cpp">
-      <Filter>Engine\source</Filter>
+    <ClCompile Include="Sound\f2dSoundBufferStatic.cpp">
+      <Filter>Sound\source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\f2dRenderDeviceImpl.cpp">
-      <Filter>Engine\source</Filter>
+    <ClCompile Include="Sound\f2dSoundBufferDynamic.cpp">
+      <Filter>Sound\source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\f2dRendererImpl.cpp">
-      <Filter>Engine\source</Filter>
+    <ClCompile Include="Sound\f2dSoundSpriteImpl.cpp">
+      <Filter>Sound\source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\f2dVideoStream.cpp">
-      <Filter>Engine\source</Filter>
+    <ClCompile Include="Sound\f2dSoundSysImpl.cpp">
+      <Filter>Sound\source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\f2dVideoSysImpl.cpp">
-      <Filter>Engine\source</Filter>
+    <ClCompile Include="Sound\f2dSoundSysAPI.cpp">
+      <Filter>Sound\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Video\f2dVideoStream.cpp">
+      <Filter>Video\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Video\f2dVideoSysImpl.cpp">
+      <Filter>Video\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Video\f2dVideoRenderer.cpp">
+      <Filter>Video\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Video\f2dVideoImpl.cpp">
+      <Filter>Video\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Input\f2dInputSysAPI.cpp">
+      <Filter>Input\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Input\f2dInputSysImpl.cpp">
+      <Filter>Input\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Input\f2dInputMouseImpl.cpp">
+      <Filter>Input\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Input\f2dInputKeyboardImpl.cpp">
+      <Filter>Input\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Input\f2dInputJoystickImpl.cpp">
+      <Filter>Input\source</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderDev\f2dRenderDeviceAPI.cpp">
+      <Filter>RenderDev\source</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderDev\f2dEffectImpl.cpp">
+      <Filter>RenderDev\source</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderDev\f2dRenderDeviceImpl.cpp">
+      <Filter>RenderDev\source</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderDev\f2dTextureImpl.cpp">
+      <Filter>RenderDev\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\f2dRendererImpl.cpp">
+      <Filter>Renderer\source</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderDev\f2dGraphics2DImpl.cpp">
+      <Filter>RenderDev\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\f2dSpriteImpl.cpp">
+      <Filter>Renderer\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\f2dGeometryRendererImpl.cpp">
+      <Filter>Renderer\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\f2dFontFileProvider.cpp">
+      <Filter>Renderer\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\f2dFontTexProvider.cpp">
+      <Filter>Renderer\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\f2dFontRendererImpl.cpp">
+      <Filter>Renderer\source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

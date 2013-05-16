@@ -104,6 +104,12 @@ struct f2dSoundSys
 	/// @param[out] pOut         输出的音频缓冲区指针
 	virtual fResult CreateStaticBuffer(f2dSoundDecoder* pDecoder, fBool bGlobalFocus, f2dSoundBuffer** pOut)=0;
 
+	/// @brief      创建共享内存的静态缓冲区音频
+	/// @note       共享内存缓冲区，适合重复播放的音效
+	/// @param[in]  pOrg 原始的静态缓冲区
+	/// @param[out] pOut 产生的共享内存区段的静态缓冲区
+	virtual fResult CreateSharedStaticBuffer(f2dSoundBuffer* pOrg, f2dSoundBuffer** pOut)=0;
+
 	/// @brief      创建动态音频
 	/// @note       动态音频只会缓存极少量的PCM数据，按需解码，适合背景音乐。
 	/// @param[in]  pDecoder     音频解码器，动态缓冲区会保存解码器指针，请不要将一个解码器用于多个缓冲区

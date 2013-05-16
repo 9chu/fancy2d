@@ -18,8 +18,8 @@
 /// @addtogroup f2d引擎
 /// @{
 
-/// @brief F2D版本 0.4
-#define F2DVERSION ((fuInt)(0<<16 | 4))
+/// @brief F2D版本 0.5
+#define F2DVERSION ((fuInt)(0<<16 | 5))
 
 /// @brief      创建fancy2D引擎
 /// @param[in]  Version              必须为F2DVERSION，用于检查DLL版本
