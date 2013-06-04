@@ -19,10 +19,26 @@ private:
 	struct ListenerNode
 	{
 		f2dRenderDeviceEventListener* pListener;
+		fInt Priority;   // 优先级
+
 		ListenerNode* pNext;
+	};
+
+	struct VertexDeclareInfo
+	{
+		fuInt Hash;
+		std::vector<f2dVertexElement> ElementData;
+		IDirect3DVertexDeclaration9* pVertexDeclare;
+
+		VertexDeclareInfo();
+		VertexDeclareInfo(const VertexDeclareInfo& Org);
+		~VertexDeclareInfo();
+	protected:
+		VertexDeclareInfo& operator=(const VertexDeclareInfo& Right);
 	};
 private:
 	f2dEngineImpl* m_pEngine;
+	DWORD m_CreateThreadID;
 
 	// API入口
 	f2dRenderDeviceAPI m_API;
@@ -36,6 +52,9 @@ private:
 	
 	// 监听器链表
 	ListenerNode* m_ListenerList;
+
+	// 顶点声明
+	std::vector<VertexDeclareInfo> m_VDCache;
 
 	// 设备状态
 	bool m_bDevLost;                              // 设备丢失标志
@@ -52,11 +71,14 @@ private:
 	fcyMatrix4 m_CurProjMat;       // 当前投影矩阵
 	f2dBlendState m_CurBlendState; // 当前混合状态
 
+	IDirect3DVertexDeclaration9* m_pCurVertDecl; // 当前的顶点声明
+
 	// Window
 	HWND m_hWnd;
 	f2dWindowDC m_DC;
 	IDirect3DSurface9* m_pWinSurface;
 private:
+	HRESULT doReset(D3DPRESENT_PARAMETERS* pD3DPP);  // 保证在主线程执行
 	void initState();         // 初始化状态
 	int sendDevLostMsg();     // 发送设备丢失事件, 返回对象数目
 	int sendDevResetMsg();    // 发送设备重置事件
@@ -73,6 +95,11 @@ public: // 内部函数
 	fResult SubmitLookatMat(const fcyMatrix4& Mat);               // 立即提交观察矩阵
 	fResult SubmitProjMat(const fcyMatrix4& Mat);                 // 立即提交投影矩阵
 	fResult SubmitBlendState(const f2dBlendState& State);         // 立即提交混合状态
+
+	fResult SubmitVD(IDirect3DVertexDeclaration9* pVD);  // 立即递交顶点声明
+
+	// 注册顶点声明
+	IDirect3DVertexDeclaration9* RegisterVertexDeclare(f2dVertexElement* pElement, fuInt ElementCount, fuInt& ElementSize);
 public: // 接口实现
 	void* GetHandle() { return m_pDev; }
 	fcStr GetDeviceName() { return m_DevName.c_str(); }
@@ -85,7 +112,7 @@ public: // 接口实现
 	fcyVec2 EnumSupportResolution(fuInt Index);
 	fResult SetBufferSize(fuInt Width, fuInt Height, fBool Windowed, fBool VSync, F2DAALEVEL AALevel);
 
-	fResult AttachListener(f2dRenderDeviceEventListener* Listener);
+	fResult AttachListener(f2dRenderDeviceEventListener* Listener, fInt Priority=0);
 	fResult RemoveListener(f2dRenderDeviceEventListener* Listener);
 
 	fResult CreateTextureFromStream(f2dStream* pStream, fuInt Width, fuInt Height, fBool IsDynamic, fBool HasMipmap, f2dTexture2D** pOut);
@@ -94,7 +121,8 @@ public: // 接口实现
 	fResult CreateDepthStencilSurface(fuInt Width, fuInt Height, fBool Discard, fBool AutoResize, f2dDepthStencilSurface** pOut);
 	fResult CreateGraphics2D(fuInt VertexBufferSize, fuInt IndexBufferSize, f2dGraphics2D** pOut);
 	fResult CreateGraphics3D(f2dEffect* pDefaultEffect, f2dGraphics3D** pOut);
-	fResult CreateEffect(f2dStream* pStream, f2dEffect** pOut, f2dStream** pErrOut = NULL);
+	fResult CreateEffect(f2dStream* pStream, fBool bAutoState, f2dEffect** pOut);
+	fResult CreateMeshData(f2dVertexElement* pVertElement, fuInt ElementCount, fuInt VertCount, fuInt IndexCount, fBool Int32Index, f2dMeshData** pOut);
 
 	fResult Clear(const fcyColor& BackBufferColor = 0, fFloat ZValue = 1.0f);
 	fResult Clear(const fcyColor& BackBufferColor = 0, fFloat ZValue = 1.0f, fuInt StencilValue = 0);

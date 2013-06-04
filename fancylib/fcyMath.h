@@ -99,16 +99,20 @@ public: // 函数
 	void Normalize()
 	{
 		fFloat mode = sqrt( x * x +  y * y );
-		x /= mode;
-		y /= mode;
+		if(mode != 0)
+		{
+			x /= mode;
+			y /= mode;
+		}
 	};
 	/// @brief 返回规范化向量
 	fcyVec2 GetNormalize()const
 	{
 		fFloat mode=sqrt( x *  x +  y *  y);
-		fFloat tX = x / mode;
-		fFloat tY = y / mode;
-		return fcyVec2(tX, tY);
+		if(mode != 0)
+			return fcyVec2(x / mode, y / mode);
+		else
+			return fcyVec2();
 	};
 	/// @brief 求模
 	fFloat Length()const
@@ -252,15 +256,21 @@ public: // 函数
 	void Normalize()
 	{
 		fFloat mode = sqrt( x*x +  y*y +  z*z );
-		x/=mode;
-		y/=mode;
-		z/=mode;
+		if(mode != 0)
+		{
+			x/=mode;
+			y/=mode;
+			z/=mode;
+		}
 	};
 	/// @brief 返回规范化向量
 	fcyVec3 GetNormalize()const
 	{
 		fFloat mode = sqrt( x*x + y*y + z*z );
-		return fcyVec3( x / mode, y / mode, z / mode);
+		if(mode != 0)
+			return fcyVec3( x / mode, y / mode, z / mode);
+		else
+			return fcyVec3();
 	};
 	/// @brief 取模
 	fFloat Length()const
@@ -271,6 +281,141 @@ public: // 函数
 	fFloat Length2()const
 	{
 		return x*x + y*y + z*z;
+	}
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief 4D向量
+////////////////////////////////////////////////////////////////////////////////
+class fcyVec4
+{
+public:
+	fFloat x; ///< @brief x坐标
+	fFloat y; ///< @brief y坐标
+	fFloat z; ///< @brief z坐标
+	fFloat w; ///< @brief w坐标
+public: // 构造函数
+	fcyVec4()
+		: x(0.f), y(0.f), z(0.f), w(0.f) 
+	{
+		this->w = 10;
+	}
+	/// @brief     构造函数
+	/// @param[in] X x坐标
+	/// @param[in] Y y坐标
+	/// @param[in] Z z坐标
+	/// @param[in] W w坐标
+	fcyVec4(fFloat X, fFloat Y, fFloat Z, fFloat W)
+		: x(X), y(Y), z(Z), w(W) {}
+	/// @brief     构造函数，从data[0]~data[3]取出浮点值
+	/// @warning   不安全的函数
+	/// @param[in] data 浮点数组指针
+	fcyVec4(fFloat *data)
+		: x(data[0]), y(data[1]), z(data[2]), w(data[3]) {}
+public: // 运算符重载
+	/// @brief 4D向量相加
+	fcyVec4 operator+(const fcyVec4& right)const
+	{
+		return fcyVec4(
+			x + right.x,
+			y + right.y,
+			z + right.z,
+			w + right.w
+			);
+	};
+	/// @brief 4D向量自加
+	fcyVec4& operator+=(const fcyVec4& right)
+	{
+		x += right.x;
+		y += right.y;
+		z += right.z;
+		w += right.w;
+		return *this;
+	};
+	/// @brief 4D向量相减
+	fcyVec4 operator-(const fcyVec4& right)const
+	{
+		return fcyVec4(
+			x - right.x,
+			y - right.y, 
+			z - right.z,
+			w - right.w
+			);
+	};
+	/// @brief 4D向量自减
+	fcyVec4& operator-=(const fcyVec4& right)
+	{
+		x -= right.x;
+		y -= right.y;
+		z -= right.z;
+		w -= right.w;
+		return *this;
+	};
+	/// @brief 4D向量数乘
+	fcyVec4 operator*(fFloat right)const
+	{
+		return fcyVec4(
+			x * right,
+			y * right,
+			z * right,
+			w * right
+			);
+	};
+	/// @brief 4D向量自数乘
+	fcyVec4& operator*=(fFloat right)
+	{
+		x = x * right;
+		y = y * right;
+		z = z * right;
+		w = w * right;
+		return *this;
+	};
+	/// @brief 取反
+	fcyVec4 operator-()const
+	{
+		return fcyVec4(-x, -y, -z, -w);
+	};
+public: // 函数
+	/// @brief 设值新值
+	void Set(fFloat X, fFloat Y, fFloat Z)
+	{
+		x = X; y = Y; z = Z;
+	}
+	/// @brief 设值新值
+	void Set(fFloat X, fFloat Y, fFloat Z, fFloat W)
+	{
+		x = X; y = Y; z = Z; w = W;
+	}
+	/// @brief 规范化向量
+	void Normalize()
+	{
+		fFloat mode = sqrt( x*x +  y*y +  z*z + w*w );
+		if(mode != 0)
+		{
+			x/=mode;
+			y/=mode;
+			z/=mode;
+			w/=mode;
+		}
+	};
+	/// @brief 返回规范化向量
+	fcyVec4 GetNormalize()const
+	{
+		fFloat mode = sqrt( x*x + y*y + z*z + w*w );
+		if(mode != 0)
+			return fcyVec4( x / mode, y / mode, z / mode, w / mode );
+		else
+			return fcyVec4();
+	};
+	/// @brief 取模
+	fFloat Length()const
+	{
+		return sqrt( x*x + y*y + z*z + w*w );
+	};
+	/// @brief 取模的平方
+	fFloat Length2()const
+	{
+		return x*x + y*y + z*z + w*w;
 	}
 };
 
@@ -721,7 +866,7 @@ public:
 		fFloat t = 1.f / tan(fovY*0.5f);
 
 		return fcyMatrix4(
-			t*ration, 0.f, 0.f, 0.f,
+			t/ration, 0.f, 0.f, 0.f,
 			0.f, t, 0.f, 0.f,
 			0.f, 0.f, farPlane/(farPlane-nearPlane), 1.f,
 			0.f, 0.f, -( nearPlane*farPlane )/( farPlane-nearPlane ), 0.f
@@ -741,7 +886,7 @@ public:
 		fFloat t = 1.f / tan(fovY*0.5f);
 
 		return fcyMatrix4(
-			t*ration, 0.f, 0.f, 0.f,
+			t/ration, 0.f, 0.f, 0.f,
 			0.f, t, 0.f, 0.f,
 			0.f, 0.f, farPlane/(nearPlane-farPlane), -1.f,
 			0.f, 0.f, ( nearPlane*farPlane )/( nearPlane-farPlane),	0.f

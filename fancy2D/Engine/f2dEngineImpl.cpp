@@ -1,119 +1,230 @@
 #include "f2dEngineImpl.h"
 
-#include "f2dInputSysImpl.h"
-#include "f2dSoundSysImpl.h"
-#include "f2dRendererImpl.h"
-#include "f2dVideoSysImpl.h"
+#include "../Input/f2dInputSysImpl.h"
+#include "../Sound/f2dSoundSysImpl.h"
+#include "../Video/f2dVideoSysImpl.h"
+#include "../Renderer/f2dRendererImpl.h"
 
 #include "fcyOS/fcyDebug.h"
-#include "fcyMisc/fcyStopWatch.h"
+#include "fcyOS/fcyCPUID.h"
 
 #define F2DEXPORT
 #include "../f2d.h"
 
+using namespace std;
+
 ////////////////////////////////////////////////////////////////////////////////
 // 导出函数
-extern "C" fResult F2DDLLFUNC CreateF2DEngine(fuInt Version, f2dEngineEventListener* pEngineEventListener, f2dEngine** pOut)
+extern "C" fResult F2DDLLFUNC CreateF2DEngine(fuInt Version, f2dEngineEventListener* pListener, f2dEngine** pOut, f2dInitialErrListener* pErrListener)
 {
-	if(Version != F2DVERSION)
-		return FCYERR_INVAILDVERSION;
 	if(!pOut)
 		return FCYERR_ILLEGAL;
-
 	*pOut = NULL;
+
+	if(Version != F2DVERSION)
+		return FCYERR_INVAILDVERSION;
+	
 	try
 	{
-		*pOut = new f2dEngineImpl();
-
-		if(pEngineEventListener)
-			(*pOut)->SetListener(pEngineEventListener);
+		*pOut = new f2dEngineImpl(pListener);
 	}
 	catch(const fcyException& e)
 	{
-		if(pEngineEventListener)
-			pEngineEventListener->OnException(e.GetTime(), e.GetSrc(), e.GetDesc());
-		
+		if(pErrListener)
+			pErrListener->OnErr(e.GetTime(), e.GetSrc(), e.GetDesc());
+
 		return FCYERR_INTERNALERR;
 	}
 
 	return FCYERR_OK;
 }
 
-extern "C" fResult F2DDLLFUNC CreateF2DEngineAndInit(fuInt Version, const fcyRect& WinPos, fcStrW Title, fBool Windowed, fBool VSync, F2DAALEVEL AA, f2dEngineEventListener* pEngineEventListener, f2dEngine** pOut)
+extern "C" fResult F2DDLLFUNC CreateF2DEngineAndInit(fuInt Version, const fcyRect& WinPos, fcStrW Title, fBool Windowed, fBool VSync, F2DAALEVEL AA, f2dEngineEventListener* pListener, f2dEngine** pOut, f2dInitialErrListener* pErrListener)
 {
-	if(Version != F2DVERSION)
-		return FCYERR_INVAILDVERSION;
 	if(!pOut)
 		return FCYERR_ILLEGAL;
-
 	*pOut = NULL;
 
-	// 试图初始化组件
+	if(Version != F2DVERSION)
+		return FCYERR_INVAILDVERSION;
+	
+	try
 	{
-		fResult tVR;
-		f2dEngine* pRet = NULL;
-		try
-		{
-			pRet = new f2dEngineImpl();
+		*pOut = new f2dEngineImpl(WinPos, Title, Windowed, VSync, AA, pListener);
+	}
+	catch(const fcyException& e)
+	{
+		if(pErrListener)
+			pErrListener->OnErr(e.GetTime(), e.GetSrc(), e.GetDesc());
 
-			if(pEngineEventListener)
-				pRet->SetListener(pEngineEventListener);
-		}
-		catch(const fcyException& e)
-		{
-			if(pEngineEventListener)
-				pEngineEventListener->OnException(e.GetTime(), e.GetSrc(), e.GetDesc());
-			return FCYERR_INTERNALERR;
-		}
-
-		tVR = pRet->InitWindow(WinPos, Title, false, F2DWINBORDERTYPE_FIXED);
-		if(FCYFAILED(tVR))
-		{
-			FCYSAFEKILL(pRet);
-			return FCYERR_INTERNALERR;
-		}
-
-		tVR = pRet->InitSoundSys();
-		if(FCYFAILED(tVR))
-		{
-			FCYSAFEKILL(pRet);
-			return FCYERR_INTERNALERR;
-		}
-
-		tVR = pRet->InitInputSys();
-		if(FCYFAILED(tVR))
-		{
-			FCYSAFEKILL(pRet);
-			return FCYERR_INTERNALERR;
-		}
-
-		tVR = pRet->InitRenderer((fuInt)WinPos.GetWidth(), (fuInt)WinPos.GetHeight(), Windowed, VSync, AA);
-		if(FCYFAILED(tVR))
-		{
-			FCYSAFEKILL(pRet);
-			return FCYERR_INTERNALERR;
-		}
-
-		tVR = pRet->InitVideoSys();
-		if(FCYFAILED(tVR))
-		{
-			FCYSAFEKILL(pRet);
-			return FCYERR_INTERNALERR;
-		}
-
-		*pOut = pRet;
+		return FCYERR_INTERNALERR;
 	}
 
 	return FCYERR_OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-f2dEngineImpl::f2dEngineImpl()
-	: m_bStop(true), m_bPresent(true), m_cFPS(0.f), m_iFPSMax(0), m_FrameDelay(0.f),
-	m_pListener(NULL),
-	m_WinClass(L"F2DRenderWindow"),
+
+fuInt f2dEngineImpl::UpdateAndRenderThread::ThreadJob()
+{
+	// 初始化计数器和FPS控制器
+	fcyStopWatch tTimer;
+	f2dFPSControllerImpl tFPSController(m_MaxFPS);
+
+	// 获得渲染设备
+	f2dRenderDeviceImpl* tpRenderDev = NULL;
+	if(m_pEngine->GetRenderer())
+		tpRenderDev = (f2dRenderDeviceImpl*)m_pEngine->GetRenderer()->GetDevice();
+
+	// 开始计时
+	tTimer.Reset();
+
+	// 执行渲染更新循环
+	fcyCriticalSection& tLock = m_pEngine->m_Sec;
+	fBool bExit = false;
+	fDouble tTime = 0;
+	while(1)
+	{
+		tLock.Lock();
+		bExit = m_pEngine->m_bStop;
+		tLock.UnLock();
+
+		// 检查退出
+		if(bExit)
+			break;
+
+		// 更新FPS
+		tTime = tFPSController.Update(tTimer);
+		
+		// 执行更新事件
+		m_pEngine->DoUpdate(tTime, &tFPSController);
+
+		// 执行渲染事件
+		if(tpRenderDev)
+			m_pEngine->DoRender(tTime, &tFPSController, tpRenderDev);
+	}
+
+	// 投递终止消息
+	PostThreadMessage(m_MainThreadID, WM_USER, 0, 0);
+
+	return 0;
+}
+
+fuInt f2dEngineImpl::UpdateThread::ThreadJob()
+{
+	// 初始化计数器和FPS控制器
+	fcyStopWatch tTimer;
+	f2dFPSControllerImpl tFPSController(m_MaxFPS);
+
+	// 开始计时
+	tTimer.Reset();
+
+	// 执行渲染更新循环
+	fcyCriticalSection& tLock = m_pEngine->m_Sec;
+	fBool bExit = false;
+	fDouble tTime = 0;
+	while(1)
+	{
+		tLock.Lock();
+		bExit = m_pEngine->m_bStop;
+		tLock.UnLock();
+
+		// 检查退出
+		if(bExit)
+			break;
+
+		// 更新FPS
+		tTime = tFPSController.Update(tTimer);
+		
+		// 执行更新事件
+		m_pEngine->DoUpdate(tTime, &tFPSController);
+	}
+
+	// 投递终止消息
+	PostThreadMessage(m_MainThreadID, WM_USER, 0, 0);
+
+	return 0;
+}
+
+fuInt f2dEngineImpl::RenderThread::ThreadJob()
+{
+	// 初始化计数器和FPS控制器
+	fcyStopWatch tTimer;
+	f2dFPSControllerImpl tFPSController(m_MaxFPS);
+
+	// 获得渲染设备
+	f2dRenderDeviceImpl* tpRenderDev = NULL;
+	if(m_pEngine->GetRenderer())
+		tpRenderDev = (f2dRenderDeviceImpl*)m_pEngine->GetRenderer()->GetDevice();
+
+	// 开始计时
+	tTimer.Reset();
+
+	// 执行渲染更新循环
+	fcyCriticalSection& tLock = m_pEngine->m_Sec;
+	fBool bExit = false;
+	fDouble tTime = 0;
+	while(1)
+	{
+		tLock.Lock();
+		bExit = m_pEngine->m_bStop;
+		tLock.UnLock();
+
+		// 检查退出
+		if(bExit)
+			break;
+
+		// 更新FPS
+		tTime = tFPSController.Update(tTimer);
+		
+		// 执行渲染事件
+		if(tpRenderDev)
+			m_pEngine->DoRender(tTime, &tFPSController, tpRenderDev);
+	}
+
+	return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+f2dEngineImpl::f2dEngineImpl(f2dEngineEventListener* pListener)
+	: m_bStop(true), m_pListener(pListener), m_LastErrTime(0), m_PumpIndex(0),
+	m_MainThreadID(GetCurrentThreadId()),
+	m_WinClass(this, L"F2DRenderWindow"),
 	m_pWindow(NULL), m_pSoundSys(NULL), m_pInputSys(NULL), m_pRenderer(NULL), m_pVideoSys(NULL)
 {
+	m_CPUString = fcyCPUID::GetCPUString();
+	m_CPUBrandString = fcyCPUID::GetCPUBrand();
+}
+
+f2dEngineImpl::f2dEngineImpl(const fcyRect& WinPos, fcStrW Title, fBool Windowed, fBool VSync, F2DAALEVEL AA, f2dEngineEventListener* pListener)
+	: m_bStop(true), m_pListener(pListener), m_LastErrTime(0), m_PumpIndex(0),
+	m_MainThreadID(GetCurrentThreadId()),
+	m_WinClass(this, L"F2DRenderWindow"),
+	m_pWindow(NULL), m_pSoundSys(NULL), m_pInputSys(NULL), m_pRenderer(NULL), m_pVideoSys(NULL)
+{
+	m_CPUString = fcyCPUID::GetCPUString();
+	m_CPUBrandString = fcyCPUID::GetCPUBrand();
+
+	// 初始化部件
+	try
+	{
+		m_pWindow = m_WinClass.CreateRenderWindow(WinPos, Title, false, F2DWINBORDERTYPE_FIXED);
+		m_pRenderer = new f2dRendererImpl(this, (fuInt)WinPos.GetWidth(), (fuInt)WinPos.GetHeight(), Windowed, VSync, AA);
+		m_pSoundSys = new f2dSoundSysImpl(this);
+		m_pInputSys = new f2dInputSysImpl(this);
+		m_pVideoSys = new f2dVideoSysImpl(this);
+	}
+	catch(...)
+	{
+		FCYSAFEKILL(m_pVideoSys);
+		FCYSAFEKILL(m_pRenderer);
+		FCYSAFEKILL(m_pInputSys);
+		FCYSAFEKILL(m_pSoundSys);
+		FCYSAFEKILL(m_pWindow);
+
+		throw;
+	}
 }
 
 f2dEngineImpl::~f2dEngineImpl()
@@ -130,28 +241,22 @@ void f2dEngineImpl::ThrowException(const fcyException& e)
 {
 	FCYDEBUGEXCPT(e);
 
-	if(m_pListener)
-		m_pListener->OnException(e.GetTime(), e.GetSrc(), e.GetDesc());
-}
+	// 设置最近一次错误
+	m_LastErrTime = e.GetTime();
+	m_LastErrSrc = e.GetSrc();
+	m_LastErrDesc = e.GetDesc();
 
-void f2dEngineImpl::ThrowException(fuInt TimeTick, fcStr Src, fcStr Desc)
-{
-	fcyDebug::Trace("[ TimeTick = %u ] fcyException @%s : %s\n",  \
-		TimeTick, Src, Desc); 
-
-	if(m_pListener)
-		m_pListener->OnException(TimeTick, Src, Desc);
-}
-
-f2dEngineEventListener* f2dEngineImpl::GetListener()
-{
-	return m_pListener;
-}
-
-fResult f2dEngineImpl::SetListener(f2dEngineEventListener* pListener)
-{
-	m_pListener = pListener;
-	return FCYERR_OK;
+	// 封装并抛出消息
+	f2dMsgMemHelper<fcyException>* tObjMem = new f2dMsgMemHelper<fcyException>(e);
+	SendMsg(
+		F2DMSG_APP_ONEXCEPTION,
+		e.GetTime(), 
+		(fuLong)tObjMem->GetObj().GetSrc(),
+		(fuLong)tObjMem->GetObj().GetDesc(),
+		0,
+		tObjMem
+		);
+	FCYSAFEKILL(tObjMem);
 }
 
 fResult f2dEngineImpl::InitWindow(const fcyRect& Pos, fcStrW Title, fBool Visiable, F2DWINBORDERTYPE Border)
@@ -159,7 +264,17 @@ fResult f2dEngineImpl::InitWindow(const fcyRect& Pos, fcStrW Title, fBool Visiab
 	if(m_pWindow)
 		return FCYERR_ILLEGAL;
 
-	return m_WinClass.CreateRenderWindow(this, Pos, Title, Visiable, Border, &m_pWindow);
+	try
+	{
+		m_pWindow = m_WinClass.CreateRenderWindow(Pos, Title, false, F2DWINBORDERTYPE_FIXED);
+	}
+	catch(const fcyException& e)
+	{
+		ThrowException(e);
+		return FCYERR_INTERNALERR;
+	}
+
+	return FCYERR_OK;
 }
 
 fResult f2dEngineImpl::InitSoundSys()
@@ -234,173 +349,243 @@ fResult f2dEngineImpl::InitVideoSys()
 	return FCYERR_OK;
 }
 
-f2dWindow* f2dEngineImpl::GetMainWindow()
-{
-	return m_pWindow;
-}
-
-f2dFileSys* f2dEngineImpl::GetFileSys()
-{
-	return &m_FileSys;
-}
-
-f2dSoundSys* f2dEngineImpl::GetSoundSys()
-{
-	return m_pSoundSys;
-}
-
-f2dInputSys* f2dEngineImpl::GetInputSys()
-{
-	return m_pInputSys;
-}
-
-f2dRenderer* f2dEngineImpl::GetRenderer()
-{
-	return m_pRenderer;
-}
-
-f2dVideoSys* f2dEngineImpl::GetVideoSys()
-{
-	return m_pVideoSys;
-}
+f2dSoundSys* f2dEngineImpl::GetSoundSys() { return m_pSoundSys; }
+f2dInputSys* f2dEngineImpl::GetInputSys() { return m_pInputSys; }
+f2dRenderer* f2dEngineImpl::GetRenderer() { return m_pRenderer; }
+f2dVideoSys* f2dEngineImpl::GetVideoSys() { return m_pVideoSys; }
 
 void f2dEngineImpl::Abort()
 {
+	m_Sec.Lock();
 	m_bStop = true;
+	m_Sec.UnLock();
 }
 
-void f2dEngineImpl::Run()
+void f2dEngineImpl::Run(F2DENGTHREADMODE ThreadMode, fuInt UpdateMaxFPS, fuInt RenderMaxFPS)
 {
+	m_Sec.Lock();
 	m_bStop = false;
+	m_Sec.UnLock();
 
-	// 渲染设备
-	f2dRenderDeviceImpl* tDev = NULL;
-	fResult tDevSync = FCYERR_INTERNALERR;
+	switch(ThreadMode)
+	{
+	case F2DENGTHREADMODE_SINGLETHREAD:
+		Run_SingleThread(UpdateMaxFPS);
+		break;
+	case F2DENGTHREADMODE_MULTITHREAD:
+		Run_MultiThread(UpdateMaxFPS);
+		break;
+	case F2DENGTHREADMODE_FULLMULTITHREAD:
+		Run_FullMultiThread(UpdateMaxFPS, RenderMaxFPS);
+		break;
+	}
+}
 
-	// 初始化计数器
-	fcyStopWatch tWatch;
-	fDouble tTime=0., tPageCount=0., tTotalTime=0.;
+fResult f2dEngineImpl::SendMsg(const f2dMsg& Msg, f2dInterface* pMemObj)
+{
+	m_Sec.Lock();
 
-	// 触发初始化消息
-	if(m_pListener)
-		m_pListener->OnStartLoop();
+	m_MsgPump[m_PumpIndex].Push(Msg, pMemObj);
+
+	m_Sec.UnLock();
+
+	return FCYERR_OK;
+}
+
+void f2dEngineImpl::Run_SingleThread(fuInt UpdateMaxFPS)
+{
+	// 初始化计数器和FPS控制器
+	fcyStopWatch tTimer;
+	f2dFPSControllerImpl tFPSController(UpdateMaxFPS);
+
+	// 获得渲染设备
+	f2dRenderDeviceImpl* tpRenderDev = NULL;
+	if(m_pRenderer)
+		tpRenderDev = (f2dRenderDeviceImpl*)m_pRenderer->GetDevice();
 
 	// 开始计时
-	tWatch.Reset();
+	tTimer.Reset();
 
 	// 执行程序循环
+	fBool bExit = false;
+	fDouble tTime = 0;
 	MSG tMsg;
-	timeBeginPeriod(1); // 调节计时器精度
-	while(!m_bStop)
+	while(1)
 	{
+		m_Sec.Lock();
+		bExit = m_bStop;
+		m_Sec.UnLock();
+
+		if(bExit)
+			break;
+
 		// 应用程序消息处理
-		tWatch.Pause();
+		tTimer.Pause();
 		{
 			if(PeekMessage(&tMsg, 0, 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&tMsg);
 				DispatchMessage(&tMsg);
 
-				// 处理退出消息
-				if(tMsg.message==WM_QUIT)
-					if(m_pListener) // 触发退出消息
-						m_pListener->OnAppExit();
-			}
-		}
-		tWatch.Resume();
-
-		// FPS计算
-		{
-			// FPS限制
-			if(m_iFPSMax)
-			{
-				tTime = tWatch.GetElpased();	// 获得流逝时间
-
-				if(tTime < m_FrameDelay)
+				// 发送退出消息
+				if(tMsg.message == WM_QUIT)
+					SendMsg(F2DMSG_APP_ONEXIT);
+				else if(tMsg.message == WM_USER)
 				{
-					fuInt tTimeToSleep = (fuInt)((m_FrameDelay - tTime) * 1000.f);
-					
-					// Sleep粗略限速并减少CPU占用
-					if(tTimeToSleep)
-						Sleep(tTimeToSleep - 1);
-
-					// while精确限速
-					while((tTime = tWatch.GetElpased()) < m_FrameDelay) {}
+					// 主线程委托
+					if(tMsg.lParam)
+					{
+						((f2dMainThreadDelegate*)tMsg.lParam)->Excute();
+						((f2dMainThreadDelegate*)tMsg.lParam)->Release();
+					}
 				}
 			}
-			else
-			{
-				// 计算流逝时间
-				tTime = tWatch.GetElpased();
-			}
-
-			// 重置计数器，开始计时
-			tWatch.Reset();
-
-			// 计算FPS
-			tPageCount+= 1.;
-			tTotalTime += tTime;
-			if(tTotalTime>=1.)
-			{
-				m_cFPS = (float)(tPageCount/tTotalTime);
-				tTotalTime=0.;
-				tPageCount=0.;
-
-				if(m_pListener) // 触发FPS更新消息
-					m_pListener->OnFPSUpdate(m_cFPS);
-			}
 		}
+		tTimer.Resume();
+
+		// 更新FPS
+		tTime = tFPSController.Update(tTimer);
+		
+		// 执行更新事件
+		DoUpdate(tTime, &tFPSController);
 
 		// 执行渲染事件
-		if(m_pRenderer)
-		{
-			tDev = (f2dRenderDeviceImpl*)m_pRenderer->GetDevice();
+		if(tpRenderDev)
+			DoRender(tTime, &tFPSController, tpRenderDev);
+	}
+}
 
-			// 同步设备状态，处理设备丢失
-			if(FCYOK(tDevSync = tDev->SyncDevice()))
+void f2dEngineImpl::Run_MultiThread(fuInt UpdateMaxFPS)
+{
+	// 创建工作线程并执行
+	UpdateAndRenderThread tThread(this, UpdateMaxFPS);
+	tThread.Resume();
+
+	// 执行程序循环
+	fBool bExit = false;
+	MSG tMsg;
+	while(1)
+	{
+		m_Sec.Lock();
+		bExit = m_bStop;
+		m_Sec.UnLock();
+
+		if(bExit)
+			break;
+
+		// 应用程序消息处理
+		if(GetMessage(&tMsg, 0, 0, 0))
+		{
+			if(tMsg.message != WM_USER)
 			{
-				if(m_pListener) // 触发渲染事件
-					m_pListener->OnRender(tTime);
+				TranslateMessage(&tMsg);
+				DispatchMessage(&tMsg);
 			}
 			else
-				Sleep(1); // 渲染失败时延时
+			{
+				// 主线程委托
+				if(tMsg.lParam)
+				{
+					((f2dMainThreadDelegate*)tMsg.lParam)->Excute();
+					((f2dMainThreadDelegate*)tMsg.lParam)->Release();
+				}
+			}
 		}
 		else
-			Sleep(1);     // 无渲染器时延时
-
-		// 执行更新事件
-		if(m_pListener)
-			m_pListener->OnUpdate(tTime);
-
-		// 递交画面
-		if(FCYOK(tDevSync) && tDev && m_bPresent)
-			tDev->Present();
+		{
+			// 发送退出消息
+			if(tMsg.message == WM_QUIT)
+				SendMsg(F2DMSG_APP_ONEXIT);
+		}
 	}
-	timeEndPeriod(1); // 撤销计时器精度
 
-	// 触发退出循环消息
+	// 等待工作线程
+	tThread.Wait();
+}
+
+void f2dEngineImpl::Run_FullMultiThread(fuInt UpdateMaxFPS, fuInt RenderMaxFPS)
+{
+	// 创建工作线程并执行
+	UpdateThread tUpdateThread(this, UpdateMaxFPS);
+	RenderThread tRenderThread(this, RenderMaxFPS);
+	tUpdateThread.Resume();
+	tRenderThread.Resume();
+
+	// 执行程序循环
+	fBool bExit = false;
+	MSG tMsg;
+	while(1)
+	{
+		m_Sec.Lock();
+		bExit = m_bStop;
+		m_Sec.UnLock();
+
+		if(bExit)
+			break;
+
+		// 应用程序消息处理
+		if(GetMessage(&tMsg, 0, 0, 0))
+		{
+			if(tMsg.message != WM_USER)
+			{
+				TranslateMessage(&tMsg);
+				DispatchMessage(&tMsg);
+			}
+			else
+			{
+				// 主线程委托
+				if(tMsg.lParam)
+				{
+					((f2dMainThreadDelegate*)tMsg.lParam)->Excute();
+					((f2dMainThreadDelegate*)tMsg.lParam)->Release();
+				}
+			}
+		}
+		else
+		{
+			// 发送退出消息
+			if(tMsg.message == WM_QUIT)
+				SendMsg(F2DMSG_APP_ONEXIT);
+		}
+	}
+
+	// 等待工作线程
+	tUpdateThread.Wait();
+	tRenderThread.Wait();
+}
+
+void f2dEngineImpl::DoUpdate(fDouble ElapsedTime, f2dFPSControllerImpl* pFPSController)
+{
+	f2dMsgPump* tPump = NULL;
+
+	// 交换消息泵并清空消息泵
+	m_Sec.Lock();
+	tPump = &m_MsgPump[ m_PumpIndex ];
+	m_PumpIndex = !m_PumpIndex;
+	m_MsgPump[m_PumpIndex].Clear();
+	m_Sec.UnLock();
+
+	// 更新输入设备
+	m_pInputSys->Update();
+
+	// 执行监听器
 	if(m_pListener)
-		m_pListener->OnAbortLoop();
+	{
+		if(false == m_pListener->OnUpdate(ElapsedTime, pFPSController, tPump))
+			Abort();
+	}
 }
 
-fFloat f2dEngineImpl::GetFPS()
+void f2dEngineImpl::DoRender(fDouble ElapsedTime, f2dFPSControllerImpl* pFPSController, f2dRenderDeviceImpl* pDev)
 {
-	return m_cFPS;
-}
-
-fuInt f2dEngineImpl::GetMaxFPS()
-{
-	return m_iFPSMax;
-}
-
-void f2dEngineImpl::SetMaxFPS(fuInt FPS)
-{
-	m_iFPSMax = FPS;
-	if(FPS)
-		m_FrameDelay = 1.f / FPS;
-}
-
-void f2dEngineImpl::DisablePresent()
-{
-	m_bPresent = !m_bPresent;
+	// 同步设备状态，处理设备丢失
+	if(FCYOK(pDev->SyncDevice()))
+	{
+		if(m_pListener) // 触发渲染事件
+			if(m_pListener->OnRender(ElapsedTime, pFPSController))
+			{
+				// 递交画面
+				pDev->Present();
+			}
+	}
 }

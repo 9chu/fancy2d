@@ -10,6 +10,8 @@
 
 #include "f2dInputSysAPI.h"
 
+class f2dEngineImpl;
+
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief 鼠标设备实现
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,12 +19,35 @@ class f2dInputMouseImpl :
 	public fcyRefObjImpl<f2dInputMouse>
 {
 	friend class f2dInputSysImpl;
+protected:
+	class DefaultListener :
+		public f2dInputMouseEventListener
+	{
+	protected:
+		f2dEngineImpl* m_pEngine;
+	public:
+		void OnMouseMoveX(fInt Value);
+		void OnMouseMoveY(fInt Value);
+		void OnMouseMoveZ(fInt Value);
+		void OnMouseLBtnDown();
+		void OnMouseRBtnDown();
+		void OnMouseMBtnDown();
+		void OnMouseAdditionBtnDown(fuInt Index);
+		void OnMouseLBtnUp();
+		void OnMouseRBtnUp();
+		void OnMouseMBtnUp();
+		void OnMouseAdditionBtnUp(fuInt Index);
+	public:
+		DefaultListener(f2dInputSysImpl* pInputSys);
+	};
 private:
 	static const fuInt BufferSize;
 	static const DIDATAFORMAT DIDF_Mouse;
 	static const DIOBJECTDATAFORMAT DIODF_Mouse[7];
 private:
+	f2dInputSysImpl* m_pSys;
 	IDirectInputDevice8* m_pDev;
+	DefaultListener m_DefaultListener;
 	f2dInputMouseEventListener* m_pListener;
 	
 	int m_TotalOffsetX;
@@ -47,6 +72,6 @@ public: // 接口实现
 	fInt GetOffsetY();
 	fInt GetOffsetZ();
 protected: // 禁止直接new/delete
-	f2dInputMouseImpl(IDirectInput8* pDev, HWND Win, const GUID& pGUID, fBool bGlobalFocus);
+	f2dInputMouseImpl(f2dInputSysImpl* pSys, HWND Win, const GUID& pGUID, fBool bGlobalFocus);
 	~f2dInputMouseImpl();
 };

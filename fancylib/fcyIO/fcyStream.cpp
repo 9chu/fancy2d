@@ -7,7 +7,7 @@ using namespace std;
 fcyFileStream::fcyFileStream(fcStrW Path, fBool Writable)
 	: m_sPath(Path), m_bWritable(Writable)
 {
-	m_hFile = CreateFile(
+	m_hFile = CreateFileW(
 		m_sPath.c_str(), 
 		Writable? GENERIC_WRITE|GENERIC_READ : GENERIC_READ,
 		FILE_SHARE_READ,

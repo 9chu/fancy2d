@@ -21,14 +21,26 @@
 /// @brief F2D版本 0.5
 #define F2DVERSION ((fuInt)(0<<16 | 5))
 
+/// @brief 初始化错误接受器
+struct f2dInitialErrListener
+{
+	/// @brief     错误消息
+	/// @param[in] TimeTick 时间戳
+	/// @param[in] Src      错误源
+	/// @param[in] Desc     错误描述
+	virtual void OnErr(fuInt TimeTick, fcStr Src, fcStr Desc)=0;
+};
+
 /// @brief      创建fancy2D引擎
 /// @param[in]  Version              必须为F2DVERSION，用于检查DLL版本
-/// @param[in]  pEngineEventListener 可空，用来设置引擎监听器。
+/// @param[in]  pListener            可空，用来设置引擎监听器。
 /// @param[out] pOut                 输出的引擎指针
+/// @param[in]  pErrListener         可空，初始化错误回调。
 extern "C" fResult F2DDLLFUNC CreateF2DEngine(
-	fuInt Version, 
-	f2dEngineEventListener* pEngineEventListener,
-	f2dEngine** pOut);
+	fuInt Version,
+	f2dEngineEventListener* pListener,
+	f2dEngine** pOut,
+	f2dInitialErrListener* pErrListener = NULL);
 
 /// @brief      创建fancy2D引擎并初始化所有组件
 /// @param[in]  Version              必须为F2DVERSION，用于检查DLL版本
@@ -37,8 +49,9 @@ extern "C" fResult F2DDLLFUNC CreateF2DEngine(
 /// @param[in]  Windowed             是否窗口化
 /// @param[in]  VSync                是否垂直同步
 /// @param[in]  AA                   指定抗锯齿等级
-/// @param[in]  pEngineEventListener 可空，用来设置引擎监听器。
+/// @param[in]  pListener            可空，用来设置引擎监听器。
 /// @param[out] pOut                 输出的引擎指针
+/// @param[in]  pErrListener         可空，初始化错误回调。
 extern "C" fResult F2DDLLFUNC CreateF2DEngineAndInit(
 	fuInt Version, 
 	const fcyRect& WinPos, 
@@ -46,7 +59,8 @@ extern "C" fResult F2DDLLFUNC CreateF2DEngineAndInit(
 	fBool Windowed, 
 	fBool VSync,
 	F2DAALEVEL AA,
-	f2dEngineEventListener* pEngineEventListener,
-	f2dEngine** pOut);
+	f2dEngineEventListener* pListener,
+	f2dEngine** pOut,
+	f2dInitialErrListener* pErrListener = NULL);
 
 /// @}

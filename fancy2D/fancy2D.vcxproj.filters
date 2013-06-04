@@ -195,6 +195,18 @@
     <ClInclude Include="Renderer\f2dFontRendererImpl.h">
       <Filter>Renderer\header</Filter>
     </ClInclude>
+    <ClInclude Include="RenderDev\f2dMeshDataImpl.h">
+      <Filter>RenderDev\header</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderDev\f2dGraphics3DImpl.h">
+      <Filter>RenderDev\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\f2dFPSControllerImpl.h">
+      <Filter>Engine\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\f2dMsgPumpImpl.h">
+      <Filter>Engine\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\f2dEngineImpl.cpp">
@@ -286,6 +298,12 @@
     </ClCompile>
     <ClCompile Include="Renderer\f2dFontRendererImpl.cpp">
       <Filter>Renderer\source</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderDev\f2dMeshDataImpl.cpp">
+      <Filter>RenderDev\source</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderDev\f2dGraphics3DImpl.cpp">
+      <Filter>RenderDev\source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

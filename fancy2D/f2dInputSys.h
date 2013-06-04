@@ -33,7 +33,7 @@ struct f2dInputDevice : public f2dInterface
 	virtual f2dInputJoystick* ToJoystick()=0; ///< @brief 转换到手柄设备（不增加引用计数）
 
 	/// @brief 更新设备状态
-	/// @note  该函数必须在需要时，或者在每一帧的update过程中调用以刷新设备状态。
+	/// @note  该方法已由引擎自动调用。
 	virtual fResult UpdateState()=0;
 };
 

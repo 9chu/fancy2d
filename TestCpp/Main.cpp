@@ -1,186 +1,23 @@
-#include <string>
-
 // 如果需要引入fcyStream则必须在f2d之前引入
-#include "fcyIO/fcyStream.h"
-#include "fcyUIBase/fuiContainer.h"
-#include "fcyUIControl/fuiBoard.h"
-#include "fcyUIControl/fuiHProgressBar.h"
-#include "fcyUIControl/fuiVProgressBar.h"
-#include "fcyUIControl/fuiSpriteButton.h"
-#include "fcyUIControl/fuiHSliderBar.h"
-#include "fcyUIControl/fuiLabel.h"
-#include "fcyUIControl/fuiEditBox.h"
+#include <fcyIO/fcyStream.h>
+#include <fcyFile/fcyModelMesh.h>
+#include <fcyOS/fcyDebug.h>
+#include <fcyOS/fcyMultiThread.h>
 
 // f2d头文件
-#include "f2d.h"
+#include <f2d.h>
+
+#include <iostream>
+#include <string>
 
 using namespace std;
 
-// For Test
-fuiHProgressBar* g_pHProgress;
-
-class MyBoard :
-	public fuiBoard
-{
-private:
-	bool m_bMyMouseDown;
-	fcyVec2 m_LastMouse;
-public:
-	fBool OnMouseMove(fFloat X, fFloat Y)
-	{
-		if(fuiBoard::OnMouseMove(X,Y))
-			return true;
-
-		if(m_bMyMouseDown)
-		{
-			fcyVec2 tOffset(X - m_LastMouse.x,
-				Y - m_LastMouse.y);
-
-			const fcyRect& tOrg = GetRect();
-			SetRect(fcyRect(tOrg.a + tOffset, tOrg.b + tOffset));
-		}
-
-		return true;
-	}
-
-	void OnLMouseUp(fFloat X, fFloat Y)
-	{
-		fuiBoard::OnLMouseUp(X,Y);
-
-		m_bMyMouseDown = false;
-
-		m_MouseEvent = FUIMOUSEEVENT_MOVE;
-		m_pMouseCatch = NULL;
-	}
-
-	fBool OnLMouseDown(fFloat X, fFloat Y)
-	{
-		if(fuiBoard::OnLMouseDown(X,Y))
-			return true;
-
-		m_MouseEvent = FUIMOUSEEVENT_LDOWN;
-		m_pMouseCatch = this;
-
-		g_pHProgress->SetParent(this);
-		SetControlLayer(0);
-		m_bMyMouseDown = true;
-		m_LastMouse = fcyVec2(X,Y);
-
-		return true;
-	}
-public:
-	MyBoard(fuiContainer* pContainer)
-		: fuiBoard(pContainer), m_bMyMouseDown(false)
-	{
-		SetStyle(L"Default");
-	}
-};
-
-class MyAppUIPage :
-	public fuiContainer
-{
-private:
-	f2dRenderer* m_pRenderer;
-	f2dGraphics2D* m_pGraph;
-	fuiRenderer* m_pUIRenderer;
-	fuiContext* m_pUIContext;
-protected:
-	void init()
-	{
-		fcyFileStream* pStream = NULL;
-		
-		pStream = new fcyFileStream(L"DemoRes\\DemoUISprite.xml", false);
-		m_pUIContext->LoadSprite(pStream);
-		FCYSAFEKILL(pStream);
-		
-		pStream = new fcyFileStream(L"DemoRes\\DemoUIStyle.xml", false);
-		m_pUIContext->LoadStyle(pStream);
-		FCYSAFEKILL(pStream);
-
-		pStream = new fcyFileStream(L"DemoRes\\DemoUIFont.xml", false);
-		m_pUIContext->LoadFontStyle(pStream);
-		FCYSAFEKILL(pStream);
-	}
-	void initUI()
-	{
-		fuiBoard* pBoard = new MyBoard(this);
-		pBoard->SetRect(fcyRect(10.f, 10.f, 150.f, 150.f));
-
-		pBoard = new MyBoard(this);
-		pBoard->SetRect(fcyRect(200.f, 200.f, 600.f, 500.f));
-
-		g_pHProgress = new fuiHProgressBar(this, 0.5);
-		g_pHProgress->SetStyle(L"Default");
-		g_pHProgress->SetRect(fcyRect(10.f, 10.f, 300.f, 50.f));
-
-		fuiVProgressBar* t = new fuiVProgressBar(this, 0.5);
-		t->SetStyle(L"Default");
-		t->SetRect(fcyRect(10.f, 10.f, 50.f, 300.f));
-
-		fuiSpriteButton* pButton = new fuiSpriteButton(this);
-		pButton->SetStyle(L"PlayButton");
-		pButton->SetRect(fcyRect(50.f, 50.f, 80.f, 80.f));
-		pButton->SetEvt_OnClick(std::bind(&MyAppUIPage::PlayButton_OnClick, this));
-
-		fuiHSliderBar* pSliderBar = new fuiHSliderBar(pBoard);
-		pSliderBar->SetStyle(L"Default");
-		pSliderBar->SetRect(fcyRect(20.f, 100.f, 220.f, 150.f));
-
-		fuiLabel* pLabel = new fuiLabel(pBoard);
-		pLabel->SetRect(fcyRect(10.f, 100.f, 250.f, 150.f));
-		pLabel->SetStyle(L"Default");
-		pLabel->SetCaption(L"");
-
-		fuiEditBox* pEditBox = new fuiEditBox(pBoard);
-		pEditBox->SetRect(fcyRect(10.f, 200.f, 400.f, 250.f));
-		pEditBox->SetStyle(L"Default");
-		pEditBox->SetText(L"haha我去日fk艹哈哈哈哈哈哈");
-	}
-	fuiContext* OnQueryContext()
-	{
-		return m_pUIContext;
-	}
-protected:
-	void PlayButton_OnClick()
-	{
-		fcyFileStream* pStream = new fcyFileStream(L"Screen.png", true);
-		m_pRenderer->GetDevice()->SaveScreen(pStream);
-		FCYSAFEKILL(pStream);
-	}
-public:
-	void RenderUI()
-	{
-		m_pUIRenderer->Begin();
-
-		Render(m_pUIRenderer);
-
-		m_pUIRenderer->End();
-	}
-public:
-	MyAppUIPage(f2dRenderer* pRenderer, f2dGraphics2D* pGraph)
-		: fuiContainer(NULL), m_pRenderer(pRenderer), m_pGraph(pGraph),
-		m_pUIRenderer(NULL), m_pUIContext(NULL)
-	{
-		m_pUIContext = new fuiContext(m_pRenderer);
-		m_pUIRenderer = new fuiRenderer(m_pRenderer, m_pGraph);
-
-		init();
-		initUI();
-	}
-	~MyAppUIPage()
-	{
-		FCYSAFEKILL(m_pUIRenderer);
-		FCYSAFEKILL(m_pUIContext);
-	}
-};
-
 class MyApp :
-	public f2dWindowEventListener,  // 引擎消息监听
-	public f2dEngineEventListener   // 窗口消息监听
+	public f2dEngineEventListener
 {
 private:
 	// 必要组件
-	f2dEngine* m_pEngine;
+	fcyRefPointer<f2dEngine> m_pEngine;
 	f2dFileSys* m_pFileSys;
 	f2dRenderer* m_pRenderer;
 	f2dRenderDevice* m_pDev;
@@ -188,109 +25,193 @@ private:
 	f2dInputSys* m_pInputSys;
 	f2dVideoSys* m_pVideoSys;
 
-	// 绘图对象
-	f2dGraphics2D* m_pGraph;
+	// FPS绘制用
+	fcyRefPointer<f2dGraphics2D> m_pGraph2D;
+	fcyRefPointer<f2dTexture2D> m_FPSTexture;
+	fcyRefPointer<f2dFontProvider> m_FPSFont;
+	fcyRefPointer<f2dFontRenderer> m_FPSFontRenderer;
 
-	f2dSprite* m_pSprite;
+	// 测试用
+	fcyRefPointer<f2dSprite> m_Pointer;
+	fcyRefPointer<f2dInputKeyboard> m_pKeyboard;
 
-	// UI页
-	MyAppUIPage* m_pUIPage;
-private:  // 窗口消息
-	// 窗口关闭消息
-	void OnClose()
+	// 同步用
+	fcyCriticalSection m_Sec;
+	fcyVec2 m_MousePos;
+	std::wstring m_FPSOnUpdateThread;
+	std::wstring m_FPSOnRenderThread;
+private:  // 功能函数
+	void showSelfInfo()
 	{
-		m_pEngine->Abort();
-	}
-	// 按键按下
-	void OnKeyDown(fuInt KeyCode, fuInt Flag)
-	{
-		switch(KeyCode)
+		f2dCPUInfo tInfo;
+
+		m_pEngine->GetCPUInfo(tInfo);
+
+		cout<<"f2d Version"<<(F2DVERSION>>16)<<"."<<(F2DVERSION & 0x0000FFFF)<<"\n"<<endl;
+
+		cout<<"[ CPU制造商 ] "<<tInfo.CPUString<<endl;
+		cout<<"[  CPU品牌  ] "<<tInfo.CPUBrandString<<"\n"<<endl;
+
+		cout<<"[ 显卡名称 ] "<<m_pDev->GetDeviceName()<<"\n"<<endl;
+
+		for(fuInt i = 0; i<m_pDev->GetSupportResolutionCount(); i++)
 		{
-		case 'P':
-			try
+			fcyVec2 t = m_pDev->EnumSupportResolution(i);
+			cout<<"[ 分辨率 ] "<<(int)t.x<<"x"<<(int)t.y;
+
+			cout<<" ( 抗锯齿等级 ";
+			for(int j = F2DAALEVEL_NONE; j != F2DAALEVEL_16; j++)
 			{
-				fcyFileStream* pFile = new fcyFileStream(L"Screen.png", true);
-				m_pDev->SaveScreen(pFile);
-				pFile->Release();
+				if(m_pDev->CheckMultiSample((F2DAALEVEL)j, true))
+				{
+					switch(j)
+					{
+					case F2DAALEVEL_NONE:
+						cout<<"x0 ";
+						break;
+					case F2DAALEVEL_2:
+						cout<<"x2 ";
+						break;
+					case F2DAALEVEL_4:
+						cout<<"x4 ";
+						break;
+					case F2DAALEVEL_8:
+						cout<<"x8 ";
+						break;
+					case F2DAALEVEL_16:
+						cout<<"x16 ";
+						break;
+					}
+				}
 			}
-			catch(const fcyException& e)
-			{
-				MessageBoxA(0, e.GetDesc(), "截屏失败", 0);
-			}
-			break;
-		default:
-			m_pUIPage->SendKeyboardEvent(FUIKEYBOARDEVENT_KEYDOWN, fuiHelper::VKCodeToF2DKeyCode(KeyCode));
+			cout<<" )"<<endl;
 		}
-	}
-	void OnKeyUp(fuInt KeyCode, fuInt Flag)
-	{
-		m_pUIPage->SendKeyboardEvent(FUIKEYBOARDEVENT_KEYUP, fuiHelper::VKCodeToF2DKeyCode(KeyCode));
-	}
-	// 鼠标事件
-	void OnMouseLBDown(fShort X, fShort Y, fuInt Flag)
-	{
-		m_pUIPage->SendMouseEvent(FUIMOUSEEVENT_LDOWN, (float)X, (float)Y);
-	}
-	void OnMouseLBUp(fShort X, fShort Y, fuInt Flag)
-	{
-		m_pUIPage->SendMouseEvent(FUIMOUSEEVENT_LUP, (float)X, (float)Y);
-	}
-	void OnMouseMove(fShort X, fShort Y, fuInt Flag)
-	{
-		m_pUIPage->SendMouseEvent(FUIMOUSEEVENT_MOVE, (float)X, (float)Y);
-	}
-	void OnCharInput(fCharW CharCode, fuInt Flag)
-	{
-		m_pUIPage->SendKeyboardEvent(FUIKEYBOARDEVENT_CHARINPUT, (F2DINPUTKEYCODE)CharCode);
-	}
-private: // 引擎消息
-	// 进入循环
-	void OnStartLoop()
-	{
-	}
-	// 主逻辑事件
-	void OnUpdate(double ElapsedTime)
-	{
-		m_pUIPage->Update(ElapsedTime);
-	}
-	// 主渲染事件
-	void OnRender(double ElapsedTime)
-	{
-		m_pDev->Clear(0x00FFFFFF);
 
-		m_pGraph->Begin();
-
-		m_pUIPage->RenderUI();
-
-		// m_pSprite->Draw(m_pGraph, fcyVec2(400.f, 300.f));
-
-		m_pGraph->End();		
+		cout<<endl;
 	}
-	// 异常
-	void OnException(fuInt TimeTick, fcStr Src, fcStr Desc)
+	void drawFPS(f2dFPSController* pFPS)
 	{
-		char tData[1024];
-		sprintf_s(tData, "时间戳：%u\n异常源：%s\n异常信息：%s", TimeTick, Src, Desc);
-		MessageBoxA(NULL, tData, "异常", 0);
+		m_pDev->ClearZBuffer();
+		m_pGraph2D->Begin();
+
+		fCharW tBuffer[1024];
+		swprintf_s(tBuffer, L"%c %lf\n%c %lf\n%c %lf", 
+			(wchar_t)-10, pFPS->GetFPS(), (wchar_t)-11, pFPS->GetAvgFPS(), (wchar_t)-12, pFPS->GetMaxFPS());
+
+		m_FPSFontRenderer->DrawTextW(m_pGraph2D, tBuffer, fcyVec2(0.f, m_FPSFont->GetAscender()));
+
+		m_pGraph2D->End();
+	}
+protected: // 引擎消息
+	fBool OnUpdate(fDouble ElapsedTime, f2dFPSController* pFPSController, f2dMsgPump* pMsgPump)
+	{
+		// 消息处理
+		f2dMsg tMsg;
+		while(FCYOK(pMsgPump->GetMsg(&tMsg)))
+		{
+			switch(tMsg.Type)
+			{
+			case F2DMSG_RENDER_ONDEVLOST:
+				fcyDebug::Trace(L"设备丢失！\n");
+				break;
+			case F2DMSG_RENDER_ONDEVRESET:
+				fcyDebug::Trace(L"设备重置！\n");
+				break;
+			case F2DMSG_WINDOW_ONCLOSE:
+				m_pEngine->Abort();
+				break;
+			case F2DMSG_WINDOW_ONMOUSEMOVE:
+				break;
+
+			case F2DMSG_KEYBOARD_ONKEYDOWN:
+				// m_pEngine->GetMainWindow()->SetCaption(L"按键按下");
+				m_Sec.Lock();
+				if(tMsg.Param1 == F2DINPUTKEYCODE_RIGHT)
+					m_MousePos.x += 10.f;
+				m_Sec.UnLock();
+				break;
+			case F2DMSG_KEYBOARD_ONKEYUP:
+				break;
+			}
+		}
+
+		// 同步数据
+		fCharW tBuffer[1024];
+		swprintf_s(tBuffer, L"更新线程 FPS: %4.2lf 平均FPS: %4.2lf 最大FPS: %4.2lf", pFPSController->GetFPS(), pFPSController->GetAvgFPS(), pFPSController->GetMaxFPS());
+		
+		m_Sec.Lock();
+		m_FPSOnUpdateThread = tBuffer;
+		m_Sec.UnLock();
+
+		return true;
+	}
+	fBool OnRender(fDouble ElapsedTime, f2dFPSController* pFPSController)
+	{
+		// 同步数据
+		fCharW tBuffer[1024];
+		swprintf_s(tBuffer, L"渲染线程 FPS: %4.2lf 平均FPS: %4.2lf 最大FPS: %4.2lf", pFPSController->GetFPS(), pFPSController->GetAvgFPS(), pFPSController->GetMaxFPS());
+		
+		m_Sec.Lock();
+		m_FPSOnRenderThread = tBuffer;
+		m_Sec.UnLock();
+
+		m_pDev->Clear();
+
+		// drawFPS(pFPSController);
+
+		m_pGraph2D->Begin();
+
+		m_Sec.Lock();
+		m_Pointer->Draw(m_pGraph2D, m_MousePos);
+		m_Sec.UnLock();
+
+		m_pGraph2D->End();
+
+		// 绘制FPS数据
+		{
+			m_pDev->ClearZBuffer();
+			m_pGraph2D->Begin();
+
+			fCharW tBuffer[1024];
+			
+			m_Sec.Lock();
+			swprintf_s(tBuffer, L"%s\n%s", 
+				m_FPSOnUpdateThread.c_str(), m_FPSOnRenderThread.c_str()
+				);
+			m_Sec.UnLock();
+
+			m_FPSFontRenderer->SetColor(0xFFFFFFFF);
+			m_FPSFontRenderer->DrawTextW(m_pGraph2D, tBuffer, fcyVec2(0.f, m_FPSFont->GetAscender()));
+
+			m_pGraph2D->End();
+		}
+
+		return true; 
 	}
 public:
 	MyApp()
-		: m_pEngine(NULL), m_pGraph(NULL)
 	{
+		struct : public f2dInitialErrListener {
+			void OnErr(fuInt TimeTick, fcStr Src, fcStr Desc)
+			{
+				fChar pBuffer[1024];
+				sprintf_s(pBuffer, "初始化失败！\n时间戳：%u\n问题来源：%s\n错误描述：%s", TimeTick, Src, Desc);
+				MessageBoxA(0, pBuffer, "f2d 初始化失败", MB_ICONERROR);
+			}
+		} tErrCallBack;
+
 		// 创建引擎
 		if(FCYFAILED(CreateF2DEngineAndInit(
 			F2DVERSION,
 			fcyRect(50.f, 50.f, 800.f + 50.f, 600.f + 50.f), // 800x600
-			L"f2d 0.4 - Hello fancyUI!",                     // 标题
+			L"fancy2D 0.5 引擎功能模块测试程序",                          // 标题
 			true,
-			true,
+			true,  // VSYNC
 			F2DAALEVEL_NONE,
 			this,
-			&m_pEngine)))
-		{
-			MessageBox(0, L"创建引擎时失败", L"错误", MB_ICONERROR);
-			return;
-		}
+			&*m_pEngine,
+			&tErrCallBack)))
+		{ return; }
 
 		// 获得组件
 		m_pFileSys = m_pEngine->GetFileSys();
@@ -300,84 +221,50 @@ public:
 		m_pInputSys = m_pEngine->GetInputSys();
 		m_pVideoSys = m_pEngine->GetVideoSys();
 
-		// 注册消息处理函数
-		m_pEngine->GetMainWindow()->SetListener(this);
+		// 信息自举
+		showSelfInfo();
 
 		// 加载资源
 		{
 			// 映射本地文件夹DemoRes到节点Res
-			m_pFileSys->LoadRealPath(L"Res", L"DemoRes");
+			m_pFileSys->LoadRealPath(L"Res", L"E:\\Projects\\fancy2D\\TestCpp\\DemoRes\\");
 
-			// 创建Graphics
-			m_pRenderer->GetDevice()->CreateGraphics2D(0,0,&m_pGraph);
+			// 加载纹理
+			m_pDev->CreateTextureFromStream(m_pFileSys->GetStream(L"Res\\FPSFont.png"), 0, 0, false, true, &m_FPSTexture);
+			//m_pRenderer->CreateFontFromTex(m_pFileSys->GetStream(L"Res\\FPSFont.xml"), m_FPSTexture, &m_FPSFont);
+			m_pRenderer->CreateFontFromFile(m_pFileSys->GetStream(L"Res\\方正卡通简体.ttf"), 0, fcyVec2(20, 20), F2DFONTFLAG_NONE, &m_FPSFont);
+			m_pRenderer->CreateFontRenderer(m_FPSFont, &m_FPSFontRenderer);
 
-			// 创建UI
-			m_pUIPage = new MyAppUIPage(m_pRenderer, m_pGraph);
-			m_pUIPage->SetRect(fcyRect(0.f, 0.f, 800.f, 600.f));
+			// 测试
+			fcyRefPointer<f2dTexture2D> pTex;
+			m_pDev->CreateTextureFromStream(m_pFileSys->GetStream(L"Res\\Pointer.png"), 0, 0, false, true, &pTex);
+			m_pRenderer->CreateSprite2D(pTex, &m_Pointer);
 
-			// 创建Sprite
-			f2dTexture* pTex = NULL;
-			m_pRenderer->GetDevice()->CreateTextureFromStream(
-				m_pFileSys->GetStream(L"Res\\TEST.png"),
-				0, 0, false, true, &pTex);
-			m_pRenderer->CreateSprite2D(pTex, &m_pSprite);
-			pTex->Release();
+			m_pInputSys->CreateKeyboard(-1, true, &m_pKeyboard);
+
+			// 创建渲染器
+			m_pDev->CreateGraphics2D(0, 0, &m_pGraph2D);
 		}
 
 		// 显示窗口
 		m_pEngine->GetMainWindow()->SetVisiable(true);
 
 		// 启动
-		m_pEngine->Run();
+		m_pEngine->Run(F2DENGTHREADMODE_FULLMULTITHREAD, 120, 0);
 	}
 	~MyApp()
 	{
-		// 卸载资源
-		{
-			FCYSAFEKILL(m_pSprite);
-			FCYSAFEDEL(m_pUIPage);
-			FCYSAFEKILL(m_pGraph);
-		}
-
-		// 销毁引擎
-		FCYSAFEKILL(m_pEngine);
 	}
 };
 
-/*
-#include "fcyOS\fcySocket.h"
-#include "fcyNet\fcyHTTP.h"
-#include "fcyParser\fcyXml.h"
-*/
-
-int WINAPI WinMain(HINSTANCE,HINSTANCE,LPSTR,int)
+//int WINAPI WinMain(HINSTANCE,HINSTANCE,LPSTR,int)
+int main()
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
-	// _CrtSetBreakAlloc(11532);
+	// _CrtSetBreakAlloc(5351);
 #endif
 
-	/*
-	fcySocket::InitSocket();
-
-	fcyStream* pStream;
-	
-	// fcyNet::HTTPReadFile("api.bilibili.tv/view?type=xml&id=314&page=0", &pStream);
-	// fcyNet::HTTPReadFile("comment.bilibili.tv/314.xml", &pStream);
-	// http://interface.bilibili.tv/playurl?otype=xml&cid=<CID>&type=flv
-	// fcyXml tXml(pStream);
-
-	fcyNet::HTTPReadFile("pic.66wz.com/0/01/06/87/1068780_728634.jpg", &pStream);
-
-	fcyFileStream* tStream = new fcyFileStream(L"e:\\test2.jpg", true);
-	fcyStreamHelper::FillStream(pStream, tStream, pStream->GetLength());
-	FCYSAFEKILL(tStream);
-	
-	FCYSAFEKILL(pStream);
-
-	fcySocket::HaltSocket();
-	*/
-	
 	MyApp tApp;
 
 	return 0;

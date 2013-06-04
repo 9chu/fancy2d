@@ -119,8 +119,8 @@ LRESULT CALLBACK f2dWindowClass::WndProc(HWND Handle, UINT Msg, WPARAM wParam, L
 	return DefWindowProc(Handle,Msg,wParam,lParam);
 }
 
-f2dWindowClass::f2dWindowClass(fcStrW ClassName)
-	: m_ClsName(ClassName)
+f2dWindowClass::f2dWindowClass(f2dEngineImpl* pEngine, fcStrW ClassName)
+	: m_pEngine(pEngine), m_ClsName(ClassName)
 {
 	WNDCLASS tWndClass;
 	tWndClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -149,22 +149,9 @@ fcStrW f2dWindowClass::GetName()const
 	return m_ClsName.c_str();
 }
 
-fResult f2dWindowClass::CreateRenderWindow(f2dEngineImpl* pEngine, const fcyRect& Pos, fcStrW Title, fBool Visiable, F2DWINBORDERTYPE Border, f2dWindowImpl** pOut)
+f2dWindowImpl* f2dWindowClass::CreateRenderWindow(const fcyRect& Pos, fcStrW Title, fBool Visiable, F2DWINBORDERTYPE Border)
 {
-	if(!pOut)
-		return FCYERR_ILLEGAL;
-	try
-	{
-		*pOut = NULL;
-		*pOut = new f2dWindowImpl(this, Pos, Title, Visiable, Border);
-	}
-	catch(const fcyException& e)
-	{
-		pEngine->ThrowException(e);
-		return FCYERR_INTERNALERR;
-	}
-
-	return FCYERR_OK;
+	return new f2dWindowImpl(m_pEngine, this, Pos, Title, Visiable, Border);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -213,9 +200,89 @@ void f2dWindowDC::Create(int nWidth, int nHeight)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// 监听器
+void f2dWindowImpl::DefaultListener::OnClose() 
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONCLOSE);
+}
+void f2dWindowImpl::DefaultListener::OnPaint()
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONPAINT);
+}
+void f2dWindowImpl::DefaultListener::OnSize(fuInt ClientWidth, fuInt ClientHeight)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONRESIZE, ClientWidth, ClientHeight);
+}
+void f2dWindowImpl::DefaultListener::OnKeyDown(fuInt KeyCode, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONKEYDOWN, KeyCode);
+}
+void f2dWindowImpl::DefaultListener::OnKeyUp(fuInt KeyCode, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONKEYUP, KeyCode);
+}
+void f2dWindowImpl::DefaultListener::OnCharInput(fCharW CharCode, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONCHARINPUT, CharCode);
+}
+void f2dWindowImpl::DefaultListener::OnMouseMove(fShort X, fShort Y, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONMOUSEMOVE, X, Y);
+}
+void f2dWindowImpl::DefaultListener::OnMouseWheel(fShort X, fShort Y, fFloat Wheel, fuInt Flag)
+{
+	fDouble tValue = Wheel;
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONMOUSEWHEEL, X, Y, *(fuLong*)&tValue);
+}
+void f2dWindowImpl::DefaultListener::OnMouseLBDown(fShort X, fShort Y, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONMOUSELDOWN, X, Y);
+}
+void f2dWindowImpl::DefaultListener::OnMouseLBUp(fShort X, fShort Y, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONMOUSELUP, X, Y);
+}
+void f2dWindowImpl::DefaultListener::OnMouseLBDouble(fShort X, fShort Y, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONMOUSELDOUBLE, X, Y);
+}
+void f2dWindowImpl::DefaultListener::OnMouseMBDown(fShort X, fShort Y, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONMOUSEMDOWN, X, Y);
+}
+void f2dWindowImpl::DefaultListener::OnMouseMBUp(fShort X, fShort Y, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONMOUSEMUP, X, Y);
+}
+void f2dWindowImpl::DefaultListener::OnMouseMBDouble(fShort X, fShort Y, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONMOUSEMDOUBLE, X, Y);
+}
+void f2dWindowImpl::DefaultListener::OnMouseRBDown(fShort X, fShort Y, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONMOUSERDOWN, X, Y);
+}
+void f2dWindowImpl::DefaultListener::OnMouseRBUp(fShort X, fShort Y, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONMOUSERUP, X, Y);
+}
+void f2dWindowImpl::DefaultListener::OnMouseRBDouble(fShort X, fShort Y, fuInt Flag)
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONMOUSERDOUBLE, X, Y);
+}
+void f2dWindowImpl::DefaultListener::OnGetFocus()
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONGETFOCUS);
+}
+void f2dWindowImpl::DefaultListener::OnLostFocus()
+{
+	m_pEngine->SendMsg(F2DMSG_WINDOW_ONLOSTFOCUS);
+}
 
-f2dWindowImpl::f2dWindowImpl(f2dWindowClass* WinCls, const fcyRect& Pos, fcStrW Title, fBool Visiable, F2DWINBORDERTYPE Border)
-	: m_pListener(NULL), m_hWnd(NULL), m_bShow(false), m_CaptionText(Title)
+////////////////////////////////////////////////////////////////////////////////
+
+f2dWindowImpl::f2dWindowImpl(f2dEngineImpl* pEngine, f2dWindowClass* WinCls, const fcyRect& Pos, fcStrW Title, fBool Visiable, F2DWINBORDERTYPE Border)
+	: m_DefaultListener(pEngine), m_pListener(&m_DefaultListener), m_hWnd(NULL), m_bShow(false), m_CaptionText(Title)
 {
 	// 定义窗口样式
 	fuInt tWinStyle;

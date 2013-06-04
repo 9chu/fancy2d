@@ -189,17 +189,35 @@ struct f2dGeometryRenderer :
 ////////////////////////////////////////////////////////////////////////////////
 struct f2dGlyphInfo
 {
-	f2dTexture2D* pTex;  ///< @brief 存放字形数据的纹理，弱引用
 	fcyRect GlyphPos;    ///< @brief 字形在纹理上的uv坐标
-	fcyVec2 BrushPos;    ///< @brief 笔触在纹理上的uv坐标
+	fcyVec2 GlyphSize;   ///< @brief 字形大小
+	fcyVec2 BrushPos;    ///< @brief 笔触距离字形左上角坐标
 	fcyVec2 Advance;     ///< @brief 笔触的前进量(像素)
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief fancy2D 字体提供器
 ////////////////////////////////////////////////////////////////////////////////
-struct f2dFontProvider
+struct f2dFontProvider :
+	public f2dInterface
 {
+	/// @brief 获得默认行高
+	virtual fFloat GetLineHeight()=0;
+
+	/// @brief 获得基线到轮廓线的距离
+	virtual fFloat GetAscender()=0;
+
+	/// @brief 与Ascender相反
+	virtual fFloat GetDescender()=0;
+
+	/// @brief 返回缓冲纹理
+	virtual f2dTexture2D* GetCacheTexture()=0;
+
+	/// @breif     缓存字符串
+	/// @note      针对动态产生文字的特定方法
+	/// @param[in] String 字符串
+	virtual fResult CacheString(fcStrW String)=0;
+
 	/// @brief      请求一个字形
 	/// @param[in]  pGraph    正在使用的渲染器，空表示只查询字形数据
 	/// @param[in]  Character 请求的字符
@@ -237,7 +255,8 @@ struct f2dFontRendererListener
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief fancy2D 字体渲染器
 ////////////////////////////////////////////////////////////////////////////////
-struct f2dFontRenderer
+struct f2dFontRenderer :
+	public f2dInterface
 {
 	/// @brief 返回监听器
 	virtual f2dFontRendererListener* GetListener()=0;
@@ -281,7 +300,7 @@ struct f2dFontRenderer
 
 	/// @brief     测量一个字符串最终绘制的大小
 	/// @param[in] String 字符串
-	virtual fcyVec2 MeasureString(fcStrW String)=0;
+	virtual fcyRect MeasureString(fcStrW String)=0;
 
 	/// @brief     绘制文字
 	/// @param[in] pGraph   渲染器
@@ -343,17 +362,23 @@ struct f2dRenderer
 	virtual fResult CreateFontRenderer(f2dFontProvider* pProvider, f2dFontRenderer** pOut)=0;
 
 	/// @brief      从字体文件加载字体
-	/// @param[in]  pStream   字体文件
+	/// @param[in]  pStream   字体文件，读取整个文件
 	/// @param[in]  FaceIndex 若有多个Face，可以指定索引。0总是有效值。
 	/// @param[in]  Flag      额外选项
 	/// @param[out] pOut      返回的字体对象
-	virtual fResult CreateFontFromFile(f2dStream* pStream, fuInt FaceIndex, F2DFONTFLAG Flag, f2dFontProvider** pOut)=0;
+	virtual fResult CreateFontFromFile(f2dStream* pStream, fuInt FaceIndex, const fcyVec2& FontSize, F2DFONTFLAG Flag, f2dFontProvider** pOut)=0;
 
 	/// @brief      从纹理加载字体
-	/// @param[in]  pDefineFile 字体文件
+	/// @param[in]  pDefineFile 字体定义文件
 	/// @param[in]  pTex        纹理
 	/// @param[out] pOut        返回的字体对象
 	virtual fResult CreateFontFromTex(f2dStream* pDefineFile, f2dTexture2D* pTex, f2dFontProvider** pOut)=0;
+	
+	/// @brief      从纹理加载字体
+	/// @param[in]  pDefineFile 字体定义
+	/// @param[in]  pTex        纹理
+	/// @param[out] pOut        返回的字体对象
+	virtual fResult CreateFontFromTex(fcStrW pDefineText, f2dTexture2D* pTex, f2dFontProvider** pOut)=0;
 };
 
 /// @}

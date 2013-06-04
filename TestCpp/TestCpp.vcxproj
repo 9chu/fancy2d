@@ -62,7 +62,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\fancylib\;$(SolutionDir)\fancy2D\;$(SolutionDir)\fancyUI\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\fancylib\bin\;$(SolutionDir)\fancy2D\bin\;$(SolutionDir)\fancyUI\bin\</AdditionalLibraryDirectories>
       <AdditionalDependencies>fancy2D_d.lib;fancylib_d.lib;fancyUI_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -81,7 +81,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\fancylib\;$(SolutionDir)\fancy2D\;$(SolutionDir)\fancyUI\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>

@@ -10,6 +10,8 @@
 
 #include "f2dInputSysAPI.h"
 
+class f2dEngineImpl;
+
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief 游戏手柄实现
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,12 +19,32 @@ class f2dInputJoystickImpl :
 	public fcyRefObjImpl<f2dInputJoystick>
 {
 	friend class f2dInputSysImpl;
+protected:
+	class DefaultListener :
+		public f2dInputJoystickEventListener
+	{
+	protected:
+		f2dEngineImpl* m_pEngine;
+	public:
+		void OnJoystickBtnDown(fuInt Index);
+		void OnJoystickBtnUp(fuInt Index);
+		void OnJoystickXAxisPosChange(fFloat Value);
+		void OnJoystickYAxisPosChange(fFloat Value);
+		void OnJoystickZAxisPosChange(fFloat Value);
+		void OnJoystickXAxisRotationChange(fFloat Value);
+		void OnJoystickYAxisRotationChange(fFloat Value);
+		void OnJoystickZAxisRotationChange(fFloat Value);
+	public:
+		DefaultListener(f2dInputSysImpl* pInputSys);
+	};
 private:
 	static const fuInt BufferSize;
 	static const DIDATAFORMAT DIDF_Joystick;
 	static const DIOBJECTDATAFORMAT DIODF_Joystick[44];
 private:
+	f2dInputSysImpl* m_pSys;
 	IDirectInputDevice8* m_pDev;
+	DefaultListener m_DefaultListener;
 	f2dInputJoystickEventListener* m_pListener;
 
 	// 范围值
@@ -77,6 +99,6 @@ public:
 	fFloat GetSaturation();
 	fResult SetSaturation(fFloat Percent);
 protected: // 禁止直接new/delete
-	f2dInputJoystickImpl(IDirectInput8* pDev, HWND Win, const GUID& pGUID, fBool bGlobalFocus);
+	f2dInputJoystickImpl(f2dInputSysImpl* pSys, HWND Win, const GUID& pGUID, fBool bGlobalFocus);
 	~f2dInputJoystickImpl();
 };

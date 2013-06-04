@@ -14,9 +14,23 @@ class f2dRendererImpl :
 	public fcyRefObjImpl<f2dRenderer>
 {
 private:
+	class DefaultListener :
+		public f2dRenderDeviceEventListener
+	{
+	protected:
+		f2dEngineImpl* m_pEngine;
+	public:
+		void OnRenderDeviceLost();
+		void OnRenderDeviceReset();
+	public:
+		DefaultListener(f2dEngineImpl* pEngine)
+			: m_pEngine(pEngine) {}
+	};
+private:
 	f2dEngineImpl* m_pEngine;
 
 	f2dRenderDeviceImpl* m_pDev;
+	DefaultListener m_DefaultListener;
 public: // 接口实现
 	f2dRenderDevice* GetDevice();
 
@@ -27,8 +41,9 @@ public: // 接口实现
 	fResult CreateGeometryRenderer(f2dGeometryRenderer** pOut);
 
 	fResult CreateFontRenderer(f2dFontProvider* pProvider, f2dFontRenderer** pOut);
-	fResult CreateFontFromFile(f2dStream* pStream, fuInt FaceIndex, F2DFONTFLAG Flag, f2dFontProvider** pOut);
+	fResult CreateFontFromFile(f2dStream* pStream, fuInt FaceIndex, const fcyVec2& FontSize, F2DFONTFLAG Flag, f2dFontProvider** pOut);
 	fResult CreateFontFromTex(f2dStream* pDefineFile, f2dTexture2D* pTex, f2dFontProvider** pOut);
+	fResult CreateFontFromTex(fcStrW pDefineText, f2dTexture2D* pTex, f2dFontProvider** pOut);
 public:
 	f2dRendererImpl(f2dEngineImpl* pEngine, fuInt BackBufferWidth, fuInt BackBufferHeight, fBool Windowed, fBool VSync, F2DAALEVEL AALevel);
 	~f2dRendererImpl();

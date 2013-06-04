@@ -54,7 +54,7 @@ public: // 接口实现
 	{
 		return m_WorldMat;
 	}
-	const fcyMatrix4& GetLookatTransform()
+	const fcyMatrix4& GetViewTransform()
 	{
 		return m_LookatMat;
 	}
@@ -71,7 +71,7 @@ public: // 接口实现
 		else
 			m_bStateDirty = true;
 	}
-	void SetLookatTransform(const fcyMatrix4& Mat)
+	void SetViewTransform(const fcyMatrix4& Mat)
 	{
 		m_LookatMat = Mat;
 		

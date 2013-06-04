@@ -1,15 +1,32 @@
 fancy2D 0.5
 
 BUG修正：
-
+  - 修正投影矩阵计算公式的错误
+  
 变化：
+  - 引入多线程，对框架进行大幅度修改
   - 修改数学库
   - Renderer\RenderDev部分完全重写
-  - Sprite\GeometryRenderer默认z值设为1.0
+  - Sprite\GeometryRenderer\Font默认z值设为1.0
 
 新增：
   - f2dSoundSys::CreateSharedStaticBuffer 暴露SoundSprite细节，创建共享内存音频
   - fancylib增加 fcyFunctor，用以绑定静态函数或者类成员函数
+  - 增加SuperFastHash函数
+
+多线程修改注明：
+  - 新版本中，OnUpdate 和 OnRender 函数依据需要可能会在不同线程中执行。
+  - 依据需要，引擎可以执行在以下多线程模式：
+     - 单线程：该模式不需要关注线程同步，窗口消息处理时可能会阻塞游戏循环。
+     - 多线程：主线程只处理窗口消息。OnUpdate 和 OnRender在单独线程执行，防止窗口消息阻塞。
+     - 完全多线程：主线程只处理窗口消息。OnUpdate \ OnRender分别在单独线程中执行，编码最为困难。
+  - D3D被设置为多线程模式，但是D3D对象的创建应该要阻塞OnRender。但是由于D3D本身的问题，不能在创建
+    对象的同时进行渲染。
+  - 为防止多线程带来的问题，现为OnUpdate函数增加消息泵。无论何种模式下，引擎会自动为 
+    f2dWindowEventListener、f2dInputKeyboardEventListener、f2dInputMouseEventListener、
+    f2dInputJoystickEventListener、f2dRenderDeviceEventListener 挂接Listener，所有回调会作为消息转
+    发到 OnUpdate 的消息泵中。
+  - 消息泵中的消息会在OnUpdate结束时自行清空。
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

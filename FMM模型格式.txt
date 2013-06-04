@@ -1,0 +1,232 @@
+fancy模型网格文件格式约定 - v1
+
+> 概述
+  fancy模型网格文件旨在用以描述一种通用的二进制模型储存格式方便游戏加载读取。
+  该格式基于块的形式描述数据，并公开其详细定义，同时允许用户自行定制包含的数
+  据块。
+  
+> 文件数据格式
+  在未有特别说明情况下，二进制数据由以下数据类型组成：
+    1. 基础类型
+         类型    大小(字节)  说明
+         fBool        1      逻辑数据，0表示假，非0表示真
+         fChar        1      有符号字符
+         fByte        1      无符号字节
+         fShort       2      有符号短整数
+         fuShort      2      无符号短整数
+         fInt         4      有符号整数
+         fuInt        4      无符号整数
+         fLong        8      有符号64位整数
+         fuLong       8      无符号64位整数
+         fFloat       4      符合IEEE标准的单精度浮点
+         fDouble      8      符合IEEE标准的双精度浮点
+      
+      未经说明情况下，所有数据均使用小端存储，所有结构均紧凑排列。
+      
+    2. 符合数据类型
+       a. 字符串
+         字符串使用一个fuInt来说明长度，之后紧跟若干个fChar字符，默认情况下要
+         求使用utf8对字符串进行编码。同时字符串应该以'\0'结尾
+         
+         struct FFM_String {
+             fuInt Size;
+             fChar StrData[Size];
+         };
+         
+       b. 向量
+         
+         struct FMM_Vector2 { fFloat x,y;     };
+         struct FMM_Vector3 { fFloat x,y,z;   };
+         struct FMM_Vector4 { fFloat x,y,z,w; };
+         
+       c. 矩阵
+         默认情况下矩阵应该按照行式(行优先)排列，其定义如下：
+         
+         struct FMM_Matrix4 {
+             fFloat _11, _12, _13, _14;
+             fFloat _21, _22, _23, _24;
+             fFloat _31, _32, _33, _34;
+             fFloat _41, _42, _43, _44;
+         };
+         
+       d. 标签字符串
+         标签字符串在特定上下文中有相应用途，其长度固定，不对末尾'\0'做强制要
+         求，但是在不满足固定长度的情况下逆序使用'\0'补齐。标签字符串使用ASCI
+         I编码，固不应该含有多字节字符。
+         标签字符串的含义通常用以指示数据块的用途或数据的用途，对于自定义标签，
+         请使用'_'作为首字母。
+         
+         #define FFM_LABEL(X,N) fChar X[N]
+         
+> 文件定义
+  网格文件以FMM(Fancy Model Mesh File)作为后缀。
+  文件以文件头开始。
+
+    // 文件头部
+    struct FFM_Header {
+        FFM_LABEL(Header, 4) = "FFM\0"; // 固定的四个字符
+        fuInt Version        = 100;     // 版本号 = 1.00
+        fuInt BlockCount;               // 数据块个数
+        FFM_String Author;              // 模型作者
+        FFM_String Description;         // 模型描述及版权信息
+    };
+    
+  文件头后面紧跟若干个数据块，数量应该和 FFM_Header.BlockCount 一致。
+  数据块以头和数据域组成。
+  
+    // 数据块头部
+    struct FFM_BlockHeader {
+        FFM_LABEL(Name, 8); // 8字节标签，说明数据块类型。自定义类型以_开头
+        fuInt BlockSize;    // 说明当前数据块长度，不含头部大小
+    };
+    
+  预定义的标签均为大写，自定义的标签名应该以'_'开头。
+  
+    预定义标签名称    作用
+     "VERTEX\0\0"     描述顶点数据
+     "INDEX\0\0\0"    描述索引数据
+     "SUBSET\0\0"     描述子集数据
+     "MATERIAL"       描述材质数据
+    
+  紧跟着数据块头部为 FFM_BlockHeader.BlockSize 长度的块数据。依照相应标签的格
+  式进行定义。
+  
+  读取完所有数据块后模型解析工作结束，若仍有额外数据，则视为用户附加数据，不予
+  处理（不算作格式错误）。
+  
+> 块的先后顺序
+  在当前版本下，一个文件有且只有一个顶点数据、索引数据，并且至少有一个子集块。
+  块的次序可以打乱。
+  
+> 标签定义：VERTEX
+  VERTEX部分用以描述顶点以及一个顶点数组。
+  
+    a. 头部
+    
+        // 顶点数据块头部
+        struct FFM_VertexBlockHeader {
+            fuInt VertexCount;        // 描述顶点数量
+            fuInt VertexElementCount; // 描述组成一个顶点的元素数量
+            fByte StreamFlag;         // 描述数据域的存储方式
+                                      //  bit位  用途
+                                      //    0    是否压缩，压缩算法由用户定义
+                                      //    1    是否加密，加密算法由用户定义
+                                      //   2-3   保留
+                                      //   4-7   用户自定义标记
+        };
+      
+      头部之后跟着一个描述顶点元素的数组，元素数量应该等于 
+      FFM_VertexBlockHeader.VertexElementCount 具体元素描述如下：
+      
+        // 顶点元素描述
+        struct FFM_VertexElement {
+            FFM_ELEMENTTYPE Type; // 描述元素的数据格式，定义如下
+            FFM_LABEL(Usage, 8);  // 描述元素的用途
+            fByte UsageIndex;     // 描述元素的用途索引
+        };
+        
+        // 元素数据格式
+        enum FFM_ELEMENTTYPE {
+            FFM_ELEMENTTYPE_FLOAT,   // 4字节浮点
+            FFM_ELEMENTTYPE_FLOAT2,  // 2*4字节浮点
+            FFM_ELEMENTTYPE_FLOAT3,  // 3*4字节浮点
+            FFM_ELEMENTTYPE_FLOAT4,  // 4*4字节浮点
+            FFM_ELEMENTTYPE_COLOR,   // 4*1字节BGRA颜色分量
+            FFM_ELEMENTTYPE_UBYTE4,  // 4*1字节
+            FFM_ELEMENTTYPE_SHORT2,  // 2*2有符号短整数
+            FFM_ELEMENTTYPE_SHORT4   // 4*2有符号短整数
+        };
+        
+        其中预定义的USAGE如下
+          预定义的USAGE     说明
+          "POSITION"        坐标
+          "WEIGHT\0\0"      混合权重
+          "INDICES\0"       混合索引
+          "NORMAL\0\0"      法线
+          "PSIZE\0\0\0"     点大小
+          "TEXCOORD"        纹理坐标
+          "TANGENT\0"       切线
+          "BINORMAL"        次法线
+          "TESSFACT"        细分量
+          "POST\0\0\0\0"    T坐标值
+          "COLOR\0\0\0"     颜色
+          "FOG\0\0\0\0\0"   雾
+          "DEPTH\0\0\0"     深度
+          "SAMPLE\0\0"      采样
+    
+    b. 数据域
+      接下来的部分描述所有顶点数据。单个顶点的数据大小应该由顶点声明推导出来。
+      元素个数应该同 FFM_VertexBlockHeader.VertCount 一致。
+      具体存储方式由 FFM_VertexBlockHeader.StreamFlag 定义。
+      
+> 标签定义：INDEX
+  INDEX部分用以描述索引。
+  
+    // 顶点数据块头部
+    struct FFM_IndexBlockHeader {
+        fuInt IndexCount;    // 描述索引数量
+        fBool UseInt32Index; // 描述是否使用4位整数作为索引，否则使用短整数
+        fChar StreamFlag;    // 描述数据域的存储方式
+                             //  bit位  用途
+                             //    0    是否压缩，压缩算法由用户定义
+                             //    1    是否加密，加密算法由用户定义
+                             //   2-3   保留
+                             //   4-7   用户自定义标记
+    };
+      
+  接下来跟着 FFM_IndexBlockHeader.IndexCount 个索引数据，单个索引大小由
+  FFM_IndexBlockHeader.UseInt32Index 定义。
+  索引下标应该由0开始。
+  索引数据的具体储存由 FFM_IndexBlockHeader.StreamFlag 定义。
+  
+> 标签定义：SUBSET
+  SUBSET部分描述了模型的子集。一个SUBSET描述一个子集。
+  在没有定义子集的情况下模型将无法渲染。
+  
+    // 子集数据
+    struct FFM_SubsetBlock {
+        FFM_String SubsetName;      // 子集名称，在模型数据中不可重复
+        FFM_String MaterialName;    // 材质名称
+        FFM_PRIMTYPE PrimitiveType; // 图元类型
+        fuInt StartIndex;           // 索引开始下标
+        fuInt PrimitiveCount;       // 图元数量
+    };
+   
+    // FFM_PRIMTYPE 图元类型定义如下
+    enum FFM_PRIMTYPE {
+	      FFM_PRIMTYPE_NULL          = 0,  // 无效值
+        FFM_PRIMTYPE_POINTLIST     = 1,  // 点集
+        FFM_PRIMTYPE_LINELIST      = 2,  // 线集
+        FFM_PRIMTYPE_LINESTRIP     = 3,  // 线带集
+        FFM_PRIMTYPE_TRIANGLELIST  = 4,  // 三角形集
+        FFM_PRIMTYPE_TRIANGLESTRIP = 5,  // 三角形带
+        FFM_PRIMTYPE_TRIANGLEFAN   = 6   // 三角形扇
+    };
+    
+> 标签定义：MATERIAL
+  MATERIAL部分描述了以何种方式来渲染一个子集。
+  
+    // 材质数据
+    struct FFM_MaterialData {
+        FFM_String MaterialName;  // 材质名称，在模型中不可重复
+        FFM_String DefineXML;     // 材质定义数据(无头部XML)
+    };
+    
+  材质数据XML格式：
+  <!-- Extern 若不为空，则材质来自外部 -->
+  <fancyModelMaterial Extern="Mat01.xml">
+    <!-- 标准材质参数 -->
+    <!--漫反射颜色--> <Diffuse>0,0,0</Diffuse>
+		<!--环境光颜色--> <Ambient>0,0,0</Ambient>
+		<!--镜面光颜色--> <Specular>0,0,0</Specular>
+		<!--光泽度-->     <Glossiness>1.00</Glossiness>
+		<!--不透明度-->   <Opacity>1.00</Opacity>
+		<!--镜面光等级--> <SpecularLevel>1.00</SpecularLevel>
+		
+		<!-- 以下为FX材质属性 -->
+		<!--技术--> <Technique>Default</Technique>
+		<!--参数--> <Param Type="Texture2D" Name="Tex">1.png</Param>
+  </fancyModelMaterial>
+  
+  材质的更多定义可交由用户自行描述。
+  

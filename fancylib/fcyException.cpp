@@ -13,6 +13,13 @@ fcyException::fcyException(fcStr Src, fcStr Desc)
 	m_ExcpDesc = Desc;
 }
 
+fcyException::fcyException(const fcyException& Org)
+{
+	m_Time = Org.m_Time;
+	m_ExcpSrc = Org.m_ExcpSrc;
+	m_ExcpDesc = Org.m_ExcpDesc;
+}
+
 fcyException::~fcyException(void)
 {}
 

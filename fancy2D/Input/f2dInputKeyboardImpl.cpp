@@ -1,5 +1,24 @@
 #include "f2dInputKeyboardImpl.h"
 
+#include "../Engine/f2dEngineImpl.h"
+#include "f2dInputSysImpl.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+f2dInputKeyboardImpl::DefaultListener::DefaultListener(f2dInputSysImpl* pInputSys)
+	: m_pEngine(pInputSys->GetEngine())
+{}
+
+void f2dInputKeyboardImpl::DefaultListener::OnKeyboardBtnDown(F2DINPUTKEYCODE KeyCode)
+{
+	m_pEngine->SendMsg(F2DMSG_KEYBOARD_ONKEYDOWN, KeyCode);
+}
+
+void f2dInputKeyboardImpl::DefaultListener::OnKeyboardBtnUp(F2DINPUTKEYCODE KeyCode)
+{
+	m_pEngine->SendMsg(F2DMSG_KEYBOARD_ONKEYUP, KeyCode);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 
 const fuInt f2dInputKeyboardImpl::BufferSize = 32;
@@ -270,9 +289,11 @@ const DIOBJECTDATAFORMAT f2dInputKeyboardImpl::DIODF_Keyboard[256] =
 	{ &GUID_Key, 255, 2147548940, 0 }
 };
 
-f2dInputKeyboardImpl::f2dInputKeyboardImpl(IDirectInput8* pDev, HWND Win, const GUID& pGUID, fBool bGlobalFocus)
-	: m_pDev(NULL), m_pListener(NULL)
+f2dInputKeyboardImpl::f2dInputKeyboardImpl(f2dInputSysImpl* pSys, HWND Win, const GUID& pGUID, fBool bGlobalFocus)
+	: m_pSys(pSys), m_pDev(NULL), m_DefaultListener(pSys), m_pListener(&m_DefaultListener)
 {
+	IDirectInput8* pDev = pSys->GetHandle();
+
 	memset(m_ButtonState, 0, sizeof(m_ButtonState));
 
 	HRESULT tHR = pDev->CreateDevice(pGUID, &m_pDev, NULL);
@@ -318,12 +339,19 @@ f2dInputKeyboardImpl::f2dInputKeyboardImpl(IDirectInput8* pDev, HWND Win, const 
 
 	// 获得设备
 	tHR = m_pDev->Acquire();
+
+	// 注册
+	m_pSys->RegisterDevice(this);
 }
 
 f2dInputKeyboardImpl::~f2dInputKeyboardImpl()
 {
 	if(m_pDev)
 		m_pDev->Unacquire();
+
+	// 取消注册
+	m_pSys->UnregisterDevice(this);
+
 	FCYSAFEKILL(m_pDev);
 }
 

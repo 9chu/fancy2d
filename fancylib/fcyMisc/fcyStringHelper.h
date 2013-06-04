@@ -75,6 +75,30 @@ namespace fcyStringHelper
 	/// @return    Êä³öµÄ×Ö·û´®
 	std::wstring TimeToWideStr(fDouble Seconds);
 
+	/// @brief     ÌÞ³ý×ó²à¿Õ°××Ö·û
+	/// @param[in] Org Ô­Ê¼×Ö·û´®
+	std::wstring TrimLeft(const std::wstring &Org);
+	
+	/// @brief     ÌÞ³ýÓÒ²à¿Õ°××Ö·û
+	/// @param[in] Org Ô­Ê¼×Ö·û´®
+	std::wstring TrimRight(const std::wstring &Org);
+	
+	/// @brief     ÌÞ³ý¿Õ°××Ö·û
+	/// @param[in] Org Ô­Ê¼×Ö·û´®
+	std::wstring Trim(const std::wstring &Org);
+
+	/// @brief     ÌÞ³ý×ó²à¿Õ°××Ö·û
+	/// @param[in] Org Ô­Ê¼×Ö·û´®
+	std::string TrimLeft(const std::string &Org);
+	
+	/// @brief     ÌÞ³ýÓÒ²à¿Õ°××Ö·û
+	/// @param[in] Org Ô­Ê¼×Ö·û´®
+	std::string TrimRight(const std::string &Org);
+	
+	/// @brief     ÌÞ³ý¿Õ°××Ö·û
+	/// @param[in] Org Ô­Ê¼×Ö·û´®
+	std::string Trim(const std::string &Org);
+
 	/// @brief     stringµ½wstring
 	/// @param[in] Org Ô­Ê¼×Ö·û´®
 	/// @param[in] CodePage ´úÂëÒ³£¬¾ßÌå²éÔÄMSDN

@@ -217,6 +217,8 @@ fResult f2dGraphics2DImpl::Begin()
 	if(!(m_pIB && m_pVB))
 		return FCYERR_INTERNALERR;
 
+	m_pParent->SubmitVD(NULL);
+
 	IDirect3DDevice9* pDev = (IDirect3DDevice9*)m_pParent->GetHandle();
 	pDev->SetFVF(FVF);
 	pDev->SetStreamSource(0, m_pVB, 0, sizeof(f2dGraphics2DVertex));

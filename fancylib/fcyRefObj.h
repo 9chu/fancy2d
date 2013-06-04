@@ -49,3 +49,64 @@ public:
 		: m_cRef(1) {}
 	virtual ~fcyRefObjImpl() {}
 };
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief ÷«ƒ‹÷∏’Î
+////////////////////////////////////////////////////////////////////////////////
+template<typename T>
+class fcyRefPointer
+{
+protected:
+	T* m_pPointer;
+public:
+	bool operator==(const fcyRefPointer& Right)const
+	{
+		return (m_pPointer == Right);
+	}
+	fcyRefPointer& operator=(const fcyRefPointer& Right)
+	{
+		if(m_pPointer != Right.m_pPointer)
+		{
+			FCYSAFEKILL(m_pPointer);
+			m_pPointer = Right.m_pPointer;
+			if(m_pPointer)
+				m_pPointer->AddRef();
+		}
+		return *this;
+	}
+	T*& operator->()
+	{
+		return m_pPointer;
+	}
+	T*& operator*()
+	{
+		return m_pPointer;
+	}
+	T** operator&()
+	{
+		return &m_pPointer;
+	}
+	operator T*()
+	{
+		return m_pPointer;
+	}
+public:
+	fcyRefPointer()
+		: m_pPointer(NULL) {}
+	fcyRefPointer(T* pObj)
+		: m_pPointer(pObj) 
+	{
+		if(pObj)
+			pObj->AddRef();
+	}
+	fcyRefPointer(const fcyRefPointer& Right)
+		: m_pPointer(Right.m_pPointer)
+	{
+		if(pObj)
+			pObj->AddRef();
+	}
+	~fcyRefPointer()
+	{
+		FCYSAFEKILL(m_pPointer);
+	}
+};

@@ -177,6 +177,21 @@
     <ClInclude Include="fcyMisc\fcyRandom.h">
       <Filter>fcyMisc\header</Filter>
     </ClInclude>
+    <ClInclude Include="fcyMisc\fcyFunctor.h">
+      <Filter>fcyMisc\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyMisc\fcyFunctorDetail.h">
+      <Filter>fcyMisc\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyOS\fcyCPUID.h">
+      <Filter>fcyOS\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyMisc\fcyHash.h">
+      <Filter>fcyMisc\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyFile\fcyModelMesh.h">
+      <Filter>fcyFile\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="extern\zlib\gzclose.c">
@@ -273,6 +288,12 @@
       <Filter>fcyNet\source</Filter>
     </ClCompile>
     <ClCompile Include="fcyMisc\fcyRandom.cpp">
+      <Filter>fcyMisc\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyOS\fcyCPUID.cpp">
+      <Filter>fcyOS\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyMisc\fcyHash.cpp">
       <Filter>fcyMisc\source</Filter>
     </ClCompile>
   </ItemGroup>

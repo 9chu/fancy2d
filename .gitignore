@@ -15,8 +15,11 @@ fancyUI/bin/
 fancyUI/obj/
 TestCpp/bin/
 TestCpp/obj/
+TestCpp/DemoRes/
 tools/FCYResPackageEditor/bin/
 tools/FCYResPackageEditor/obj/
+tools/FMM_3DSMAX_ExportPlugin/lib/
+tools/FMM_3DSMAX_ExportPlugin/obj/
 WinConsole.lnk
 cloc.exe
 cloc.bat

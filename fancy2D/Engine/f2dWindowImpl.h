@@ -22,15 +22,16 @@ class f2dWindowClass
 {
 	friend class f2dWindowImpl;
 private:
+	f2dEngineImpl* m_pEngine;
 	std::wstring m_ClsName;
 private:
 	static std::unordered_map<HWND, f2dWindowImpl*> s_WindowCallBack;
 	static LRESULT CALLBACK WndProc(HWND Handle, UINT Msg, WPARAM wParam, LPARAM lParam);
 public:
 	fcStrW GetName()const; // 获得窗口类名称
-	fResult CreateRenderWindow(f2dEngineImpl* pEngine, const fcyRect& Pos, fcStrW Title, fBool Visiable, F2DWINBORDERTYPE Border, f2dWindowImpl** pOut); // 创建窗口
+	f2dWindowImpl* CreateRenderWindow(const fcyRect& Pos, fcStrW Title, fBool Visiable, F2DWINBORDERTYPE Border); // 创建窗口
 public:
-	f2dWindowClass(fcStrW ClassName);
+	f2dWindowClass(f2dEngineImpl* pEngine, fcStrW ClassName);
 	~f2dWindowClass();
 };
 
@@ -79,12 +80,47 @@ class f2dWindowImpl :
 {
 	friend class f2dWindowClass;
 private:
+	class DefaultListener :
+		public f2dWindowEventListener
+	{
+	protected:
+		f2dEngineImpl* m_pEngine;
+	public:
+		void OnIMEStartComposition() {}
+		void OnIMEEndComposition() {}
+		void OnIMEComposition(fCharW CharCode, fuInt Flag) {}
+
+		void OnClose();
+		void OnPaint();
+		void OnSize(fuInt ClientWidth, fuInt ClientHeight);
+		void OnKeyDown(fuInt KeyCode, fuInt Flag);
+		void OnKeyUp(fuInt KeyCode, fuInt Flag);
+		void OnCharInput(fCharW CharCode, fuInt Flag);
+		void OnMouseMove(fShort X, fShort Y, fuInt Flag);
+		void OnMouseWheel(fShort X, fShort Y, fFloat Wheel, fuInt Flag);
+		void OnMouseLBDown(fShort X, fShort Y, fuInt Flag);
+		void OnMouseLBUp(fShort X, fShort Y, fuInt Flag);
+		void OnMouseLBDouble(fShort X, fShort Y, fuInt Flag);
+		void OnMouseMBDown(fShort X, fShort Y, fuInt Flag);
+		void OnMouseMBUp(fShort X, fShort Y, fuInt Flag);
+		void OnMouseMBDouble(fShort X, fShort Y, fuInt Flag);
+		void OnMouseRBDown(fShort X, fShort Y, fuInt Flag);
+		void OnMouseRBUp(fShort X, fShort Y, fuInt Flag);
+		void OnMouseRBDouble(fShort X, fShort Y, fuInt Flag);
+		void OnGetFocus();
+		void OnLostFocus();
+	public:
+		DefaultListener(f2dEngineImpl* pEngine)
+			: m_pEngine(pEngine) {}
+	};
+private:
 	// 状态
 	HWND m_hWnd;
 	bool m_bShow;
 	std::wstring m_CaptionText;
 
 	// 监听器
+	DefaultListener m_DefaultListener;
 	f2dWindowEventListener* m_pListener;
 public: // 接口实现
 	f2dWindowEventListener* GetListener();
@@ -106,6 +142,6 @@ public: // 接口实现
 	fBool IsTopMost();
 	fResult SetTopMost(fBool TopMost);
 protected:
-	f2dWindowImpl(f2dWindowClass* WinCls, const fcyRect& Pos, fcStrW Title, fBool Visiable, F2DWINBORDERTYPE Border);
+	f2dWindowImpl(f2dEngineImpl* pEngine, f2dWindowClass* WinCls, const fcyRect& Pos, fcStrW Title, fBool Visiable, F2DWINBORDERTYPE Border);
 	~f2dWindowImpl();
 };

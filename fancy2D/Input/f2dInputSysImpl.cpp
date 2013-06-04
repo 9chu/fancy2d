@@ -6,7 +6,8 @@
 
 #include "../Engine/f2dEngineImpl.h"
 
-#include "fcyException.h"
+#include <fcyOS/fcyDebug.h>
+#include <fcyException.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -44,6 +45,23 @@ f2dInputSysImpl::f2dInputSysImpl(f2dEngineImpl* pEngine)
 
 f2dInputSysImpl::~f2dInputSysImpl()
 {
+	// 报告可能的对象泄漏
+	if(!m_pObjList.empty())
+	{
+		std::vector<f2dInputDevice*>::iterator i = m_pObjList.begin();
+		while(i != m_pObjList.end())
+		{
+			char tTextBuffer[256];
+			sprintf_s(tTextBuffer, "Unrelease input device at %x", *i);
+#ifdef _DEBUG
+			fcyDebug::Trace("[ @ f2dInputSysImpl::~f2dInputSysImpl ] %s\n", tTextBuffer);
+#endif
+			m_pEngine->ThrowException(fcyException("f2dInputSysImpl::~f2dInputSysImpl", tTextBuffer));
+
+			i++;
+		}
+	}
+
 	FCYSAFEKILL(m_pDInput);
 }
 
@@ -131,7 +149,7 @@ fResult f2dInputSysImpl::CreateMouse(fInt DevIndex, fBool bGlobalFocus, f2dInput
 	f2dInputMouse* pRet = NULL;
 	try
 	{
-		pRet = new f2dInputMouseImpl(m_pDInput, m_hWinHandle, tGuid, bGlobalFocus);
+		pRet = new f2dInputMouseImpl(this, m_hWinHandle, tGuid, bGlobalFocus);
 	}
 	catch(const fcyException& e)
 	{
@@ -164,7 +182,7 @@ fResult f2dInputSysImpl::CreateKeyboard(fInt DevIndex, fBool bGlobalFocus, f2dIn
 	f2dInputKeyboard* pRet = NULL;
 	try
 	{
-		pRet = new f2dInputKeyboardImpl(m_pDInput, m_hWinHandle, tGuid, bGlobalFocus);
+		pRet = new f2dInputKeyboardImpl(this, m_hWinHandle, tGuid, bGlobalFocus);
 	}
 	catch(const fcyException& e)
 	{
@@ -191,7 +209,7 @@ fResult f2dInputSysImpl::CreateJoystick(fInt DevIndex, fBool bGlobalFocus, f2dIn
 	f2dInputJoystick* pRet = NULL;
 	try
 	{
-		pRet = new f2dInputJoystickImpl(m_pDInput, m_hWinHandle, tGuid, bGlobalFocus);
+		pRet = new f2dInputJoystickImpl(this, m_hWinHandle, tGuid, bGlobalFocus);
 	}
 	catch(const fcyException& e)
 	{

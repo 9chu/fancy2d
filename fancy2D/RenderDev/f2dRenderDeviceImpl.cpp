@@ -1,10 +1,14 @@
 #include "f2dRenderDeviceImpl.h"
 
 #include <fcyMisc/fcyStringHelper.h>
+#include <fcyMisc/fcyHash.h>
 #include <fcyOS/fcyDebug.h>
 
 #include "f2dTextureImpl.h"
 #include "f2dGraphics2DImpl.h"
+#include "f2dGraphics3DImpl.h"
+#include "f2dEffectImpl.h"
+#include "f2dMeshDataImpl.h"
 
 #include "../Engine/f2dEngineImpl.h"
 
@@ -12,10 +16,29 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+f2dRenderDeviceImpl::VertexDeclareInfo::VertexDeclareInfo()
+	: Hash(0), pVertexDeclare(NULL)
+{}
+
+f2dRenderDeviceImpl::VertexDeclareInfo::VertexDeclareInfo(const VertexDeclareInfo& Org)
+	: Hash(Org.Hash), ElementData(Org.ElementData), pVertexDeclare(Org.pVertexDeclare)
+{
+	if(pVertexDeclare)
+		pVertexDeclare->AddRef();
+}
+
+f2dRenderDeviceImpl::VertexDeclareInfo::~VertexDeclareInfo()
+{
+	FCYSAFEKILL(pVertexDeclare);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 f2dRenderDeviceImpl::f2dRenderDeviceImpl(f2dEngineImpl* pEngine, fuInt BackBufferWidth, fuInt BackBufferHeight, fBool Windowed, fBool VSync, F2DAALEVEL AALevel)
 	: m_pEngine(pEngine), m_pD3D9(NULL), m_pDev(NULL), m_hWnd((HWND)pEngine->GetMainWindow()->GetHandle()),
 	m_bDevLost(false), m_pBackBuffer(NULL), m_pBackDepthBuffer(NULL), m_pCurGraphics(NULL),
-	m_ListenerList(NULL), m_pWinSurface(NULL), m_pCurBackBuffer(NULL), m_pCurBackDepthBuffer(NULL)
+	m_ListenerList(NULL), m_pWinSurface(NULL), m_pCurBackBuffer(NULL), m_pCurBackDepthBuffer(NULL),
+	m_pCurVertDecl(NULL), m_CreateThreadID(GetCurrentThreadId())
 {
 	ZeroMemory(&m_D3Dpp,sizeof(m_D3Dpp));
 	m_ScissorRect.left = 0;
@@ -72,7 +95,7 @@ f2dRenderDeviceImpl::f2dRenderDeviceImpl(f2dEngineImpl* pEngine, fuInt BackBuffe
 		D3DADAPTER_DEFAULT,
 		D3DDEVTYPE_HAL,
 		m_hWnd,
-		D3DCREATE_HARDWARE_VERTEXPROCESSING,
+		D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED, // 启动多线程
 		&m_D3Dpp,
 		&m_pDev
 		);
@@ -131,16 +154,51 @@ f2dRenderDeviceImpl::~f2dRenderDeviceImpl()
 #ifdef _DEBUG
 			fcyDebug::Trace("[ @ f2dRenderDeviceImpl::~f2dRenderDeviceImpl ] %s\n", tTextBuffer);
 #endif
-			m_pEngine->ThrowException(GetTickCount(), "f2dRenderDeviceImpl::~f2dRenderDeviceImpl", tTextBuffer);
+			m_pEngine->ThrowException(fcyException("f2dRenderDeviceImpl::~f2dRenderDeviceImpl", tTextBuffer));
 		}
 
 		delete p;
 	}
 	
+	// 释放顶点声明
+	m_VDCache.clear();
+
 	// 释放DX组件
 	FCYSAFEKILL(m_pWinSurface);
 	FCYSAFEKILL(m_pDev);
 	FCYSAFEKILL(m_pD3D9);
+}
+
+HRESULT f2dRenderDeviceImpl::doReset(D3DPRESENT_PARAMETERS* pD3DPP)
+{
+	struct _Work : public fcyRefObjImpl<f2dMainThreadDelegate>
+	{
+		IDirect3DDevice9* pDev;
+		D3DPRESENT_PARAMETERS* D3DPP;
+		HRESULT HR;
+		
+		void Excute() { HR = pDev->Reset(D3DPP); }
+
+		_Work(IDirect3DDevice9* p, D3DPRESENT_PARAMETERS* pp)
+			: pDev(p), D3DPP(pp) {}
+	};
+
+	if(GetCurrentThreadId() != m_CreateThreadID)
+	{
+		HRESULT tHR;
+		_Work* tWork = new _Work(m_pDev, pD3DPP);
+
+		m_pEngine->InvokeDelegateAndWait(tWork);
+
+		tHR = tWork->HR;
+		FCYSAFEKILL(tWork);
+
+		return tHR;
+	}
+	else
+	{
+		return m_pDev->Reset(pD3DPP);
+	}
 }
 
 void f2dRenderDeviceImpl::initState()
@@ -209,6 +267,8 @@ int f2dRenderDeviceImpl::sendDevLostMsg()
 {
 	int tRet = 0;
 
+	m_pCurVertDecl = NULL;
+
 	// 释放可能的对象
 	FCYSAFEKILL(m_pCurBackBuffer);
 	FCYSAFEKILL(m_pCurBackDepthBuffer);
@@ -253,7 +313,7 @@ fResult f2dRenderDeviceImpl::SyncDevice()
 	{	
 		if(tHR == D3DERR_DEVICENOTRESET) // 尚未重置
 		{
-			tHR = m_pDev->Reset(&m_D3Dpp);
+			tHR = doReset(&m_D3Dpp);
 
 			if(SUCCEEDED(tHR)) // 重置成功
 			{
@@ -322,9 +382,12 @@ fResult f2dRenderDeviceImpl::SubmitCurGraphics(f2dGraphics* pGraph, bool bDirty)
 		return FCYERR_OK;
 
 	// 更新状态
-	SubmitWorldMat(pGraph->GetWorldTransform());
-	SubmitLookatMat(pGraph->GetLookatTransform());
-	SubmitProjMat(pGraph->GetProjTransform());
+	if(!pGraph->IsGraphics3D())
+	{
+		SubmitWorldMat(pGraph->GetWorldTransform());
+		SubmitLookatMat(pGraph->GetViewTransform());
+		SubmitProjMat(pGraph->GetProjTransform());
+	}
 	SubmitBlendState(pGraph->GetBlendState());
 
 	m_pCurGraphics = pGraph;
@@ -381,6 +444,119 @@ fResult f2dRenderDeviceImpl::SubmitBlendState(const f2dBlendState& State)
 	m_CurBlendState = State;
 
 	return FCYERR_OK;
+}
+
+fResult f2dRenderDeviceImpl::SubmitVD(IDirect3DVertexDeclaration9* pVD)
+{
+	if(m_pCurVertDecl == pVD)
+		return FCYERR_OK;
+	else
+	{
+		m_pCurVertDecl = pVD;
+		if(FAILED(m_pDev->SetVertexDeclaration(pVD)))
+			return FCYERR_INTERNALERR;
+		else
+			return FCYERR_OK;
+	}
+}
+
+IDirect3DVertexDeclaration9* f2dRenderDeviceImpl::RegisterVertexDeclare(f2dVertexElement* pElement, fuInt ElementCount, fuInt& ElementSize)
+{
+	if(ElementCount == 0)
+		return NULL;
+
+	// === Hash检查 ===
+	fuInt HashCode = fcyHash::SuperFastHash((fcData)pElement, sizeof(f2dVertexElement) * ElementCount);
+	
+	for(fuInt i = 0; i<m_VDCache.size(); i++)
+	{
+		if(m_VDCache[i].ElementData.size() == ElementCount && m_VDCache[i].Hash == HashCode)
+		{
+			fBool tHas = true;
+
+			vector<f2dVertexElement>& tVec = m_VDCache[i].ElementData;
+			for(fuInt j = 0; j<tVec.size(); j++)
+			{
+				if(memcmp(&tVec[j], &pElement[j], sizeof(f2dVertexElement))!=0)
+				{
+					tHas = false;
+					break;
+				}
+			}
+
+			if(tHas)
+				return m_VDCache[i].pVertexDeclare;
+		}
+	}
+
+	// === 创建条目 ===
+	D3DVERTEXELEMENT9* pElementArr = new D3DVERTEXELEMENT9[ ElementCount + 1 ];
+	ZeroMemory(pElementArr, sizeof(D3DVERTEXELEMENT9) * (ElementCount + 1));
+
+	// 结尾
+	D3DVERTEXELEMENT9 tEnd = D3DDECL_END();
+	pElementArr[ ElementCount ] = tEnd;
+
+	fuInt tOffset = 0;
+
+	for(fuInt i = 0; i<ElementCount; i++)
+	{
+		pElementArr[i].Stream = 0;
+		pElementArr[i].Offset = tOffset;
+		pElementArr[i].Type = pElement[i].Type;
+		pElementArr[i].Method = D3DDECLMETHOD_DEFAULT;
+		pElementArr[i].Usage = pElement[i].Usage;
+		pElementArr[i].UsageIndex = pElement[i].UsageIndex;
+
+		switch(pElementArr[i].Type)
+		{
+		case D3DDECLTYPE_FLOAT1:
+			tOffset += sizeof(float);
+			break;
+		case D3DDECLTYPE_FLOAT2:
+			tOffset += sizeof(float) * 2;
+			break;
+		case D3DDECLTYPE_FLOAT3:
+			tOffset += sizeof(float) * 3;
+			break;
+		case D3DDECLTYPE_FLOAT4:
+			tOffset += sizeof(float) * 4;
+			break;
+		case D3DDECLTYPE_D3DCOLOR:
+			tOffset += sizeof(char) * 4;
+			break;
+		case D3DDECLTYPE_UBYTE4:
+			tOffset += sizeof(char) * 4;
+			break;
+		case D3DDECLTYPE_SHORT2:
+			tOffset += sizeof(short) * 2;
+			break;
+		case D3DDECLTYPE_SHORT4:
+			tOffset += sizeof(short) * 4;
+			break;
+		}
+	}
+
+	IDirect3DVertexDeclaration9* pVD = NULL;
+	HRESULT tHR = m_pDev->CreateVertexDeclaration(pElementArr, &pVD);
+	FCYSAFEDELARR(pElementArr);
+
+	if(FAILED(tHR))
+		return NULL;
+
+	VertexDeclareInfo tInfo;
+	tInfo.Hash = HashCode;
+	tInfo.pVertexDeclare = pVD;
+	tInfo.ElementData.resize(ElementCount);
+	for(fuInt i = 0; i<ElementCount; i++)
+	{
+		tInfo.ElementData[i] = pElement[i];
+	}
+	m_VDCache.push_back(tInfo);
+
+	ElementSize = tOffset;
+
+	return pVD;
 }
 
 F2DAALEVEL f2dRenderDeviceImpl::GetAALevel()
@@ -495,7 +671,7 @@ fResult f2dRenderDeviceImpl::SetBufferSize(fuInt Width, fuInt Height, fBool Wind
 	sendDevLostMsg();
 
 	// 重设渲染系统
-	HRESULT tHR = m_pDev->Reset(&tD3Dpp);
+	HRESULT tHR = doReset(&tD3Dpp);
 	if(FAILED(tHR))
 	{
 		// 设置失败，保留为丢失状态，等待循环时恢复上次状态。
@@ -520,15 +696,29 @@ fResult f2dRenderDeviceImpl::SetBufferSize(fuInt Width, fuInt Height, fBool Wind
 	}
 }
 
-fResult f2dRenderDeviceImpl::AttachListener(f2dRenderDeviceEventListener* Listener)
+fResult f2dRenderDeviceImpl::AttachListener(f2dRenderDeviceEventListener* Listener, fInt Priority)
 {
 	if(Listener == NULL)
 		return FCYERR_INVAILDPARAM;
 
 	ListenerNode* pNew = new ListenerNode();
 	pNew->pListener = Listener;
+	pNew->Priority = Priority;
 	pNew->pNext = m_ListenerList;
+
 	m_ListenerList = pNew;
+
+	// 对优先级进行插入排序
+	ListenerNode* p = m_ListenerList;
+	while(p->pNext && p->Priority > p->pNext->Priority)
+	{
+		ListenerNode* t = p->pNext;
+
+		std::swap(p->pListener, t->pListener);
+		std::swap(p->Priority, t->Priority);
+
+		p = t;
+	}
 
 	return FCYERR_OK;
 }
@@ -673,16 +863,64 @@ fResult f2dRenderDeviceImpl::CreateGraphics2D(fuInt VertexBufferSize, fuInt Inde
 	return FCYERR_OK;
 }
 
-// 尚未实现
 fResult f2dRenderDeviceImpl::CreateGraphics3D(f2dEffect* pDefaultEffect, f2dGraphics3D** pOut)
 {
-	return FCYERR_NOTIMPL;
+	if(!pOut)
+		return FCYERR_INVAILDPARAM;
+	*pOut = NULL;
+
+	try
+	{
+		*pOut = new f2dGraphics3DImpl(this, (f2dEffectImpl*)pDefaultEffect);
+	}
+	catch(const fcyException& e)
+	{
+		m_pEngine->ThrowException(e);
+
+		return FCYERR_INTERNALERR;
+	}
+
+	return FCYERR_OK;
 }
 
-// 尚未实现
-fResult f2dRenderDeviceImpl::CreateEffect(f2dStream* pStream, f2dEffect** pOut, f2dStream** pErrOut)
+fResult f2dRenderDeviceImpl::CreateEffect(f2dStream* pStream, fBool bAutoState, f2dEffect** pOut)
 {
-	return FCYERR_NOTIMPL;
+	if(!pOut)
+		return FCYERR_INVAILDPARAM;
+	*pOut = NULL;
+
+	try
+	{
+		*pOut = new f2dEffectImpl(this, pStream, bAutoState);
+	}
+	catch(const fcyException& e)
+	{
+		m_pEngine->ThrowException(e);
+
+		return FCYERR_INTERNALERR;
+	}
+
+	return FCYERR_OK;
+}
+
+fResult f2dRenderDeviceImpl::CreateMeshData(f2dVertexElement* pVertElement, fuInt ElementCount, fuInt VertCount, fuInt IndexCount, fBool Int32Index, f2dMeshData** pOut)
+{
+	if(!pOut)
+		return FCYERR_INVAILDPARAM;
+	*pOut = NULL;
+
+	try
+	{
+		*pOut = new f2dMeshDataImpl(this, pVertElement, ElementCount, VertCount, IndexCount, Int32Index);
+	}
+	catch(const fcyException& e)
+	{
+		m_pEngine->ThrowException(e);
+
+		return FCYERR_INTERNALERR;
+	}
+
+	return FCYERR_OK;
 }
 
 fResult f2dRenderDeviceImpl::Clear(const fcyColor& BackBufferColor, fFloat ZValue)
@@ -732,6 +970,7 @@ fResult f2dRenderDeviceImpl::SetRenderTarget(f2dTexture2D* pTex)
 
 	FCYSAFEKILL(m_pCurBackBuffer);
 	m_pCurBackBuffer = pTex;
+	m_pCurBackBuffer->AddRef();
 	if(m_pBackBuffer == NULL)
 		m_pDev->GetRenderTarget(0, &m_pBackBuffer);
 
@@ -760,6 +999,7 @@ fResult f2dRenderDeviceImpl::SetDepthStencilSurface(f2dDepthStencilSurface* pSur
 
 	FCYSAFEKILL(m_pCurBackDepthBuffer);
 	m_pCurBackDepthBuffer = pSurface;
+	m_pCurBackDepthBuffer->AddRef();
 	if(m_pBackDepthBuffer == NULL)
 		m_pDev->GetDepthStencilSurface(&m_pBackDepthBuffer);
 

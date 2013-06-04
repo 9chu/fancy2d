@@ -30,6 +30,7 @@ public:
 	/// @param[in] Src  “Ï≥£‘¥
 	/// @param[in] Desc “Ï≥£√Ë ˆ
 	fcyException(fcStr Src, fcStr Desc);
+	fcyException(const fcyException& Org);
 	~fcyException();
 };
 

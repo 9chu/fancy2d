@@ -48,7 +48,35 @@ void fcyXmlNode::writeToStr(wstring& pOut, fuInt Indentation)
 		unordered_map<wstring, wstring>::iterator i = m_Atti.begin();
 		while(i != m_Atti.end())
 		{
-			pOut += i->first + L"=\"" + i->second + L"\" ";
+			pOut += i->first + L"=\"";
+			
+			// 写出属性值并转义
+			for(fuInt k = 0; k<i->second.size(); k++)
+			{
+				switch(i->second[k])
+				{
+				case L'<':
+					pOut += L"&lt;";
+					break;
+				case L'>':
+					pOut += L"&gt;";
+					break;
+				case L'&':
+					pOut += L"&amp;";
+					break;
+				case L'\'':
+					pOut += L"&apos;";
+					break;
+				case L'"':
+					pOut += L"&quot;";
+					break;
+				default:
+					pOut += i->second[k];
+					break;
+				}
+			}
+
+			pOut += L"\" ";
 			i++;
 		}
 	}
@@ -581,11 +609,23 @@ std::wstring fcyXml::readString(fcyLexicalReader& tReader)
 	wstring tRet;
 
 	// 读取'"'
-	tReader.Match(L'\"', true);
+	tReader.Match(L'"', true);
 
-	fCharW tChar = tReader.ReadChar();
-	while(tChar != L'"')
+	while(1)
 	{
+		fCharW tChar = tReader.PeekChar();
+
+		if(tChar == L'"')
+		{
+			tReader.ReadChar();
+			break;
+		}
+		else if(tChar == L'&') // 处理escape
+		{
+			tRet += praseEscape(tReader);
+			continue;
+		}
+
 		tRet += tChar;
 		tChar = tReader.ReadChar();
 	}

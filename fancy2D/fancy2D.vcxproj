@@ -60,6 +60,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\fancylib;extern\DirectShowClass\;extern\DXSDK\include;extern\libvorbis\include;extern\libogg\include;extern\freetype\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <MinimalRebuild>true</MinimalRebuild>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -80,6 +81,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)\fancylib;extern\DirectShowClass\;extern\DXSDK\include;extern\libvorbis\include;extern\libogg\include;extern\freetype\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,6 +95,8 @@
   <ItemGroup>
     <ClInclude Include="Engine\f2dEngineImpl.h" />
     <ClInclude Include="Engine\f2dFileSysImpl.h" />
+    <ClInclude Include="Engine\f2dFPSControllerImpl.h" />
+    <ClInclude Include="Engine\f2dMsgPumpImpl.h" />
     <ClInclude Include="Engine\f2dWindowImpl.h" />
     <ClInclude Include="f2d.h" />
     <ClInclude Include="f2dEngine.h" />
@@ -102,6 +106,8 @@
     <ClInclude Include="f2dRenderDevice.h" />
     <ClInclude Include="f2dRenderer.h" />
     <ClInclude Include="f2dSoundSys.h" />
+    <ClInclude Include="RenderDev\f2dGraphics3DImpl.h" />
+    <ClInclude Include="RenderDev\f2dMeshDataImpl.h" />
     <ClInclude Include="Renderer\f2dFontFileProvider.h" />
     <ClInclude Include="Renderer\f2dFontRendererImpl.h" />
     <ClInclude Include="Renderer\f2dFontTexProvider.h" />
@@ -138,6 +144,8 @@
     <ClCompile Include="Engine\f2dEngineImpl.cpp" />
     <ClCompile Include="Engine\f2dFileSysImpl.cpp" />
     <ClCompile Include="Engine\f2dWindowImpl.cpp" />
+    <ClCompile Include="RenderDev\f2dGraphics3DImpl.cpp" />
+    <ClCompile Include="RenderDev\f2dMeshDataImpl.cpp" />
     <ClCompile Include="Renderer\f2dFontFileProvider.cpp" />
     <ClCompile Include="Renderer\f2dFontRendererImpl.cpp" />
     <ClCompile Include="Renderer\f2dFontTexProvider.cpp" />

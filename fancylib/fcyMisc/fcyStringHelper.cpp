@@ -123,6 +123,48 @@ std::wstring fcyStringHelper::TimeToWideStr(fDouble Seconds)
 	return wstring(tTime);
 }
 
+std::wstring fcyStringHelper::TrimLeft(const std::wstring &Org)
+{ 
+	wstring tRet = Org;
+	wstring::const_iterator p = find_if_not(tRet.begin(), tRet.end(), isspace); 
+	tRet.erase(tRet.begin(), p); 
+	return tRet;
+}
+
+std::wstring fcyStringHelper::TrimRight(const std::wstring &Org)
+{
+	wstring tRet = Org;
+	wstring::const_reverse_iterator p = find_if_not(tRet.rbegin(), tRet.rend(), isspace); 
+	tRet.erase(p.base(), tRet.end()); 
+	return tRet; 
+}
+
+std::wstring fcyStringHelper::Trim(const std::wstring &Org)
+{
+	return TrimLeft(TrimRight(Org));
+}
+
+std::string fcyStringHelper::TrimLeft(const std::string &Org)
+{ 
+	string tRet = Org;
+	string::const_iterator p = find_if_not(tRet.begin(), tRet.end(), isspace); 
+	tRet.erase(tRet.begin(), p); 
+	return tRet;
+}
+
+std::string fcyStringHelper::TrimRight(const std::string &Org)
+{
+	string tRet = Org;
+	string::const_reverse_iterator p = find_if_not(tRet.rbegin(), tRet.rend(), isspace); 
+	tRet.erase(p.base(), tRet.end()); 
+	return tRet; 
+}
+
+std::string fcyStringHelper::Trim(const std::string &Org)
+{
+	return TrimLeft(TrimRight(Org));
+}
+
 wstring fcyStringHelper::MultiByteToWideChar(string Org, fuInt CodePage)
 {
 	fuInt dwNum = ::MultiByteToWideChar(CodePage, 0, Org.c_str(), -1, NULL, 0); // 获得长度

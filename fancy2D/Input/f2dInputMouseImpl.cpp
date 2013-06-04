@@ -1,5 +1,68 @@
 #include "f2dInputMouseImpl.h"
 
+#include "../Engine/f2dEngineImpl.h"
+#include "f2dInputSysImpl.h"
+
+////////////////////////////////////////////////////////////////////////////////
+
+f2dInputMouseImpl::DefaultListener::DefaultListener(f2dInputSysImpl* pInputSys)
+	: m_pEngine(pInputSys->GetEngine()) {}
+
+void f2dInputMouseImpl::DefaultListener::OnMouseMoveX(fInt Value)
+{
+	m_pEngine->SendMsg(F2DMSG_MOUSE_ONOFFSET, Value);
+}
+
+void f2dInputMouseImpl::DefaultListener::OnMouseMoveY(fInt Value)
+{
+	m_pEngine->SendMsg(F2DMSG_MOUSE_ONOFFSET, 0, Value);
+}
+
+void f2dInputMouseImpl::DefaultListener::OnMouseMoveZ(fInt Value)
+{
+	m_pEngine->SendMsg(F2DMSG_MOUSE_ONOFFSET, 0, 0, Value);
+}
+
+void f2dInputMouseImpl::DefaultListener::OnMouseLBtnDown()
+{
+	m_pEngine->SendMsg(F2DMSG_MOUSE_ONLBTNDOWN);
+}
+
+void f2dInputMouseImpl::DefaultListener::OnMouseRBtnDown()
+{
+	m_pEngine->SendMsg(F2DMSG_MOUSE_ONRBTNDOWN);
+}
+
+void f2dInputMouseImpl::DefaultListener::OnMouseMBtnDown()
+{
+	m_pEngine->SendMsg(F2DMSG_MOUSE_ONMBTNDOWN);
+}
+
+void f2dInputMouseImpl::DefaultListener::OnMouseAdditionBtnDown(fuInt Index)
+{
+	m_pEngine->SendMsg(F2DMSG_MOUSE_ONADDBTNDOWN, Index);
+}
+
+void f2dInputMouseImpl::DefaultListener::OnMouseLBtnUp()
+{
+	m_pEngine->SendMsg(F2DMSG_MOUSE_ONLBTNUP);
+}
+
+void f2dInputMouseImpl::DefaultListener::OnMouseRBtnUp()
+{
+	m_pEngine->SendMsg(F2DMSG_MOUSE_ONRBTNUP);
+}
+
+void f2dInputMouseImpl::DefaultListener::OnMouseMBtnUp()
+{
+	m_pEngine->SendMsg(F2DMSG_MOUSE_ONMBTNUP);
+}
+
+void f2dInputMouseImpl::DefaultListener::OnMouseAdditionBtnUp(fuInt Index)
+{
+	m_pEngine->SendMsg(F2DMSG_MOUSE_ONADDBTNUP, Index);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 const fuInt f2dInputMouseImpl::BufferSize = 32;
@@ -21,10 +84,12 @@ const DIOBJECTDATAFORMAT f2dInputMouseImpl::DIODF_Mouse[7] =
 	{ 0, 15, 0x80FFFF0C, 0 }
 };
 
-f2dInputMouseImpl::f2dInputMouseImpl(IDirectInput8* pDev, HWND Win, const GUID& pGUID, fBool bGlobalFocus)
-	: m_pDev(NULL), m_pListener(NULL),
+f2dInputMouseImpl::f2dInputMouseImpl(f2dInputSysImpl* pSys, HWND Win, const GUID& pGUID, fBool bGlobalFocus)
+	: m_pSys(pSys), m_pDev(NULL), m_DefaultListener(pSys), m_pListener(&m_DefaultListener),
 	m_TotalOffsetX(0), m_TotalOffsetY(0), m_TotalOffsetZ(0)
 {
+	IDirectInput8* pDev = pSys->GetHandle();
+
 	memset(m_BtnState, 0, sizeof(m_BtnState));
 
 	HRESULT tHR = pDev->CreateDevice(pGUID, &m_pDev, NULL);
@@ -70,12 +135,19 @@ f2dInputMouseImpl::f2dInputMouseImpl(IDirectInput8* pDev, HWND Win, const GUID& 
 
 	// 获得设备
 	tHR = m_pDev->Acquire();
+
+	// 注册
+	m_pSys->RegisterDevice(this);
 }
 
 f2dInputMouseImpl::~f2dInputMouseImpl()
 {
 	if(m_pDev)
 		m_pDev->Unacquire();
+
+	// 释放
+	m_pSys->UnregisterDevice(this);
+
 	FCYSAFEKILL(m_pDev);
 }
 

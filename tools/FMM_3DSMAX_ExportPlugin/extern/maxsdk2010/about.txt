@@ -1,0 +1,51 @@
+© 2009 Autodesk, Inc.  All rights reserved.  
+
+All use of this Software is subject to the terms and conditions of the Autodesk End User License Agreement accepted upon installation of this Software and/or packaged with the Software.
+
+
+Trademarks
+Autodesk and 3ds Max are registered trademarks or trademarks of Autodesk, Inc., and/or its subsidiaries and/or affiliates in the USA and/or other countries. clothfx™ is a trademark of Size8 Software, Inc. Havok.com™ is a trademark or registered trademark of Havok.com Inc. or its licensors. Intel is a registered trademark of Intel Corporation. mental ray is a registered trademark of mental images GmbH licensed for use by Autodesk, Inc. All other brand names, product names or trademarks belong to their respective holders.  
+
+Patents
+Protected by one or more of U.S. Patent Nos.  6,363,503, 7,168,012, 6,888,542, 5,287,408, 5,760,716, 6,064,394, 5,751,829, 6,122,391, 6,463,180, 6,081,624, 6,396,420, 6,313,842, 6,496,597, 6,411,297, 6,262,742, 6,366,283, 6,525,730, 6,487,322, 7,287,191, 6,061,067, 5,956,031, 6,072,498, 5,986,657, 6,195,098, 5,995,107, 6,034,695, 6,184,901, 6,323,879, 6,473,081, 6,683,620, 6,650,339, 6,889,374, 6,714,194, 7,019,743, 7,246,329, 6,947,058, 6,762,757, 6,768,486, 6,760,022, 7,233,326, 7,164,420, 5,594,856, 5,731,821, 6,144,385, 6,144,382, 6,628,285, 6,675,355, 6,964,015, 6,992,685 7,317,457, 7,372,464, 7,330,183; and patents pending.
+
+Third-Party Software Credits and Attributions
+Portions Copyright ©2008 Acresso Software Inc., and/or InstallShield Co. Inc.
+Portions Copyright © 2005 Bluerock Technologies LLC.
+Portions Copyright Carl-Mikael Lagnecrantz © 2008.
+This software contains source code provided by mental images GmbH.
+Portions Copyright Manuel Jouglet Marcus, Mootools © 2008.
+Portions Copyright © 2000-2005 Size8 Software, Inc.
+Portions Copyright © 2003 ATI Technologies, Inc. All Rights Reserved. Permission to use, copy, modify, and distribute this software and its documentation for any purpose and without fee is hereby granted, provided that the above copyright notice appear in all copies and derivative works and that both the copyright notice and this permission notice appear in support documentation, and that the name of ATI Technologies, Inc. not be used in advertising or publicity pertaining to distribution of the software without specific, written prior permission.
+Portions Copyright 1990-1991 by Thomas Knoll. Copyright 1992-1995 by Adobe Systems, Inc.
+Portions Copyright 1993-1996, Adobe Systems, Incorporated. All rights reserved worldwide.
+Portions Copyright © 1989, 1991, 1993 Aladdin Enterprises.  All rights reserved.
+Portions of this software are Copyright © 1991-1994 by Arthur D. Applegate.  All Rights Reserved.  
+Portions Copyright © 2005 Blur Studio, Inc.
+Portions of this software, Point Cache 2 are copyright © 2005-2006 Blizzard Entertainment, Inc.
+Portions Copyright Mathew Kaustinen © 2007.
+Portions developed by Digimation, Inc. for the exclusive use of Autodesk, Inc.
+Portions of this software JSR-184 Exporter Copyright © 2004 Digital Element, Inc.
+Portions Copyright © 1994 F. Kenton Musgrave.
+Portions Copyright Guruware OBJio © 2007 www.guruware.at.
+JPEG software is copyright © 1991-1998, Thomas G. Lane.  All Rights Reserved.  This software is based in part on the work of the Independent JPEG Group.
+Portions relating to OpenEXR © 2003 Industrial Light and Magic a division of Lucas Digital Ltd. LLC.
+Portions Copyright © 1990-2007 Info-ZIP.  All rights reserved.  For the purposes of this copyright and license, "Info-ZIP" is defined as the following set of individuals: Mark Adler, John Bush, Karl Davis, Harald Denker, Jean-Michel Dubois, Jean-loup Gailly, Hunter Goatley, Ed Gordon, Ian Gorman, Chris Herborth, Dirk Haase, Greg Hartwig, Robert Heath, Jonathan Hudson, Paul Kienitz, David Kirschbaum, Johnny Lee, Onno van der Linden, Igor Mandrichenko, Steve P. Miller, Sergio Monesi, Keith Owens, George Petrov, Greg Roelofs, Kai Uwe Rommel, Steve Salisbury, Dave Smith, Steven M. Schweda, Christian Spieler, Cosmin Truta, Antoine Verheijen, Paul von Behren, Rich Wales, Mike White. This software is provided "as is," without warranty of any kind, express or implied. In no event shall Info-ZIP or its contributors be held liable for any direct, indirect, incidental, special or consequential damages arising out of the use of or inability to use this software. 
+Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the above disclaimer and the following restrictions: 1) Redistributions of source code (in whole or in part) must retain the above copyright notice, definition, disclaimer, and this list of conditions. 2) Redistributions in binary form (compiled executables and libraries) must reproduce the above copyright notice, definition, disclaimer, and this list of conditions in documentation and/or other materials provided with the distribution. The sole exception to this condition is redistribution of a standard UnZipSFX binary (including SFXWiz) as part of a self-extracting archive; that is permitted without inclusion of this license, as long as the normal SFX banner has not been removed from the binary or disabled. 3) Altered versions--including, but not limited to, ports to new operating systems, existing ports with new graphical interfaces, versions with modified or added functionality, and dynamic, shared, or static library versions not from Info-ZIP--must be plainly marked as such and must not be misrepresented as being the original source or, if binaries, compiled from the original source. Such altered versions also must not be misrepresented as being Info-ZIP releases--including, but not limited to, labeling of the altered versions with the names "Info-ZIP" (or any variation thereof, including, but not limited to, different capitalizations), "Pocket UnZip," "WiZ" or "MacZip" without the explicit permission of Info-ZIP. Such altered versions are further prohibited from misrepresentative use of the Zip-Bugs or Info-ZIP e-mail addresses or the Info-ZIP URL(s), such as to imply Info-ZIP will provide support for the altered versions. 4) Info-ZIP retains the right to use the names "Info-ZIP," "Zip," "UnZip," "UnZipSFX," "WiZ," "Pocket UnZip," "Pocket Zip," and "MacZip" for its own source and binary releases.
+Portions Copyright © 2006 IntegrityWare, Inc.
+Portions Copyright © 1999-2005 Joseph Alter, Inc. Credit to Joe Alter, Gonzalo Rueda, and Dean Edmonds.
+This product includes Radiance software (http://radsite.lbl.gov/radiance) developed by the Lawrence Berkeley National Laboratory (http://www.lbl.gov). Copyright © 1990–2005. The Regents of the University of California through Lawrence Berkeley National Laboratory. All rights reserved.
+Portions Copyright Max HTR created 2003-2005 by Motion Analysis.
+Portions Copyright 1998-2003 by Neil Hodgson.  All Rights Reserved.  Permission to use, copy, modify, and distribute this software and it documentation for any purpose and without fee is hereby granted, provided that the above copyright notice appear in all copies and that both that copyright notice and this permission notice appear in supporting documentation.
+Portions Copyright © 1999, 2000 NVIDIA Corporation.  This file is provided without support, instructions or implied warranty of any kind.  NVIDIA makes no guarantee of its fitness for a particular purpose and is not liable under any circumstances for any damages or loss whatsoever arising from the use or inability to use this file or items derived from it.
+Portions Copyright © 2006 NVIDIA Corporation.
+Portions Copyright Orbaz Technologies © 2007.
+Portions Copyright © 1988-1997 Sam Leffler.
+Portions Copyright © 1991-1997 Silicon Graphics, Inc. Permissions to use, copy, modify, distribute, and sell this software and its documentation for any purpose is hereby granted without fee, provided that (i) the above copyright notices and this permission notice appear in all copies of the software and related documentation, and (ii) the names of Sam Leffler and Silicon Graphics may not be used in any advertising or publicity relating to the software without the specific, prior written permission of Sam Leffler and Silicon Graphics.
+Portions relating to OpenEXR Bitmap I/O Plugin © 2003-2005 SplutterFish, LLC.
+Certain patents licensed from Viewpoint Corporation.
+ 
+
+ 
+
+

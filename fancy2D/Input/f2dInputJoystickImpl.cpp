@@ -1,5 +1,59 @@
 #include "f2dInputJoystickImpl.h"
 
+#include "../Engine/f2dEngineImpl.h"
+#include "f2dInputSysImpl.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+f2dInputJoystickImpl::DefaultListener::DefaultListener(f2dInputSysImpl* pInputSys)
+	: m_pEngine(pInputSys->GetEngine()) {}
+
+void f2dInputJoystickImpl::DefaultListener::OnJoystickBtnDown(fuInt Index)
+{
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONBUTTONDOWN, Index);
+}
+
+void f2dInputJoystickImpl::DefaultListener::OnJoystickBtnUp(fuInt Index)
+{
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONBUTTONUP, Index);
+}
+
+void f2dInputJoystickImpl::DefaultListener::OnJoystickXAxisPosChange(fFloat Value)
+{
+	fDouble tValue = Value;
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONXPOSCHANGE, *(fuLong*)&tValue);
+}
+
+void f2dInputJoystickImpl::DefaultListener::OnJoystickYAxisPosChange(fFloat Value)
+{
+	fDouble tValue = Value;
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONYPOSCHANGE, *(fuLong*)&tValue);
+}
+
+void f2dInputJoystickImpl::DefaultListener::OnJoystickZAxisPosChange(fFloat Value)
+{
+	fDouble tValue = Value;
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONZPOSCHANGE, *(fuLong*)&tValue);
+}
+
+void f2dInputJoystickImpl::DefaultListener::OnJoystickXAxisRotationChange(fFloat Value)
+{
+	fDouble tValue = Value;
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONXROTCHANGE, *(fuLong*)&tValue);
+}
+
+void f2dInputJoystickImpl::DefaultListener::OnJoystickYAxisRotationChange(fFloat Value)
+{
+	fDouble tValue = Value;
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONYROTCHANGE, *(fuLong*)&tValue);
+}
+
+void f2dInputJoystickImpl::DefaultListener::OnJoystickZAxisRotationChange(fFloat Value)
+{
+	fDouble tValue = Value;
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONZROTCHANGE, *(fuLong*)&tValue);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 
 const fuInt f2dInputJoystickImpl::BufferSize = 32;
@@ -58,12 +112,14 @@ const DIOBJECTDATAFORMAT f2dInputJoystickImpl::DIODF_Joystick[44] =
 	{ 00000000, 79, 2164260620, 0 }
 };
 
-f2dInputJoystickImpl::f2dInputJoystickImpl(IDirectInput8* pDev, HWND Win, const GUID& pGUID, bool bGlobalFocus)
-	: m_pDev(NULL), m_pListener(NULL),
+f2dInputJoystickImpl::f2dInputJoystickImpl(f2dInputSysImpl* pSys, HWND Win, const GUID& pGUID, bool bGlobalFocus)
+	: m_pSys(pSys), m_pDev(NULL), m_DefaultListener(pSys), m_pListener(&m_DefaultListener),
 	m_lXHalf(0), m_lXHalfLen(0), m_lYHalf(0), m_lYHalfLen(0), m_lZHalf(0), m_lZHalfLen(0), 
 	m_lRxHalf(0), m_lRxHalfLen(0), m_lRyHalf(0), m_lRyHalfLen(0), m_lRzHalf(0), m_lRzHalfLen(0),
 	m_lX(0.f), m_lY(0.f), m_lZ(0.f), m_lRx(0.f), m_lRy(0.f), m_lRz(0.f)
 {
+	IDirectInput8* pDev = pSys->GetHandle();
+
 	memset(m_ButtonDown, 0, sizeof(m_ButtonDown));
 	memset(m_Slider, 0, sizeof(m_Slider));
 	memset(m_POV, 0, sizeof(m_POV));
@@ -113,12 +169,19 @@ f2dInputJoystickImpl::f2dInputJoystickImpl(IDirectInput8* pDev, HWND Win, const 
 
 	// 获得设备
 	tHR = m_pDev->Acquire();
+
+	// 注册
+	m_pSys->RegisterDevice(this);
 }
 
 f2dInputJoystickImpl::~f2dInputJoystickImpl()
 {
 	if(m_pDev)
 		m_pDev->Unacquire();
+
+	// 取消注册
+	m_pSys->UnregisterDevice(this);
+
 	FCYSAFEKILL(m_pDev);
 }
 
