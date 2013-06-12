@@ -13,9 +13,10 @@ fancylib/bin/
 fancylib/obj/
 fancyUI/bin/
 fancyUI/obj/
+fancyUI/bak/
 TestCpp/bin/
 TestCpp/obj/
-TestCpp/DemoRes/
+TestCpp/DemoRes/bak/
 tools/FCYResPackageEditor/bin/
 tools/FCYResPackageEditor/obj/
 tools/FMM_3DSMAX_ExportPlugin/lib/

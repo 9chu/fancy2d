@@ -113,7 +113,7 @@ public:
 			return m_pCallBack->Invoke( FCYFUNCTOR_MAKEARG1(FCYMAKEFUNCTOR, p) ); // (p1, p2, p3...)
 	}
 public:
-	bool Empty()
+	bool Empty()const
 	{
 		return (NULL == m_pCallBack);
 	}

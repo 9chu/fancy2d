@@ -19,6 +19,56 @@
 class fcyXmlNode
 {
 	friend class fcyXml;
+public:
+	class AttributeIterator
+	{
+		friend class fcyXmlNode;
+	private:
+		std::unordered_map<std::wstring, std::wstring>::iterator i;
+	public:
+		fcStrW GetName()const
+		{
+			return i->first.c_str();
+		}
+		fcStrW GetContent()const
+		{
+			return i->second.c_str();
+		}
+		void SetContent(fcStrW Content)
+		{
+			i->second = Content;
+		}
+	public:
+		AttributeIterator& operator=(const AttributeIterator& Right)
+		{
+			i = Right.i;
+		}
+		fBool operator==(const AttributeIterator& Right)const
+		{
+			return (i == Right.i);
+		}
+		fBool operator!=(const AttributeIterator& Right)const
+		{
+			return (i != Right.i);
+		}
+		AttributeIterator& operator--()
+		{
+			i--;
+			return *this;
+		}
+		AttributeIterator& operator++()
+		{
+			i++;
+			return *this;
+		}
+	protected:
+		AttributeIterator(const std::unordered_map<std::wstring, std::wstring>::iterator& _i)
+			: i(_i) {}
+	public:
+		AttributeIterator() {}
+		AttributeIterator(const AttributeIterator& Org)
+			: i(Org.i) {}
+	};
 private:
 	std::wstring m_Name;                                               ///< @brief 名字
 	std::wstring m_Content;                                            ///< @brief 节点数据
@@ -79,7 +129,7 @@ public:
 	/// @brief     获得属性
 	/// @param[in] Name 属性名
 	/// @return    属性值
-	fcStrW GetAttribute(fcStrW Name);
+	fcStrW GetAttribute(fcStrW Name)const;
 
 	/// @brief     获得属性
 	/// @param[in] Name  属性名
@@ -90,6 +140,18 @@ public:
 	/// @param[in] Name 属性名
 	/// @return    返回属性是否存在
 	fBool HasAttribute(fcStrW Name)const;
+
+	/// @brief 返回第一个属性
+	AttributeIterator GetFirstAttribute();
+
+	/// @brief 返回最后一个属性
+	AttributeIterator GetLastAttribute();
+
+	/// @brief 移除属性
+	fBool RemoveAttribute(fcStrW Name);
+	
+	/// @brief 移除属性
+	AttributeIterator RemoveAttribute(AttributeIterator Iter);
 public:
 	/// @brief 构造函数
 	fcyXmlNode();

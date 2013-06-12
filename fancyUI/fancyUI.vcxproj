@@ -11,30 +11,26 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fcyUIBase\fuiContainer.h" />
-    <ClInclude Include="fcyUIBase\fuiContext.h" />
     <ClInclude Include="fcyUIBase\fuiControl.h" />
-    <ClInclude Include="fcyUIBase\fuiRenderer.h" />
-    <ClInclude Include="fcyUIControl\fuiBoard.h" />
-    <ClInclude Include="fcyUIControl\fuiEditBox.h" />
-    <ClInclude Include="fcyUIControl\fuiHProgressBar.h" />
-    <ClInclude Include="fcyUIControl\fuiHSliderBar.h" />
+    <ClInclude Include="fcyUIBase\fuiEvent.h" />
+    <ClInclude Include="fcyUIBase\fuiFactory.h" />
+    <ClInclude Include="fcyUIBase\fuiPage.h" />
+    <ClInclude Include="fcyUIBase\fuiProperty.h" />
+    <ClInclude Include="fcyUIBase\fuiRes.h" />
+    <ClInclude Include="fcyUIBase\fuiStyle.h" />
+    <ClInclude Include="fcyUIBase\fuiGraphics.h" />
     <ClInclude Include="fcyUIControl\fuiLabel.h" />
-    <ClInclude Include="fcyUIControl\fuiSpriteButton.h" />
-    <ClInclude Include="fcyUIControl\fuiVProgressBar.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="fcyUIBase\fuiContainer.cpp" />
-    <ClCompile Include="fcyUIBase\fuiContext.cpp" />
     <ClCompile Include="fcyUIBase\fuiControl.cpp" />
-    <ClCompile Include="fcyUIBase\fuiRenderer.cpp" />
-    <ClCompile Include="fcyUIControl\fuiBoard.cpp" />
-    <ClCompile Include="fcyUIControl\fuiEditBox.cpp" />
-    <ClCompile Include="fcyUIControl\fuiHProgressBar.cpp" />
-    <ClCompile Include="fcyUIControl\fuiHSliderBar.cpp" />
+    <ClCompile Include="fcyUIBase\fuiEvent.cpp" />
+    <ClCompile Include="fcyUIBase\fuiFactory.cpp" />
+    <ClCompile Include="fcyUIBase\fuiGraphics.cpp" />
+    <ClCompile Include="fcyUIBase\fuiPage.cpp" />
+    <ClCompile Include="fcyUIBase\fuiProperty.cpp" />
+    <ClCompile Include="fcyUIBase\fuiRes.cpp" />
+    <ClCompile Include="fcyUIBase\fuiStyle.cpp" />
     <ClCompile Include="fcyUIControl\fuiLabel.cpp" />
-    <ClCompile Include="fcyUIControl\fuiSpriteButton.cpp" />
-    <ClCompile Include="fcyUIControl\fuiVProgressBar.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5745204B-573E-49A9-9145-8031BDF53235}</ProjectGuid>

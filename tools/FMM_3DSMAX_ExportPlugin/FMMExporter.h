@@ -14,10 +14,12 @@
 #include <iparamm2.h>
 
 #include <IGame\IGame.h>
+#include <IGame\IGameFX.h>
 #include <IGame\IGameError.h>
 
+#include <fcyParser\fcyXml.h>
 #include <fcyMisc\fcyHash.h>
-#include <fcyFile\fcyModelMesh.h>
+#include <fcyFile\fcyModelMeshFile.h>
 #include <fcyMath.h>
 
 #include "resource.h"
@@ -72,16 +74,24 @@ public:
 		return 0;
 	}
 protected:
-	fcyModelMesh<Vertex> m_MeshData;
-	std::unordered_map<int, std::wstring> m_MatCache;
-	std::unordered_map<Vertex, fuInt> m_IndexCache;        // 缓存所有顶点的索引
+	// 导出用上下文
+	struct OutputContext
+	{
+		fcyModelMeshFile MeshData;                          ///< @brief 模型数据
+		fcyRefPointer<fcyModelVertexLabel> VertexLabel;     ///< @brief 顶点标签
+		fcyRefPointer<fcyModelIndexLabel> IndexLabel;       ///< @brief 索引标签
+
+		std::unordered_map<int, std::wstring> MatCache;     ///< @brief 缓存 <材质ID, 材质名>
+		std::unordered_map<Vertex, fuInt> IndexCache;       ///< @brief 缓存所有顶点的索引
+	};
 protected:
 	void FillFaceVertex(IGameMesh* pMesh, FaceEx* pFace, Vertex Out[]);
 
 	std::wstring ExportProperty(IGameProperty* pProp);
-	void ExportMaterial(IGameMaterial* pMat, int ID = -1);
-	void ExportSubNode(IGameNode* pNode);
-	void ExportMesh(IGameNode* pParent, IGameMesh* pObj);
+	void ExportFXProperty(fcyXmlNode& Node, IGameFXProperty* pProp);
+	void ExportMaterial(OutputContext* pContext, IGameMaterial* pMat, int ID = -1);
+	void ExportSubNode(OutputContext* pContext, IGameNode* pNode);
+	void ExportMesh(OutputContext* pContext, IGameNode* pParent, IGameMesh* pObj);
 public: // 接口实现
 	/// @brief 返回支持的扩展名数量
 	int	ExtCount() { return 1; }

@@ -37,27 +37,27 @@ struct f2dSprite :
 	virtual fResult SetTexture(f2dTexture2D* pTex)=0;
 
 	/// @brief 返回对应纹理的矩形
-	virtual fcyRect GetTexRect()=0;
+	virtual const fcyRect& GetTexRect()const=0;
 
 	/// @brief 设置对应纹理的矩形
-	virtual fResult SetTexRect(fcyRect Rect)=0;
+	virtual fResult SetTexRect(const fcyRect& Rect)=0;
 
 	/// @brief 返回热点
-	virtual fcyVec2 GetHotSpot()=0;
+	virtual const fcyVec2& GetHotSpot()const=0;
 
 	/// @brief     设置热点
 	/// @param[in] Point 热点
-	virtual fResult SetHotSpot(fcyVec2 Point)=0;
+	virtual fResult SetHotSpot(const fcyVec2& Point)=0;
 
 	/// @brief 返回翻转方式
-	virtual F2DSPRITEFLIP GetFlipType()=0;
+	virtual F2DSPRITEFLIP GetFlipType()const=0;
 	
 	/// @brief     设置翻转方式
 	/// @param[in] Type 翻转方式
 	virtual fResult SetFlipType(F2DSPRITEFLIP Type)=0;
 
 	/// @brief 返回Z值
-	virtual fFloat GetZ()=0;
+	virtual fFloat GetZ()const=0;
 
 	/// @brief     设置Z值
 	/// @param[in] Value 新的Z值
@@ -65,7 +65,7 @@ struct f2dSprite :
 
 	/// @brief     返回顶点的颜色
 	/// @param[in] Index 顶点索引[0~3]，按照顺时针方向定位
-	virtual fcyColor GetColor(fuInt Index)=0;
+	virtual fcyColor GetColor(fuInt Index)const=0;
 
 	/// @brief     设置所有顶点的颜色
 	/// @param[in] Color 混合颜色

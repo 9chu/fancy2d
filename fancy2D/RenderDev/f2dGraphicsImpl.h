@@ -67,7 +67,10 @@ public: // 接口实现
 		m_WorldMat = Mat;
 
 		if(IsInRender())
+		{
+			Flush();
 			m_pParent->SubmitWorldMat(Mat);
+		}
 		else
 			m_bStateDirty = true;
 	}
@@ -76,7 +79,10 @@ public: // 接口实现
 		m_LookatMat = Mat;
 		
 		if(IsInRender())
+		{
+			Flush();
 			m_pParent->SubmitLookatMat(Mat);
+		}
 		else
 			m_bStateDirty = true;
 	}
@@ -85,7 +91,10 @@ public: // 接口实现
 		m_ProjMat = Mat;
 		
 		if(IsInRender())
+		{
+			Flush();
 			m_pParent->SubmitProjMat(Mat);
+		}
 		else
 			m_bStateDirty = true;
 	}
@@ -98,7 +107,10 @@ public: // 接口实现
 		m_BlendState = State;
 
 		if(IsInRender())
+		{
+			Flush();
 			m_pParent->SubmitBlendState(State);
+		}
 		else
 			m_bStateDirty = true;
 	}

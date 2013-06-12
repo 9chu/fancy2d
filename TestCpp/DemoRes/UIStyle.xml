@@ -1,0 +1,11 @@
+﻿<fancyUIStyle>
+<!--
+  <Sprite Name="Sprite0" Src="Res\\12.png" Rect="10,20,30,10" HotPos="10,10" />
+  <BorderSprite Name="Border1" Src="Res\\12.png" Rect="10,20,20,20" Margin="10,10,20,20" />
+  <Font Name="" FontSrc="" FontSize="12,23" />
+  <Font Name="" TexSrc="" Define="" />
+-->
+  <Font Name="FPSFont" FontSrc="Res\\Droid Sans Fallback.ttf" FontSize="16,16"/>
+  
+  <Font Name="TestFont" FontSrc="Res\\Droid Sans Fallback.ttf" FontSize="50,50"/>
+</fancyUIStyle>

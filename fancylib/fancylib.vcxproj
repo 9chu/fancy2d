@@ -30,7 +30,13 @@
     <ClInclude Include="extern\zlib\zconf.h" />
     <ClInclude Include="extern\zlib\zlib.h" />
     <ClInclude Include="extern\zlib\zutil.h" />
-    <ClInclude Include="fcyFile\fcyModelMesh.h" />
+    <ClInclude Include="fcyFile\fcyModelIndexLabel.h" />
+    <ClInclude Include="fcyFile\fcyModelLabel.h" />
+    <ClInclude Include="fcyFile\fcyModelMaterialLabel.h" />
+    <ClInclude Include="fcyFile\fcyModelMeshExporter.h" />
+    <ClInclude Include="fcyFile\fcyModelMeshFile.h" />
+    <ClInclude Include="fcyFile\fcyModelSubsetLabel.h" />
+    <ClInclude Include="fcyFile\fcyModelVertexLabel.h" />
     <ClInclude Include="fcyMath.h" />
     <ClInclude Include="fcyMisc\fcyFunctor.h" />
     <ClInclude Include="fcyMisc\fcyFunctorDetail.h" />
@@ -74,6 +80,13 @@
     <ClCompile Include="extern\zlib\uncompr.c" />
     <ClCompile Include="extern\zlib\zutil.c" />
     <ClCompile Include="fcyException.cpp" />
+    <ClCompile Include="fcyFile\fcyModelIndexLabel.cpp" />
+    <ClCompile Include="fcyFile\fcyModelLabel.cpp" />
+    <ClCompile Include="fcyFile\fcyModelMaterialLabel.cpp" />
+    <ClCompile Include="fcyFile\fcyModelMeshExporter.cpp" />
+    <ClCompile Include="fcyFile\fcyModelMeshFile.cpp" />
+    <ClCompile Include="fcyFile\fcyModelSubsetLabel.cpp" />
+    <ClCompile Include="fcyFile\fcyModelVertexLabel.cpp" />
     <ClCompile Include="fcyFile\fcyResPackage.cpp" />
     <ClCompile Include="fcyIO\fcyBinaryHelper.cpp" />
     <ClCompile Include="fcyIO\fcyDeflate.cpp" />
@@ -168,7 +181,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>extern\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>extern\zlib;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
@@ -185,7 +198,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>extern\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>extern\zlib;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -204,7 +217,7 @@
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>extern\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>extern\zlib;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -225,7 +238,7 @@
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>extern\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>extern\zlib;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>

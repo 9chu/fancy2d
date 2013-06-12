@@ -106,12 +106,12 @@ fResult f2dSpriteImpl::SetTexture(f2dTexture2D* pTex)
 	return FCYERR_OK;
 }
 
-fcyRect f2dSpriteImpl::GetTexRect()
+const fcyRect& f2dSpriteImpl::GetTexRect()const
 {
 	return m_Org;
 }
 
-fResult f2dSpriteImpl::SetTexRect(fcyRect Rect)
+fResult f2dSpriteImpl::SetTexRect(const fcyRect& Rect)
 {
 	m_Org = Rect;
 
@@ -120,12 +120,12 @@ fResult f2dSpriteImpl::SetTexRect(fcyRect Rect)
 	return FCYERR_OK;
 }
 
-fcyVec2 f2dSpriteImpl::GetHotSpot()
+const fcyVec2& f2dSpriteImpl::GetHotSpot()const
 {
 	return m_HotSpot;
 }
 
-fResult f2dSpriteImpl::SetHotSpot(fcyVec2 Point)
+fResult f2dSpriteImpl::SetHotSpot(const fcyVec2& Point)
 {
 	m_HotSpot = Point;
 
@@ -134,7 +134,7 @@ fResult f2dSpriteImpl::SetHotSpot(fcyVec2 Point)
 	return FCYERR_OK;
 }
 
-F2DSPRITEFLIP f2dSpriteImpl::GetFlipType()
+F2DSPRITEFLIP f2dSpriteImpl::GetFlipType()const
 {
 	return m_FlipType;
 }
@@ -148,7 +148,7 @@ fResult f2dSpriteImpl::SetFlipType(F2DSPRITEFLIP Type)
 	return FCYERR_OK;
 }
 
-fFloat f2dSpriteImpl::GetZ()
+fFloat f2dSpriteImpl::GetZ()const
 {
 	return m_ZValue;
 }
@@ -160,7 +160,7 @@ fResult f2dSpriteImpl::SetZ(fFloat Value)
 	return FCYERR_OK;
 }
 
-fcyColor f2dSpriteImpl::GetColor(fuInt Index)
+fcyColor f2dSpriteImpl::GetColor(fuInt Index)const
 {
 	if(Index>=4)
 		return 0;

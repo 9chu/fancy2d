@@ -258,9 +258,13 @@ void fcyXmlNode::ClearNode()
 	m_Dict.clear();
 }
 
-fcStrW fcyXmlNode::GetAttribute(fcStrW Name)
+fcStrW fcyXmlNode::GetAttribute(fcStrW Name)const
 {
-	return m_Atti[Name].c_str();
+	unordered_map<std::wstring, std::wstring>::const_iterator i = m_Atti.find(Name);
+	if(i == m_Atti.end())
+		return NULL;
+	else
+		return i->second.c_str();
 }
 
 void fcyXmlNode::SetAttribute(fcStrW Name, fcStrW Value)
@@ -271,6 +275,33 @@ void fcyXmlNode::SetAttribute(fcStrW Name, fcStrW Value)
 fBool fcyXmlNode::HasAttribute(fcStrW Name)const
 {
 	return (m_Atti.find(Name) != m_Atti.end());
+}
+
+fcyXmlNode::AttributeIterator fcyXmlNode::GetFirstAttribute()
+{
+	return AttributeIterator(m_Atti.begin());
+}
+
+fcyXmlNode::AttributeIterator fcyXmlNode::GetLastAttribute()
+{
+	return AttributeIterator(m_Atti.end());
+}
+
+fBool fcyXmlNode::RemoveAttribute(fcStrW Name)
+{
+	unordered_map<std::wstring, std::wstring>::iterator i = m_Atti.find(Name);
+	if(i == m_Atti.end())
+		return false;
+	else
+	{
+		m_Atti.erase(i);
+		return true;
+	}
+}
+
+fcyXmlNode::AttributeIterator fcyXmlNode::RemoveAttribute(fcyXmlNode::AttributeIterator Iter)
+{
+	return m_Atti.erase(Iter.i);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

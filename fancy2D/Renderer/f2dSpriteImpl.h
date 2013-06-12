@@ -28,15 +28,15 @@ protected:
 public: // 接口实现
 	f2dTexture2D* GetTexture();
 	fResult SetTexture(f2dTexture2D* pTex);
-	fcyRect GetTexRect();
-	fResult SetTexRect(fcyRect Rect);
-	fcyVec2 GetHotSpot();
-	fResult SetHotSpot(fcyVec2 Point);
-	F2DSPRITEFLIP GetFlipType();
+	const fcyRect& GetTexRect()const;
+	fResult SetTexRect(const fcyRect& Rect);
+	const fcyVec2& GetHotSpot()const;
+	fResult SetHotSpot(const fcyVec2& Point);
+	F2DSPRITEFLIP GetFlipType()const;
 	fResult SetFlipType(F2DSPRITEFLIP Type);
-	fFloat GetZ();
+	fFloat GetZ()const;
 	fResult SetZ(fFloat Value);
-	fcyColor GetColor(fuInt Index);
+	fcyColor GetColor(fuInt Index)const;
 	fResult SetColor(fcyColor Color);
 	fResult SetColor(fuInt Index, fcyColor Color);
 	fResult Draw(f2dGraphics2D* pGraph, const fcyRect& Dest);

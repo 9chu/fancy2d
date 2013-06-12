@@ -4,8 +4,8 @@
 /// @note  定义了所有f2d接口的基类
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "fcyType.h"
-#include "fcyMath.h"
+#include <fcyType.h>
+#include <fcyMath.h>
 
 // --- f2dInterface 等价于 fcyRefObj ---
 #ifdef FCYREFOBJ

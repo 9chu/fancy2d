@@ -33,72 +33,60 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fcyUIBase\fuiContainer.h">
-      <Filter>fcyUIBase\header</Filter>
-    </ClInclude>
-    <ClInclude Include="fcyUIBase\fuiContext.h">
-      <Filter>fcyUIBase\header</Filter>
-    </ClInclude>
     <ClInclude Include="fcyUIBase\fuiControl.h">
       <Filter>fcyUIBase\header</Filter>
     </ClInclude>
-    <ClInclude Include="fcyUIBase\fuiRenderer.h">
+    <ClInclude Include="fcyUIBase\fuiProperty.h">
       <Filter>fcyUIBase\header</Filter>
     </ClInclude>
-    <ClInclude Include="fcyUIControl\fuiBoard.h">
-      <Filter>fcyUIControl\header</Filter>
+    <ClInclude Include="fcyUIBase\fuiEvent.h">
+      <Filter>fcyUIBase\header</Filter>
     </ClInclude>
-    <ClInclude Include="fcyUIControl\fuiHProgressBar.h">
-      <Filter>fcyUIControl\header</Filter>
+    <ClInclude Include="fcyUIBase\fuiStyle.h">
+      <Filter>fcyUIBase\header</Filter>
     </ClInclude>
-    <ClInclude Include="fcyUIControl\fuiVProgressBar.h">
-      <Filter>fcyUIControl\header</Filter>
+    <ClInclude Include="fcyUIBase\fuiGraphics.h">
+      <Filter>fcyUIBase\header</Filter>
     </ClInclude>
-    <ClInclude Include="fcyUIControl\fuiSpriteButton.h">
-      <Filter>fcyUIControl\header</Filter>
+    <ClInclude Include="fcyUIBase\fuiFactory.h">
+      <Filter>fcyUIBase\header</Filter>
     </ClInclude>
-    <ClInclude Include="fcyUIControl\fuiHSliderBar.h">
-      <Filter>fcyUIControl\header</Filter>
+    <ClInclude Include="fcyUIBase\fuiRes.h">
+      <Filter>fcyUIBase\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIBase\fuiPage.h">
+      <Filter>fcyUIBase\header</Filter>
     </ClInclude>
     <ClInclude Include="fcyUIControl\fuiLabel.h">
       <Filter>fcyUIControl\header</Filter>
     </ClInclude>
-    <ClInclude Include="fcyUIControl\fuiEditBox.h">
-      <Filter>fcyUIControl\header</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="fcyUIBase\fuiContainer.cpp">
-      <Filter>fcyUIBase\source</Filter>
-    </ClCompile>
-    <ClCompile Include="fcyUIBase\fuiContext.cpp">
-      <Filter>fcyUIBase\source</Filter>
-    </ClCompile>
     <ClCompile Include="fcyUIBase\fuiControl.cpp">
       <Filter>fcyUIBase\source</Filter>
     </ClCompile>
-    <ClCompile Include="fcyUIBase\fuiRenderer.cpp">
+    <ClCompile Include="fcyUIBase\fuiProperty.cpp">
       <Filter>fcyUIBase\source</Filter>
     </ClCompile>
-    <ClCompile Include="fcyUIControl\fuiBoard.cpp">
-      <Filter>fcyUIControl\source</Filter>
+    <ClCompile Include="fcyUIBase\fuiEvent.cpp">
+      <Filter>fcyUIBase\source</Filter>
     </ClCompile>
-    <ClCompile Include="fcyUIControl\fuiHProgressBar.cpp">
-      <Filter>fcyUIControl\source</Filter>
+    <ClCompile Include="fcyUIBase\fuiStyle.cpp">
+      <Filter>fcyUIBase\source</Filter>
     </ClCompile>
-    <ClCompile Include="fcyUIControl\fuiVProgressBar.cpp">
-      <Filter>fcyUIControl\source</Filter>
+    <ClCompile Include="fcyUIBase\fuiGraphics.cpp">
+      <Filter>fcyUIBase\source</Filter>
     </ClCompile>
-    <ClCompile Include="fcyUIControl\fuiSpriteButton.cpp">
-      <Filter>fcyUIControl\source</Filter>
+    <ClCompile Include="fcyUIBase\fuiFactory.cpp">
+      <Filter>fcyUIBase\source</Filter>
     </ClCompile>
-    <ClCompile Include="fcyUIControl\fuiHSliderBar.cpp">
-      <Filter>fcyUIControl\source</Filter>
+    <ClCompile Include="fcyUIBase\fuiRes.cpp">
+      <Filter>fcyUIBase\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIBase\fuiPage.cpp">
+      <Filter>fcyUIBase\source</Filter>
     </ClCompile>
     <ClCompile Include="fcyUIControl\fuiLabel.cpp">
-      <Filter>fcyUIControl\source</Filter>
-    </ClCompile>
-    <ClCompile Include="fcyUIControl\fuiEditBox.cpp">
       <Filter>fcyUIControl\source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,5 @@
 #include "FMMExporter.h"
 
-#include <fcyParser\fcyXml.h>
 #include <fcyMisc\fcyStringHelper.h>
 
 using namespace std;
@@ -22,20 +21,6 @@ public:
 
 CFMMExporter::CFMMExporter(void)
 {
-	// 注册顶点信息
-	m_MeshData.ElementList().resize(4);
-	m_MeshData.ElementList()[0].Type = FFM_ELEMENTTYPE_FLOAT3;
-	m_MeshData.ElementList()[0].Usage = FFM_LABEL8("POSITION");
-	m_MeshData.ElementList()[0].UsageIndex = 0;
-	m_MeshData.ElementList()[1].Type = FFM_ELEMENTTYPE_FLOAT3;
-	m_MeshData.ElementList()[1].Usage = FFM_LABEL8("NORMAL\0\0");
-	m_MeshData.ElementList()[1].UsageIndex = 0;
-	m_MeshData.ElementList()[2].Type = FFM_ELEMENTTYPE_COLOR;
-	m_MeshData.ElementList()[2].Usage = FFM_LABEL8("COLOR\0\0\0");
-	m_MeshData.ElementList()[2].UsageIndex = 0;
-	m_MeshData.ElementList()[3].Type = FFM_ELEMENTTYPE_FLOAT2;
-	m_MeshData.ElementList()[3].Usage = FFM_LABEL8("TEXCOORD");
-	m_MeshData.ElementList()[3].UsageIndex = 0;
 }
 
 CFMMExporter::~CFMMExporter(void)
@@ -44,14 +29,6 @@ CFMMExporter::~CFMMExporter(void)
 
 int CFMMExporter::DoExport(const MCHAR *name,ExpInterface *ei,Interface *i, BOOL suppressPrompts, DWORD options)
 {
-	// 清空模型数据
-	m_MeshData.VertList().clear();
-	m_MeshData.IndexList().clear();
-	m_MeshData.SubsetList().clear();
-	m_MeshData.MaterialList().clear();
-	m_MatCache.clear();
-	m_IndexCache.clear();
-
 	// 打开文件
 	fcyFileStream* tFile;
 	try
@@ -60,6 +37,7 @@ int CFMMExporter::DoExport(const MCHAR *name,ExpInterface *ei,Interface *i, BOOL
 	}
 	catch(...)
 	{
+		MessageBoxW(0, L"创建文件失败。", L"FFMExporter - 错误", 0);
 		return FALSE;
 	}
 	tFile->SetLength(0);
@@ -92,13 +70,40 @@ int CFMMExporter::DoExport(const MCHAR *name,ExpInterface *ei,Interface *i, BOOL
 	// 开始导出过程
 	pCore->ProgressStart("Exporting fancy Model Mesh...", TRUE, ProgressFunc, NULL);
 
+	// 准备模型数据
+	OutputContext tContext;
+	{
+		tContext.VertexLabel = new fcyModelVertexLabel();
+		tContext.VertexLabel->Release();
+		tContext.MeshData.GetLabelList().push_back(*tContext.VertexLabel);
+
+		tContext.IndexLabel = new fcyModelIndexLabel();
+		tContext.IndexLabel->Release();
+		tContext.MeshData.GetLabelList().push_back(*tContext.IndexLabel);
+
+		// 注册顶点信息
+		tContext.VertexLabel->ResizeElement(4);
+		tContext.VertexLabel->GetVertexElement(0).Type = fcyModelVertexLabel::ELEMENTTYPE_FLOAT3;
+		tContext.VertexLabel->GetVertexElement(0).Usage = FFM_MAKE_LABELNAME8("POSITION");
+		tContext.VertexLabel->GetVertexElement(0).UsageIndex = 0;
+		tContext.VertexLabel->GetVertexElement(1).Type = fcyModelVertexLabel::ELEMENTTYPE_FLOAT3;
+		tContext.VertexLabel->GetVertexElement(1).Usage = FFM_MAKE_LABELNAME8("NORMAL\0\0");
+		tContext.VertexLabel->GetVertexElement(1).UsageIndex = 0;
+		tContext.VertexLabel->GetVertexElement(2).Type = fcyModelVertexLabel::ELEMENTTYPE_COLOR;
+		tContext.VertexLabel->GetVertexElement(2).Usage = FFM_MAKE_LABELNAME8("COLOR\0\0\0");
+		tContext.VertexLabel->GetVertexElement(2).UsageIndex = 0;
+		tContext.VertexLabel->GetVertexElement(3).Type = fcyModelVertexLabel::ELEMENTTYPE_FLOAT2;
+		tContext.VertexLabel->GetVertexElement(3).Usage = FFM_MAKE_LABELNAME8("TEXCOORD");
+		tContext.VertexLabel->GetVertexElement(3).UsageIndex = 0;
+	}
+
 	// 遍历所有材质
 	int tMatCount = pIGame->GetRootMaterialCount();
 	for(int i = 0; i<tMatCount; i++)
 	{
 		IGameMaterial* pMat = pIGame->GetRootMaterial(i);
 
-		ExportMaterial(pMat);
+		ExportMaterial(&tContext, pMat);
 	}
 
 	// 遍历所有节点
@@ -111,25 +116,17 @@ int CFMMExporter::DoExport(const MCHAR *name,ExpInterface *ei,Interface *i, BOOL
 			continue;
 
 		// 导出节点
-		ExportSubNode(pGameNode);
+		ExportSubNode(&tContext, pGameNode);
 	}
 
 	// 保存数据
-	m_MeshData.Save(tFile);
+	tContext.MeshData.Save(tFile);
 	FCYSAFEKILL(tFile);
 
 	pCore->ProgressEnd();
 	
 	// 释放IGame
 	pIGame->ReleaseIGame();
-
-	// 清空模型数据
-	m_MeshData.VertList().clear();
-	m_MeshData.IndexList().clear();
-	m_MeshData.SubsetList().clear();
-	m_MeshData.MaterialList().clear();
-	m_MatCache.clear();
-	m_IndexCache.clear();
 
 	return TRUE;
 }
@@ -152,7 +149,7 @@ void CFMMExporter::FillFaceVertex(IGameMesh* pMesh, FaceEx* pFace, Vertex Out[])
 
 	Out[0].Position.x = tPos.x; Out[0].Position.y = tPos.y; Out[0].Position.z = tPos.z;
 	Out[0].Normal.x = tNormal.x; Out[0].Normal.y = tNormal.y; Out[0].Normal.z = tNormal.z;
-	Out[0].TexCoord.x = tTex.x; Out[0].TexCoord.y = tTex.y;
+	Out[0].TexCoord.x = tTex.x; Out[0].TexCoord.y = 1.f + tTex.y;
 	Out[0].Diffuse = fcyColor(tAlpha, tColor.x, tColor.y, tColor.z);
 
 	pMesh->GetVertex(pFace->vert[1], tPos);
@@ -165,7 +162,7 @@ void CFMMExporter::FillFaceVertex(IGameMesh* pMesh, FaceEx* pFace, Vertex Out[])
 
 	Out[1].Position.x = tPos.x; Out[1].Position.y = tPos.y; Out[1].Position.z = tPos.z;
 	Out[1].Normal.x = tNormal.x; Out[1].Normal.y = tNormal.y; Out[1].Normal.z = tNormal.z;
-	Out[1].TexCoord.x = tTex.x; Out[1].TexCoord.y = tTex.y;
+	Out[1].TexCoord.x = tTex.x; Out[1].TexCoord.y = 1.f + tTex.y;
 	Out[1].Diffuse = fcyColor(tAlpha, tColor.x, tColor.y, tColor.z);
 
 	pMesh->GetVertex(pFace->vert[2], tPos);
@@ -178,7 +175,7 @@ void CFMMExporter::FillFaceVertex(IGameMesh* pMesh, FaceEx* pFace, Vertex Out[])
 
 	Out[2].Position.x = tPos.x; Out[2].Position.y = tPos.y; Out[2].Position.z = tPos.z;
 	Out[2].Normal.x = tNormal.x; Out[2].Normal.y = tNormal.y; Out[2].Normal.z = tNormal.z;
-	Out[2].TexCoord.x = tTex.x; Out[2].TexCoord.y = tTex.y;
+	Out[2].TexCoord.x = tTex.x; Out[2].TexCoord.y = 1.f + tTex.y;
 	Out[2].Diffuse = fcyColor(tAlpha, tColor.x, tColor.y, tColor.z);
 }
 
@@ -223,16 +220,21 @@ std::wstring CFMMExporter::ExportProperty(IGameProperty* pProp)
 	return tRet;
 }
 
-void CFMMExporter::ExportMaterial(IGameMaterial* pMat, int ID)
+void CFMMExporter::ExportFXProperty(fcyXmlNode& Node, IGameFXProperty* pProp)
+{
+	Node.SetAttribute(L"Name", fcyStringHelper::MultiByteToWideChar(pProp->GetPropertyName()).c_str());
+
+	// ... 如何导出参数？
+}
+
+void CFMMExporter::ExportMaterial(OutputContext* pContext, IGameMaterial* pMat, int ID)
 {
 	// 获得名称
 	wstring tName = fcyStringHelper::MultiByteToWideChar(pMat->GetMaterialName());
 	
 	// 注册材质
 	if(ID != -1)
-	{
-		m_MatCache[ID] = tName;
-	}
+		pContext->MatCache[ID] = tName;
 
 	// 材质容器
 	if(pMat->IsMultiType())
@@ -240,14 +242,11 @@ void CFMMExporter::ExportMaterial(IGameMaterial* pMat, int ID)
 		int tCount = pMat->GetSubMaterialCount();
 		for(int i = 0; i<tCount; i++)
 		{
-			ExportMaterial(pMat->GetSubMaterial(i), pMat->GetMaterialID(i));
+			ExportMaterial(pContext, pMat->GetSubMaterial(i), pMat->GetMaterialID(i));
 		}
 	}
 	else
 	{
-		// 子材质，最终加入材质节点
-		fcyModelMaterial tMatData;
-
 		// 创建材质XML数据
 		fcyXml tXmlData;
 
@@ -283,18 +282,76 @@ void CFMMExporter::ExportMaterial(IGameMaterial* pMat, int ID)
 			tRoot.AppendNode(tNode);
 		}
 
+		// 导出纹理组
+		{
+			int tCount = pMat->GetNumberOfTextureMaps();
+			for(int i = 0; i<tCount; i++)
+			{
+				IGameTextureMap* pTextureMap = pMat->GetIGameTextureMap(i);
+
+				fcyXmlNode tNode;
+				tNode.SetName(L"Texture");
+				tNode.SetAttribute(L"Name", fcyStringHelper::MultiByteToWideChar(pTextureMap->GetTextureName()).c_str());
+				tNode.SetAttribute(L"Slot", fcyStringHelper::ToWideStr(pTextureMap->GetStdMapSlot()).c_str());
+				
+				if(pTextureMap->IsEntitySupported())
+				{
+					// 位图
+					tNode.SetAttribute(L"ClipU", ExportProperty(pTextureMap->GetClipUData()).c_str());
+					tNode.SetAttribute(L"ClipV", ExportProperty(pTextureMap->GetClipVData()).c_str());
+					tNode.SetAttribute(L"ClipW", ExportProperty(pTextureMap->GetClipWData()).c_str());
+					tNode.SetAttribute(L"ClipH", ExportProperty(pTextureMap->GetClipHData()).c_str());
+
+					tNode.SetAttribute(L"Filename", fcyStringHelper::MultiByteToWideChar(pTextureMap->GetBitmapFileName()).c_str());
+				}
+
+				tRoot.AppendNode(tNode);
+			}
+		}
+
+		// 导出FX数据
+		/*
+		IGameFX * pFXData = pMat->GetIGameFX();
+		if(pFXData)
+		{
+			fcyXmlNode tFXNode;
+			tFXNode.SetName(L"FX");
+			tFXNode.SetAttribute(L"Filename", fcyStringHelper::MultiByteToWideChar((fcStr)pFXData->GetEffectFile().GetFileName()).c_str());
+
+			// 导出参数
+			for(int i=0; i<pFXData->GetNumberOfProperties(); i++)
+			{
+				IGameFXProperty* pFXProp = pFXData->GetIGameFXProperty(i);
+				
+				fcyXmlNode tPropNode;
+				tPropNode.SetName(L"Param");
+				ExportFXProperty(tPropNode, pFXProp);
+
+				tFXNode.AppendNode(tPropNode);
+			}
+			
+			tRoot.AppendNode(tFXNode);
+		}
+		*/
+
 		// 设置根
 		tXmlData.SetRoot(tRoot);
 
 		// 创建材质信息
-		tMatData.MaterialName() = tName;
-		tXmlData.WriteToStr(tMatData.MaterialData());
+		fcyRefPointer<fcyModelMaterialLabel> pMat = new fcyModelMaterialLabel();
+		pMat->Release();
 
-		m_MeshData.MaterialList().push_back(tMatData);
+		wstring tXMLStr;
+		tXmlData.WriteToStr(tXMLStr);
+
+		pMat->SetMaterialName(tName);
+		pMat->SetMaterialXMLData(tXMLStr);
+
+		pContext->MeshData.GetLabelList().push_back(*pMat);
 	}
 }
 
-void CFMMExporter::ExportSubNode(IGameNode* pNode)
+void CFMMExporter::ExportSubNode(OutputContext* pContext, IGameNode* pNode)
 {
 	// 处理当前节点
 	IGameObject * pObj = pNode->GetIGameObject();
@@ -304,7 +361,7 @@ void CFMMExporter::ExportSubNode(IGameNode* pNode)
 		switch(pObj->GetIGameType())
 		{
 		case IGameObject::IGAME_MESH:
-			ExportMesh(pNode, (IGameMesh*)pObj);
+			ExportMesh(pContext, pNode, (IGameMesh*)pObj);
 			break;
 		}
 	}
@@ -319,11 +376,11 @@ void CFMMExporter::ExportSubNode(IGameNode* pNode)
 		if(pGameNode->IsTarget())
 			continue;
 
-		ExportSubNode(pGameNode);
+		ExportSubNode(pContext, pGameNode);
 	}
 }
 
-void CFMMExporter::ExportMesh(IGameNode* pParent, IGameMesh* pObj)
+void CFMMExporter::ExportMesh(OutputContext* pContext, IGameNode* pParent, IGameMesh* pObj)
 {
 	// 子集名称
 	string tName = pParent->GetName();
@@ -335,7 +392,10 @@ void CFMMExporter::ExportMesh(IGameNode* pParent, IGameMesh* pObj)
 	// 缓冲
 	unordered_map<int, vector<fuInt> > tSubsetCache; // 缓存所有子集
 	unordered_map<int, string> tSubsetNameCache;     // 子集名称缓存
+	
+	unordered_map<Vertex, fuInt>& tIndexCache = pContext->IndexCache;
 
+	// 收集每个面的顶点信息
 	fInt tFaceCount = pObj->GetNumberOfFaces();
 	for(int i = 0; i<tFaceCount; i++)
 	{
@@ -347,32 +407,32 @@ void CFMMExporter::ExportMesh(IGameNode* pParent, IGameMesh* pObj)
 		FillFaceVertex(pObj, pFace, tVert);
 
 		// 从缓存查询
-		unordered_map<Vertex, fuInt>::iterator v0 = m_IndexCache.find(tVert[0]);
-		if(v0 == m_IndexCache.end())
+		unordered_map<Vertex, fuInt>::iterator v0 = tIndexCache.find(tVert[0]);
+		if(v0 == tIndexCache.end())
 		{
-			int tIndex = m_IndexCache.size();
-			m_IndexCache[tVert[0]] = tIndex;
-			v0 = m_IndexCache.find(tVert[0]);
+			int tIndex = tIndexCache.size();
+			tIndexCache[tVert[0]] = tIndex;
+			v0 = tIndexCache.find(tVert[0]);
 
-			m_MeshData.VertList().push_back(tVert[0]);
+			pContext->VertexLabel->PushVertex(&tVert[0]);
 		}
-		unordered_map<Vertex, fuInt>::iterator v1 = m_IndexCache.find(tVert[1]);
-		if(v1 == m_IndexCache.end())
+		unordered_map<Vertex, fuInt>::iterator v1 = tIndexCache.find(tVert[1]);
+		if(v1 == tIndexCache.end())
 		{
-			int tIndex = m_IndexCache.size();
-			m_IndexCache[tVert[1]] = tIndex;
-			v1 = m_IndexCache.find(tVert[1]);
+			int tIndex = tIndexCache.size();
+			tIndexCache[tVert[1]] = tIndex;
+			v1 = tIndexCache.find(tVert[1]);
 			
-			m_MeshData.VertList().push_back(tVert[1]);
+			pContext->VertexLabel->PushVertex(&tVert[1]);
 		}
-		unordered_map<Vertex, fuInt>::iterator v2 = m_IndexCache.find(tVert[2]);
-		if(v2 == m_IndexCache.end())
+		unordered_map<Vertex, fuInt>::iterator v2 = tIndexCache.find(tVert[2]);
+		if(v2 == tIndexCache.end())
 		{
-			int tIndex = m_IndexCache.size();
-			m_IndexCache[tVert[2]] = tIndex;
-			v2 = m_IndexCache.find(tVert[2]);
+			int tIndex = tIndexCache.size();
+			tIndexCache[tVert[2]] = tIndex;
+			v2 = tIndexCache.find(tVert[2]);
 			
-			m_MeshData.VertList().push_back(tVert[2]);
+			pContext->VertexLabel->PushVertex(&tVert[2]);
 		}
 
 		// 加入索引
@@ -390,22 +450,25 @@ void CFMMExporter::ExportMesh(IGameNode* pParent, IGameMesh* pObj)
 	while(i != tSubsetCache.end())
 	{
 		// 查询子集的材质
-		const wstring& tMatName = m_MatCache[i->first];
+		const wstring& tMatName = pContext->MatCache[i->first];
 		
-		fcyModelSubset tSubset;
-		tSubset.MaterialName() = tMatName;
-		tSubset.SubsetName() = fcyStringHelper::MultiByteToWideChar(tSubsetNameCache[i->first]);
-		tSubset.StartIndex() = m_MeshData.IndexList().size();
-		tSubset.PrimitiveType() = FFM_PRIMTYPE_TRIANGLELIST;
-		tSubset.PrimitiveCount() = i->second.size() / 3;
+		// 创建子集
+		fcyRefPointer<fcyModelSubsetLabel> pSubsetLabel = new fcyModelSubsetLabel();
+		pSubsetLabel->Release();
+		
+		pSubsetLabel->SetSubsetName(fcyStringHelper::MultiByteToWideChar(tSubsetNameCache[i->first]));
+		pSubsetLabel->SetMaterialName(tMatName);
+		pSubsetLabel->SetStartIndex(pContext->IndexLabel->GetSize());
+		pSubsetLabel->SetPrimitiveType(fcyModelSubsetLabel::PRIMTYPE_TRIANGLELIST);
+		pSubsetLabel->SetPrimitiveCount(i->second.size() / 3);
 
 		// 写出数据
-		for(int j = 0; j<i->second.size(); j++)
+		for(fuInt j = 0; j<i->second.size(); j++)
 		{
-			m_MeshData.IndexList().push_back(i->second[j]);
+			pContext->IndexLabel->Push(i->second[j]);
 		}
 
-		m_MeshData.SubsetList().push_back(tSubset);
+		pContext->MeshData.GetLabelList().push_back(*pSubsetLabel);
 
 		i++;
 	}

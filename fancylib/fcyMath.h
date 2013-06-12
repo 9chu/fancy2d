@@ -37,6 +37,16 @@ public: // 构造函数
 	fcyVec2(fFloat *data)
 		: x(data[0]), y(data[1]) {}
 public: // 运算符重载
+	/// @brief 2D向量相等
+	fBool operator==(const fcyVec2& right)const
+	{
+		return (x == right.x && y == right.y);
+	}
+	/// @brief 2D向量不等
+	fBool operator!=(const fcyVec2& right)const
+	{
+		return (x != right.x || y != right.y);
+	}
 	/// @brief 2D向量相加
 	fcyVec2 operator+(const fcyVec2& right)const
 	{
@@ -66,11 +76,23 @@ public: // 运算符重载
 	{
 		return fcyVec2(x * right, y * right);
 	};
+	/// @brief 2D向量数乘（除法）
+	fcyVec2 operator/(fFloat right)const
+	{
+		return fcyVec2(x / right, y / right);
+	};
 	/// @brief 2D向量自数乘
 	fcyVec2& operator*=(fFloat right)
 	{
 		x = x * right;
 		y = y * right;
+		return *this;
+	};
+	/// @brief 2D向量自数乘（除法）
+	fcyVec2& operator/=(fFloat right)
+	{
+		x = x / right;
+		y = y / right;
 		return *this;
 	};
 	/// @brief 2D向量点积
@@ -176,6 +198,16 @@ public: // 构造函数
 	fcyVec3(fFloat *data)
 		: x(data[0]), y(data[1]), z(data[2]) {}
 public: // 运算符重载
+	/// @brief 3D向量相等
+	fBool operator==(const fcyVec3& right)const
+	{
+		return (x == right.x && y == right.y && z == right.z);
+	}
+	/// @brief 3D向量不等
+	fBool operator!=(const fcyVec3& right)const
+	{
+		return (x != right.x || y != right.y || z != right.z);
+	}
 	/// @brief 3D向量相加
 	fcyVec3 operator+(const fcyVec3& right)const
 	{
@@ -219,12 +251,29 @@ public: // 运算符重载
 			z * right
 			);
 	};
+	/// @brief 3D向量数乘（除法）
+	fcyVec3 operator/(fFloat right)const
+	{
+		return fcyVec3(
+			x / right,
+			y / right,
+			z / right
+			);
+	};
 	/// @brief 3D向量自数乘
 	fcyVec3& operator*=(fFloat right)
 	{
 		x = x * right;
 		y = y * right;
 		z = z * right;
+		return *this;
+	};
+	/// @brief 3D向量自数乘（除法）
+	fcyVec3& operator/=(fFloat right)
+	{
+		x = x / right;
+		y = y / right;
+		z = z / right;
 		return *this;
 	};
 	/// @brief 3D向量点积
@@ -313,6 +362,16 @@ public: // 构造函数
 	fcyVec4(fFloat *data)
 		: x(data[0]), y(data[1]), z(data[2]), w(data[3]) {}
 public: // 运算符重载
+	/// @brief 4D向量相等
+	fBool operator==(const fcyVec4& right)const
+	{
+		return (x == right.x && y == right.y && z == right.z && w == right.w);
+	}
+	/// @brief 4D向量不等
+	fBool operator!=(const fcyVec4& right)const
+	{
+		return (x != right.x || y != right.y || z != right.z || w != right.w);
+	}
 	/// @brief 4D向量相加
 	fcyVec4 operator+(const fcyVec4& right)const
 	{
@@ -361,6 +420,16 @@ public: // 运算符重载
 			w * right
 			);
 	};
+	/// @brief 4D向量数乘（除法）
+	fcyVec4 operator/(fFloat right)const
+	{
+		return fcyVec4(
+			x / right,
+			y / right,
+			z / right,
+			w / right
+			);
+	};
 	/// @brief 4D向量自数乘
 	fcyVec4& operator*=(fFloat right)
 	{
@@ -368,6 +437,15 @@ public: // 运算符重载
 		y = y * right;
 		z = z * right;
 		w = w * right;
+		return *this;
+	};
+	/// @brief 4D向量自数乘（除法）
+	fcyVec4& operator/=(fFloat right)
+	{
+		x = x / right;
+		y = y / right;
+		z = z / right;
+		w = w / right;
 		return *this;
 	};
 	/// @brief 取反
@@ -1051,7 +1129,7 @@ public:
 	/// @brief      求是否相交，若相交返回公共部分
 	/// @param[in]  Rect 待判断的矩形
 	/// @param[out] pOut 输出的相交部分
-	fBool Intersect(const fcyRect& Rect, fcyRect* pOut)
+	fBool Intersect(const fcyRect& Rect, fcyRect* pOut)const
 	{
 		fcyRect tRet(
 			FCYMAX(a.x, Rect.a.x),

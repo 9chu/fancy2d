@@ -189,7 +189,25 @@
     <ClInclude Include="fcyMisc\fcyHash.h">
       <Filter>fcyMisc\header</Filter>
     </ClInclude>
-    <ClInclude Include="fcyFile\fcyModelMesh.h">
+    <ClInclude Include="fcyFile\fcyModelLabel.h">
+      <Filter>fcyFile\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyFile\fcyModelVertexLabel.h">
+      <Filter>fcyFile\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyFile\fcyModelIndexLabel.h">
+      <Filter>fcyFile\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyFile\fcyModelSubsetLabel.h">
+      <Filter>fcyFile\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyFile\fcyModelMaterialLabel.h">
+      <Filter>fcyFile\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyFile\fcyModelMeshFile.h">
+      <Filter>fcyFile\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyFile\fcyModelMeshExporter.h">
       <Filter>fcyFile\header</Filter>
     </ClInclude>
   </ItemGroup>
@@ -295,6 +313,27 @@
     </ClCompile>
     <ClCompile Include="fcyMisc\fcyHash.cpp">
       <Filter>fcyMisc\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyFile\fcyModelVertexLabel.cpp">
+      <Filter>fcyFile\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyFile\fcyModelIndexLabel.cpp">
+      <Filter>fcyFile\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyFile\fcyModelSubsetLabel.cpp">
+      <Filter>fcyFile\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyFile\fcyModelMaterialLabel.cpp">
+      <Filter>fcyFile\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyFile\fcyModelMeshFile.cpp">
+      <Filter>fcyFile\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyFile\fcyModelLabel.cpp">
+      <Filter>fcyFile\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyFile\fcyModelMeshExporter.cpp">
+      <Filter>fcyFile\source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

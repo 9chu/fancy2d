@@ -44,6 +44,8 @@ public:
 		if(tRet == 0)
 			delete this;
 	}
+private:
+	fcyRefObjImpl(const fcyRefObjImpl& Org);
 public:
 	fcyRefObjImpl()
 		: m_cRef(1) {}
@@ -58,6 +60,12 @@ class fcyRefPointer
 {
 protected:
 	T* m_pPointer;
+public:
+	void DirectSet(T* Ptr)
+	{
+		FCYSAFEKILL(m_pPointer);
+		m_pPointer = Ptr;
+	}
 public:
 	bool operator==(const fcyRefPointer& Right)const
 	{
@@ -78,7 +86,15 @@ public:
 	{
 		return m_pPointer;
 	}
+	T*& operator->()const
+	{
+		return m_pPointer;
+	}
 	T*& operator*()
+	{
+		return m_pPointer;
+	}
+	T*& operator*()const
 	{
 		return m_pPointer;
 	}
@@ -89,6 +105,22 @@ public:
 	operator T*()
 	{
 		return m_pPointer;
+	}
+	operator T*()const
+	{
+		return m_pPointer;
+	}
+	template<typename P>
+	operator fcyRefPointer<P>()
+	{
+		fcyRefPointer<P> tRet = fcyRefPointer<P>((P*)m_pPointer);
+		return tRet;
+	}
+	template<typename P>
+	operator fcyRefPointer<P>()const
+	{
+		fcyRefPointer<P> tRet = fcyRefPointer<P>((P*)m_pPointer);
+		return tRet;
 	}
 public:
 	fcyRefPointer()
@@ -102,8 +134,8 @@ public:
 	fcyRefPointer(const fcyRefPointer& Right)
 		: m_pPointer(Right.m_pPointer)
 	{
-		if(pObj)
-			pObj->AddRef();
+		if(m_pPointer)
+			m_pPointer->AddRef();
 	}
 	~fcyRefPointer()
 	{

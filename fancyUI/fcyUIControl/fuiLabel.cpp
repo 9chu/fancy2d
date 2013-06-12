@@ -1,202 +1,192 @@
 #include "fuiLabel.h"
 
-#include "../fcyUIBase/fuiContainer.h"
-
 #include <fcyMisc/fcyStringHelper.h>
 
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const fCharW fuiLabel::ControlName[] = L"Label";
-
-fuiLabel::fuiLabel(fuiContainer* pContainer)
-	: fuiControl(pContainer), m_FontHeight(0.f)
+fuiLabel::fuiLabel(fuiPage* pRootPage, const std::wstring& Name)
+	: fuiControl(pRootPage, Name), m_HAlign(HALIGNMODE_LEFT), m_VAlign(VALIGNMODE_TOP), m_TextHeight(0),
+	m_pFontProvider(NULL), m_pFontRenderer(NULL)
 {
-	SetClip(true);
+	// 默认参数
+	m_bClip = true;
+
+	// 设置访问器
+	m_Text_Accessor = fuiPropertyAccessor<wstring>(
+			&m_Text,
+			[&](std::wstring& Prop, std::wstring* Value)
+			{
+				Prop = *Value;
+			},
+			[&](const std::wstring& Prop, std::wstring* Value)
+			{
+				*Value = Prop;
+
+				ExecEvent(L"OnTextChanged");
+			}
+		);
+	m_FontName_Accessor = fuiPropertyAccessor<wstring>(&m_FontName);
+	m_FontColor_Accessor = fuiPropertyAccessor<fcyColor>(&m_FontColor);
+	m_HAlign_Accessor = fuiPropertyAccessor<HALIGNMODE>(
+			&m_HAlign,
+			[&](std::wstring& Prop, HALIGNMODE* Value){
+				switch(*Value)
+				{
+				case HALIGNMODE_LEFT:
+					Prop = L"Left";
+					break;
+				case HALIGNMODE_CENTER:
+					Prop = L"Center";
+					break;
+				case HALIGNMODE_RIGHT:
+					Prop = L"Right";
+					break;
+				default:
+					throw fcyException("lambda [&](std::wstring&, HALIGNMODE*)", "Value of HALIGNMODE is invalid.");
+				}
+			},
+			[&](const std::wstring& Prop, HALIGNMODE* Value){
+				if(_wcsicmp(Prop.c_str(), L"left")==0)
+					*Value = HALIGNMODE_LEFT;
+				else if(_wcsicmp(Prop.c_str(), L"center")==0)
+					*Value = HALIGNMODE_CENTER;
+				else if(_wcsicmp(Prop.c_str(), L"right")==0)
+					*Value = HALIGNMODE_RIGHT;
+				else
+					throw fcyException("lambda [&](const std::wstring&, HALIGNMODE*)", "Property string is not correct.");
+			}
+		);
+	m_VAlign_Accessor = fuiPropertyAccessor<VALIGNMODE>(
+			&m_VAlign,
+			[&](std::wstring& Prop, VALIGNMODE* Value){
+				switch(*Value)
+				{
+				case VALIGNMODE_TOP:
+					Prop = L"Top";
+					break;
+				case VALIGNMODE_CENTER:
+					Prop = L"Center";
+					break;
+				case VALIGNMODE_BOTTOM:
+					Prop = L"Bottom";
+					break;
+				default:
+					throw fcyException("lambda [&](std::wstring&, VALIGNMODE*)", "Value of VALIGNMODE is invalid.");
+				}
+			},
+			[&](const std::wstring& Prop, VALIGNMODE* Value){
+				if(_wcsicmp(Prop.c_str(), L"top")==0)
+					*Value = VALIGNMODE_TOP;
+				else if(_wcsicmp(Prop.c_str(), L"center")==0)
+					*Value = VALIGNMODE_CENTER;
+				else if(_wcsicmp(Prop.c_str(), L"bottom")==0)
+					*Value = VALIGNMODE_BOTTOM;
+				else
+					throw fcyException("lambda [&](const std::wstring&, VALIGNMODE*)", "Property string is not correct.");
+			}
+		);
+
+	// 注册属性
+	RegisterProperty(L"Text", &m_Text_Accessor);
+	RegisterProperty(L"FontName", &m_FontName_Accessor);
+	RegisterProperty(L"FontColor", &m_FontColor_Accessor);
+	RegisterProperty(L"HAlign", &m_HAlign_Accessor);
+	RegisterProperty(L"VAlign", &m_VAlign_Accessor);
+
+	// 注册事件
+	RegisterEvent(L"OnTextChanged");
+
+	// 设置事件
+	GetEvent(L"OnTextChanged") += fuiDelegate::EventCallBack(this, &fuiLabel::OnTextChanged);
+	GetEvent(L"OnStyleChanged") += fuiDelegate::EventCallBack(this, &fuiLabel::OnStyleChanged);
 }
 
-fuiLabel::~fuiLabel(void)
+fuiLabel::~fuiLabel()
 {}
 
-void fuiLabel::recalcuPos(const fcyRect& UIRect)
+void fuiLabel::OnTextChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 {
-	// 水平绘制参考点
-	switch(m_Style.HStyle)
-	{
-	case LABELHSTYLE_CENTER: // 居中
-		m_RefPos.x = UIRect.GetCenter().x;
-		break;
-	case LABELHSTYLE_RIGHT: // 右对齐
-		m_RefPos.x = UIRect.b.x;
-		break;
-	default: // 左对齐
-		m_RefPos.x = UIRect.a.x;
-	}
+	m_Lines.clear();
+	m_LineWidth.resize(fcyStringHelper::StringSplit(m_Text, L"\n", false, m_Lines));
 
-	// 垂直绘制参考点
-	switch(m_Style.VStyle)
+	// 度量每行的宽度
+	if(m_pFontRenderer && m_pFontProvider)
 	{
-	case LABELVSTYLE_CENTER:
+		for(fuInt i = 0; i<m_Lines.size(); i++)
 		{
-			float tTotalHeight = m_Caption.size() * m_FontHeight;
-			m_RefPos.y = UIRect.GetCenter().y - tTotalHeight / 2.f + m_FontHeight;
+			fcyRect tRect = m_pFontRenderer->MeasureString(m_Lines[i].c_str());
+			m_LineWidth[i] = tRect.GetWidth() + 2.f;
 		}
-		break;
-	case LABELVSTYLE_BOTTOM:
-		{
-			float tTotalHeight = m_Caption.size() * m_FontHeight;
-			m_RefPos.y = UIRect.b.y - tTotalHeight + m_FontHeight - 2.f; // 保留2个像素边界
-		}
-		break;
-	default:
-		m_RefPos.y = UIRect.a.y + m_FontHeight;
+
+		m_TextHeight = m_Lines.size() * m_pFontProvider->GetLineHeight();
 	}
 }
 
-void fuiLabel::recalcuLineLength()
+void fuiLabel::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 {
-	m_LineLength.clear();
+	fuiRes* pFont = GetControlStyle()->QueryRes(m_FontName);
 
-	vector<wstring>::iterator i = m_Caption.begin();
-	for(; i != m_Caption.end(); i++)
+	if(pFont && pFont->GetResType() == fuiRes::RESTYPE_FONT)
 	{
-		// 计算行宽
-		float tLen = 0;
-		if(m_Style.pFont)
+		m_pFontProvider = ((fuiFont*)pFont)->GetFontProvider();
+		m_pFontRenderer = ((fuiFont*)pFont)->GetFontRenderer();
+
+		// 重新布局
+		OnTextChanged(pThis, pArgs);
+	}
+	else
+		throw fcyException("fuiLabel::OnStyleChanged", "Font res error.");
+}
+
+void fuiLabel::Update(fDouble ElapsedTime)
+{}
+
+void fuiLabel::Render(fuiGraphics* pGraph)
+{
+	if(m_pFontProvider && m_pFontRenderer)
+	{
+		// 设置颜色
+		m_pFontRenderer->SetColor(m_FontColor);
+
+		// 一行行绘制
+		float tAscender = m_pFontProvider->GetAscender();
+		float tDescender = m_pFontProvider->GetDescender();
+		float tLineHeight = m_pFontProvider->GetLineHeight();
+		for(fuInt i = 0; i<m_Lines.size(); i++)
 		{
 			fcyVec2 tPos;
-			fcyVec2 tEnd;
-			m_Style.pFont->DrawTextW(NULL, (*i).c_str(), -1, tPos, &tEnd);
-			tLen = tEnd.x - tPos.x;
-		}
-		m_LineLength.push_back(tLen);
-	}
-}
 
-void fuiLabel::GetCaption(wstring& Out)
-{
-	Out.clear();
+			// 横向位置
+			switch(m_HAlign)
+			{
+			case HALIGNMODE_LEFT:
+				tPos.x = 0.f;
+				break;
+			case HALIGNMODE_CENTER:
+				tPos.x = GetWidth() / 2.f - m_LineWidth[i] / 2.f;
+				break;
+			case HALIGNMODE_RIGHT:
+				tPos.x = GetWidth() - m_LineWidth[i];
+				break;
+			}
 
-	vector<wstring>::iterator i = m_Caption.begin();
-	for(; i != m_Caption.end(); i++)
-	{
-		if(!Out.empty())
-			Out += L"\n";
-		Out += (*i);
-	}
-}
+			// 纵向位置
+			switch(m_VAlign)
+			{
+			case VALIGNMODE_TOP:
+				tPos.y = tAscender + tLineHeight * i;
+				break;
+			case VALIGNMODE_CENTER:
+				tPos.y = GetHeight() / 2.f - m_TextHeight / 2.f + tAscender;
+				break;
+			case VALIGNMODE_BOTTOM:
+				tPos.y = GetHeight() + tDescender - tLineHeight * i;
+				break;
+			}
 
-void fuiLabel::SetCaption(fcStrW Text)
-{
-	fcyStringHelper::StringSplit(Text, L"\n", false, m_Caption);
-
-	vector<wstring>::iterator i = m_Caption.begin();
-	for(; i != m_Caption.end(); i++)
-	{
-		// 处理\r
-		if((*i).length())
-		{
-			if((*i).back() == L'\r')
-				(*i).pop_back();
+			m_pFontRenderer->DrawTextW(pGraph->GetGraphics(), m_Lines[i].c_str(), tPos);
 		}
 	}
-
-	recalcuLineLength();
-	recalcuPos(GetRect());
-}
-
-fuInt fuiLabel::GetLineCount()
-{
-	return m_Caption.size();
-}
-
-fcyColor fuiLabel::GetFontColor()
-{
-	return m_Style.FontColor;
-}
-
-void fuiLabel::SetFontColor(const fcyColor& Color)
-{
-	m_Style.FontColor = Color;
-}
-
-void fuiLabel::OnRender(fuiRenderer* pRenderer)
-{
-	if(!m_Style.pFont)
-		return;
-
-	f2dGraphics2D* pGraph = pRenderer->GetGraph();
-
-	fcyVec2 tDrawPos = m_RefPos;
-
-	for(fuInt i = 0; i<m_Caption.size(); i++)
-	{
-		switch(m_Style.HStyle)
-		{
-		case LABELHSTYLE_CENTER: // 居中
-			tDrawPos.x = m_RefPos.x - m_LineLength[i] / 2;
-			break;
-		case LABELHSTYLE_RIGHT: // 右对齐
-			tDrawPos.x = m_RefPos.x - m_LineLength[i];
-			break;
-		default: // 左对齐
-			tDrawPos.x = m_RefPos.x;
-		}
-
-		// 绘制
-		m_Style.pFont->SetColor(m_Style.FontColor);
-		m_Style.pFont->DrawTextW(pGraph, m_Caption[i].c_str(), tDrawPos);
-
-		tDrawPos.y += m_Style.pFont->GetLineHeight();
-	}
-}
-
-void fuiLabel::OnResized(fcyRect& NewSize)
-{
-	recalcuPos(NewSize);
-}
-
-void fuiLabel::OnStyleChanged(fcStrW NewStyleName)
-{
-	fuiContext* pContext = NULL;
-
-	if(!GetParent() || !(pContext = GetParent()->GetContext()))
-		throw fcyException("fuiLabel::OnStyleChanged", "Invalid parent or context pointer.");
-
-	// 获得样式并计算参数
-	fcyXmlNode* pStyleNode = pContext->GetStyle(ControlName, NewStyleName);
-	if(!pStyleNode)
-		throw fcyException("fuiLabel::OnStyleChanged", "Style not exsited.");
-
-	// 获得参数节点
-	fcyXmlNode* pNode_Style = pStyleNode->GetNodeByName(L"Style", 0);
-	if(!pNode_Style)
-		throw fcyException("fuiLabel::OnStyleChanged", "Node 'Style' not exsited.");
-
-	// 获得参数
-	LabelStyle tStyle;
-	fcStrW tFontName;
-	tStyle.HStyle = (LABELHSTYLE)_wtoi(pNode_Style->GetAttribute(L"HStyle"));
-	tStyle.VStyle = (LABELVSTYLE)_wtoi(pNode_Style->GetAttribute(L"VStyle"));
-	tFontName = pNode_Style->GetAttribute(L"Font");
-	tStyle.pFont = pContext->GetFont(tFontName);
-	if(!tStyle.pFont)
-		throw fcyException("fuiLabel::OnStyleChanged", "Font not exsited.");
-
-	swscanf_s(pNode_Style->GetAttribute(L"FontColor"), L"%x", &tStyle.FontColor);
-	m_FontHeight = tStyle.pFont->GetLineHeight();
-
-	m_Style = tStyle;
-	
-	recalcuLineLength();
-	recalcuPos(GetRect());
-}
-
-void fuiLabel::OnQueryControlName(wstring& Out)
-{
-	fuiControl::OnQueryControlName(Out);
-
-	Out += L",";
-	Out += ControlName;
 }

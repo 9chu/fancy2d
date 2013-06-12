@@ -1,0 +1,20 @@
+﻿<fancyUILayout>
+  <fuiLabel Name="FPSLabel"
+            Left="5" Top="5" Width="100" Height="20"
+            Text=""
+            FontName="FPSFont" FontColor="255,0,255,0" 
+            HAlign="CENTER" VAlign="CENTER"
+            />
+  <fuiLabel Name="Label_0"
+            Left="100" Top="150" Width="200" Height="25"
+            Text="请输入："
+            FontName="FPSFont" FontColor="255,255,255,100" 
+            HAlign="CENTER" VAlign="Top"
+            />
+  <fuiLabel Name="Label"
+            Left="50" Top="50" Width="500" Height="80"
+            Text="你好，世界！"
+            FontName="TestFont" FontColor="255,50,150,100" 
+            HAlign="CENTER" VAlign="CENTER"
+            />
+</fancyUILayout>
