@@ -1,376 +1,411 @@
 #include "fuiEditBox.h"
 
-#include "../fcyUIBase/fuiContainer.h"
+#include "../fcyUIBase/fuiPage.h"
 
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const fCharW fuiEditBox::ControlName[] = L"EditBox";
-
-fuiEditBox::fuiEditBox(fuiContainer* pContainer)
-	: fuiControl(pContainer),
-	m_FontHeight(0.f), m_DrawPosY(0.f), m_PointerX(0.f), m_PointerLeftTextWidth(0.f), m_PointerLeftCount(0),
-	m_bFocus(false), m_bShowPointer(false), m_PointerTimer(0.f)
+fuiEditBox::fuiEditBox(fuiPage* pRootPage, const std::wstring& Name)
+	: fuiControl(pRootPage, Name), m_LeftTextWidth(0), m_CursorPos(0), m_CursorLeft(0),
+	m_pFontProvider(NULL), m_pFontRenderer(NULL), m_bInText(false), m_OffsetToInputBox(fcyVec2(0.f, 3.f)),
+	m_CursorDrawAtY(0.f), m_bCursorVisiable(false), m_CursorDisplayInterval(1.f), m_Timer(0),
+	m_bFitCursor(true)
 {
-	SetClip(true);
-}
-
-fuiEditBox::~fuiEditBox(void)
-{}
-
-void fuiEditBox::resizeRect(const fcyRect& Rect)
-{
-	// 计算绘制y值
-	m_DrawPosY = Rect.GetCenter().y + m_FontHeight / 2.f;
-}
-
-void fuiEditBox::setPointerPos(fuInt TextPos)
-{
-	fcyVec2 tStart;
-	fcyVec2 tEnd;
-
-	if(m_Style.pFont)
-		m_Style.pFont->DrawTextW(NULL, m_Text.c_str(), TextPos, tStart, &tEnd);
-	
-	m_PointerLeftTextWidth = tEnd.x - tStart.x;
-	m_PointerLeftCount = TextPos;
-}
-
-fuInt fuiEditBox::locatePos(float X, float& PointerPos)
-{
-	f2dFontRenderer* pFont = m_Style.pFont;
-	if(!pFont)
-		return 0;
-
-	fuInt tPos = m_PointerLeftCount;
-	float tPointerX = m_PointerX;
-
-	if(X < tPointerX)
-	{
-		while(tPos)
+	// 设置访问器
+	m_Text_Accessor = fuiPropertyAccessor<wstring>(
+		&m_Text,
+		[&](std::wstring& Prop, std::wstring* Value)
 		{
-			fCharW tChar = m_Text[tPos - 1];
-			
-			fcyVec2 tStart;
-			fcyVec2 tEnd;
-			float tLen;
-			pFont->DrawTextW(NULL, &tChar, 1, tStart, &tEnd);
-			tLen = tEnd.x - tStart.x;
-			
-			if(X + tLen / 2.f < tPointerX)
+			Prop = *Value;
+		},
+		[&](const std::wstring& Prop, std::wstring* Value)
+		{
+			*Value = Prop;
+			ExecEvent(L"OnTextChanged");
+		}
+	);
+	m_FontName_Accessor = fuiPropertyAccessor<wstring>
+	(
+		&m_FontName,
+		[&](std::wstring& Prop, std::wstring* Value)
+		{
+			Prop = *Value;
+		},
+		[&](const std::wstring& Prop, std::wstring* Value)
+		{
+			*Value = Prop;
+
+			ExecEvent(L"OnStyleChanged");
+		}
+	);
+	m_FontColor_Accessor = fuiPropertyAccessor<fcyColor>(&m_FontColor);
+	m_BlendColor_Accessor = fuiPropertyAccessor<fcyColor>(&m_BlendColor);
+	m_CursorSprite_Accessor = fuiPropertyAccessor<wstring>
+	(
+		&m_CursorSprite,
+		[&](std::wstring& Prop, std::wstring* Value)
+		{
+			Prop = *Value;
+		},
+		[&](const std::wstring& Prop, std::wstring* Value)
+		{
+			*Value = Prop;
+
+			ExecEvent(L"OnStyleChanged");
+		}
+	);
+	m_Margin_Accessor = fuiPropertyAccessor<fcyRect>(
+		&m_Margin,
+		[&](std::wstring& Prop, fcyRect* Value)
+		{
+			fuiPropertyAccessorHelper<fcyRect>::DefaultGetter(Prop, Value);
+		},
+		[&](const std::wstring& Prop, fcyRect* Value)
+		{
+			fuiPropertyAccessorHelper<fcyRect>::DefaultSetter(Prop, Value);
+
+			ExecEvent(L"OnSizeChanged");
+		}
+	);
+	m_BorderSprite_Accessor = fuiPropertyAccessor<wstring>
+	(
+		&m_BorderSprite,
+		[&](std::wstring& Prop, std::wstring* Value)
+		{
+			Prop = *Value;
+		},
+		[&](const std::wstring& Prop, std::wstring* Value)
+		{
+			*Value = Prop;
+
+			ExecEvent(L"OnStyleChanged");
+		}
+	);
+	m_ActiveBorderSprite_Accessor = fuiPropertyAccessor<wstring>
+	(
+		&m_ActiveBorderSprite,
+		[&](std::wstring& Prop, std::wstring* Value)
+		{
+			Prop = *Value;
+		},
+		[&](const std::wstring& Prop, std::wstring* Value)
+		{
+			*Value = Prop;
+
+			ExecEvent(L"OnStyleChanged");
+		}
+	);
+	m_OffsetToInputBox_Accessor = fuiPropertyAccessor<fcyVec2>(&m_OffsetToInputBox);
+	m_CursorDisplayInterval_Accessor = fuiPropertyAccessor<float>(&m_CursorDisplayInterval);
+	m_FitCursor_Accessor = fuiPropertyAccessor<fBool>(&m_bFitCursor);
+
+	// 注册属性
+	RegisterProperty(L"Text", &m_Text_Accessor);
+	RegisterProperty(L"FontName", &m_FontName_Accessor);
+	RegisterProperty(L"FontColor", &m_FontColor_Accessor);
+	RegisterProperty(L"BlendColor", &m_BlendColor_Accessor);
+	RegisterProperty(L"Margin", &m_Margin_Accessor);
+	RegisterProperty(L"CursorSprite", &m_CursorSprite_Accessor);
+	RegisterProperty(L"BorderSprite", &m_BorderSprite_Accessor);
+	RegisterProperty(L"ActiveBorderSprite", &m_ActiveBorderSprite_Accessor);
+	RegisterProperty(L"OffsetToInputBox", &m_OffsetToInputBox_Accessor);
+	RegisterProperty(L"CursorDisplayInterval", &m_CursorDisplayInterval_Accessor);
+	RegisterProperty(L"FitCursor", &m_FitCursor_Accessor);
+
+	// 注册事件
+	RegisterEvent(L"OnTextChanged");
+
+	// 设置事件
+	GetEvent(L"OnTextChanged") += fuiDelegate::EventCallBack(this, &fuiEditBox::OnTextChanged);
+	GetEvent(L"OnStyleChanged") += fuiDelegate::EventCallBack(this, &fuiEditBox::OnStyleChanged);
+	GetEvent(L"OnSizeChanged") += fuiDelegate::EventCallBack(this, &fuiEditBox::OnSizeChanged);
+
+	GetEvent(L"OnCharInput") += fuiDelegate::EventCallBack(this, &fuiEditBox::OnCharInput);
+	GetEvent(L"OnKeyUp") += fuiDelegate::EventCallBack(this, &fuiEditBox::OnKeyUp);
+	GetEvent(L"OnKeyDown") += fuiDelegate::EventCallBack(this, &fuiEditBox::OnKeyDown);
+
+	GetEvent(L"OnGetFocus") += fuiDelegate::EventCallBack(this, &fuiEditBox::OnGetFocus);
+	GetEvent(L"OnLostFocus") += fuiDelegate::EventCallBack(this, &fuiEditBox::OnLostFocus);
+
+	GetEvent(L"OnMouseLDown") += fuiDelegate::EventCallBack(this, &fuiEditBox::OnMouseLDown);
+}
+
+fuiEditBox::~fuiEditBox()
+{
+}
+
+void fuiEditBox::adjustPos()
+{
+	if(m_pFontProvider && m_pFontRenderer)
+	{
+		float tTextLen = m_pFontRenderer->MeasureStringWidth(m_Text.substr(0, m_CursorPos).c_str());
+		m_LeftTextWidth = tTextLen;
+
+		m_CursorLeft = m_TextDrawAt.x + m_LeftTextWidth;
+		if(m_CursorLeft < m_Margin.a.x)
+		{
+			m_CursorLeft = m_Margin.a.x;
+			if(m_CursorPos)
 			{
-				tPointerX -= tLen;
-				tPos--;
+				tTextLen = m_pFontRenderer->MeasureStringWidth(m_Text.substr(m_CursorPos - 1, 1).c_str());
+				m_CursorLeft += tTextLen;
+			}
+
+			m_TextDrawAt.x = m_CursorLeft - m_LeftTextWidth;
+		}
+		else if(m_CursorLeft > m_Rect.GetWidth() - m_Margin.b.x)
+		{
+			m_CursorLeft = m_Rect.GetWidth() - m_Margin.b.x;
+
+			m_TextDrawAt.x = m_CursorLeft - m_LeftTextWidth;
+		}
+	}
+
+	if(m_bInText)
+	{
+		fuiPositionEventArgs tPos;
+		tPos.SetPos(GetAbsolutePos() + fcyVec2(m_CursorLeft, m_TextDrawAt.y) + m_OffsetToInputBox - m_pRootPage->GetRect().a);
+		m_pRootPage->ExecEvent(L"OnTextInputPosChanged", &tPos);
+	}
+}
+
+void fuiEditBox::OnTextChanged(fuiControl* pThis, fuiEventArgs* pArgs)
+{
+	if(m_CursorPos > m_Text.size())
+		m_CursorPos = m_Text.size();
+
+	adjustPos();
+
+	ExecEvent(L"OnTextChanged");
+}
+
+void fuiEditBox::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
+{
+	m_pFontProvider = NULL;
+	m_pFontRenderer = NULL;
+
+	m_Font = (fuiFont*)GetControlStyle()->QueryRes(m_FontName);
+	m_Cursor = (fuiSprite*)GetControlStyle()->QueryRes(m_CursorSprite);
+	m_Border = (fuiBorderSprite*)GetControlStyle()->QueryRes(m_BorderSprite);
+	m_ActiveBorder = (fuiBorderSprite*)GetControlStyle()->QueryRes(m_ActiveBorderSprite);
+
+	if(!m_FontName.empty() && !m_Font)
+		throw fcyException("fuiEditBox::OnStyleChanged", "Res not found.");
+	if(!m_CursorSprite.empty() && !m_Cursor)
+		throw fcyException("fuiButton::OnStyleChanged", "Res not found.");
+	if(!m_BorderSprite.empty() && !m_Border)
+		throw fcyException("fuiButton::OnStyleChanged", "Res not found.");
+	if(!m_ActiveBorderSprite.empty() && !m_ActiveBorder)
+		throw fcyException("fuiButton::OnStyleChanged", "Res not found.");
+	
+	if(m_Font && m_Font->GetResType() != fuiRes::RESTYPE_FONT)
+		throw fcyException("fuiEditBox::OnStyleChanged", "Font res error.");
+	if(m_Cursor && m_Cursor->GetResType() != fuiRes::RESTYPE_SPRITE)
+		throw fcyException("fuiEditBox::OnStyleChanged", "Sprite res error.");
+	if(m_Border && m_Border->GetResType() != fuiRes::RESTYPE_BORDERSPRITE)
+		throw fcyException("fuiEditBox::OnStyleChanged", "Border sprite res error.");
+	if(m_ActiveBorder && m_ActiveBorder->GetResType() != fuiRes::RESTYPE_BORDERSPRITE)
+		throw fcyException("fuiButton::OnStyleChanged", "Border sprite res error.");
+
+	if(m_Font)
+	{
+		m_pFontProvider = ((fuiFont*)m_Font)->GetFontProvider();
+		m_pFontRenderer = ((fuiFont*)m_Font)->GetFontRenderer();
+
+		m_TextDrawAt.y = m_Margin.a.y + (m_Rect.GetHeight() - m_Margin.a.y - m_Margin.b.y) / 2.f - m_pFontProvider->GetLineHeight() / 2.f + m_pFontProvider->GetAscender();
+		m_CursorDrawAtY = m_Margin.a.y + (m_Rect.GetHeight() - m_Margin.a.y - m_Margin.b.y) / 2.f;
+
+		// 重新布局
+		m_CursorPos = 0;
+		OnTextChanged(pThis, pArgs);
+		OnSizeChanged(pThis, pArgs);
+	}
+}
+
+void fuiEditBox::OnSizeChanged(fuiControl* pThis, fuiEventArgs* pArgs)
+{
+	if(m_pFontProvider && m_pFontRenderer)
+	{
+		float tHeight = GetHeight() - m_Margin.a.y - m_Margin.b.y;
+		m_TextDrawAt.y = m_Margin.a.y + tHeight / 2.f - m_pFontProvider->GetLineHeight() / 2.f + m_pFontProvider->GetAscender();
+	}
+}
+
+void fuiEditBox::OnCharInput(fuiControl* pThis, fuiEventArgs* pArgs)
+{
+	fuiCharEventArgs* pCharArgs = (fuiCharEventArgs*)pArgs->QueryEvent(fuiEventArgs::EVENTTYPE_CHAR);
+
+	switch(pCharArgs->GetChar())
+	{
+	case L'\b':
+		if(m_CursorPos)
+		{
+			m_Text.erase(m_CursorPos - 1, 1);
+			m_CursorPos--;
+		}
+		break;
+	default:
+		if(!iswcntrl(pCharArgs->GetChar()) || pCharArgs->GetChar() == L'\t')
+		{
+			m_Text.insert(m_CursorPos, 1, pCharArgs->GetChar());
+			m_CursorPos++;
+		}
+	}
+	
+	OnTextChanged(pThis, pArgs);
+	
+	m_bCursorVisiable = true;
+	m_Timer = 0.;
+}
+
+void fuiEditBox::OnKeyUp(fuiControl* pThis, fuiEventArgs* pArgs)
+{
+}
+
+void fuiEditBox::OnKeyDown(fuiControl* pThis, fuiEventArgs* pArgs)
+{
+	fuiKeyEventArgs* pKeyArgs = (fuiKeyEventArgs*)pArgs->QueryEvent(fuiEventArgs::EVENTTYPE_KEY);
+	switch(pKeyArgs->GetKeyCode())
+	{
+	case F2DINPUTKEYCODE_LEFT:
+		if(m_CursorPos)
+		{
+			m_CursorPos--;
+			adjustPos();
+		}
+		break;
+	case F2DINPUTKEYCODE_RIGHT:
+		if(m_CursorPos < m_Text.size())
+		{
+			m_CursorPos++;
+			adjustPos();
+		}
+		break;
+	}
+
+	m_bCursorVisiable = true;
+	m_Timer = 0.;
+}
+
+void fuiEditBox::OnGetFocus(fuiControl* pThis, fuiEventArgs* pArgs)
+{
+	m_bInText = true;
+
+	m_pRootPage->ExecEvent(L"OnTextInputStart");
+
+	// 重新设置输入框位置
+	adjustPos();
+
+	m_bCursorVisiable = true;
+	m_Timer = 0.;
+}
+
+void fuiEditBox::OnLostFocus(fuiControl* pThis, fuiEventArgs* pArgs)
+{
+	m_bInText = false;
+
+	m_pRootPage->ExecEvent(L"OnTextInputEnd");
+
+	m_bCursorVisiable = false;
+	m_Timer = 0;
+}
+
+void fuiEditBox::OnMouseLDown(fuiControl* pThis, fuiEventArgs* pArgs)
+{
+	// 从左向右扫描字符串来定位光标
+	if(m_pFontProvider && m_pFontRenderer)
+	{
+		fcyVec2 tPos = m_pRootPage->GetMouseLastPos() - GetAbsolutePos();
+
+		float tValue = m_TextDrawAt.x;
+		float tLastLen = 0.f;
+		fuInt i = 0;
+
+		for(i = 0; i<m_Text.length(); i++)
+		{
+			fCharW tStr[2] = { m_Text[i] , 0 };
+			float tTextLen = m_pFontRenderer->MeasureStringWidth(tStr);
+
+			tValue += tTextLen;
+			if(tPos.x <= tValue)
+			{
+				if(tPos.x - tLastLen <= tTextLen / 2.f)
+					break;
+				else
+				{
+					i++;
+					break;
+				}
+			}
+			else if(i == m_Text.length() - 1)
+			{
+				i = m_Text.length();
+				break;
 			}
 			else
-				break;
+			{
+				tLastLen = tValue;
+			}
 		}
+
+		m_CursorPos = i;
+		adjustPos();
+
+		m_Timer = 0;
+		m_bCursorVisiable = true;
+	}
+}
+
+void fuiEditBox::Update(fDouble ElapsedTime)
+{
+	if(m_bInText)
+	{
+		m_Timer += ElapsedTime;
+		if(m_Timer >= m_CursorDisplayInterval)
+		{
+			m_Timer = 0;
+			m_bCursorVisiable = !m_bCursorVisiable;
+		}
+	}
+}
+
+void fuiEditBox::Render(fuiGraphics* pGraph)
+{
+	fcyRect tTextRect(m_Margin.a.x, m_Margin.a.y, GetWidth() - m_Margin.b.x, GetHeight() - m_Margin.b.y);
+	fcyRect tRect(0.f, 0.f, m_Rect.GetWidth(), m_Rect.GetHeight());
+
+	if(m_bInText)
+	{
+		if(m_ActiveBorder)
+			m_ActiveBorder->Draw(pGraph, tRect, m_BlendColor);
 	}
 	else
 	{
-		while(tPos < m_Text.size())
-		{
-			fCharW tChar = m_Text[tPos];
-			
-			fcyVec2 tStart;
-			fcyVec2 tEnd;
-			float tLen;
-			pFont->DrawTextW(NULL, &tChar, 1, tStart, &tEnd);
-			tLen = tEnd.x - tStart.x;
-			
-			tPointerX += tLen;
-			tPos++;
-			if(X + tLen / 2.f <= tPointerX)
-			{
-				tPos--;
-				tPointerX -= tLen;
-				break;
-			}
-		}
+		if(m_Border)
+			m_Border->Draw(pGraph, tRect, m_BlendColor);
 	}
 
-	PointerPos = tPointerX;
-	return tPos;
-}
-
-void fuiEditBox::adjustPointer()
-{
-	if(m_PointerX < m_Style.PointerSize.x + 5.f)
-		m_PointerX = m_Style.PointerSize.x + 5.f;
-	else if(m_PointerX > GetRect().GetWidth() - m_Style.PointerSize.x)
-		m_PointerX = GetRect().GetWidth() - m_Style.PointerSize.x;
-}
-
-const std::wstring& fuiEditBox::GetText()
-{
-	return m_Text;
-}
-
-void fuiEditBox::SetText(fcStrW Text)
-{
-	m_Text = Text;
-	m_PointerLeftTextWidth = 0.f;
-	m_PointerLeftCount = 0;
-	m_PointerX = 0.f;
-
-	adjustPointer();
-}
-
-void fuiEditBox::SetEvt_OnEnter(const std::function<void(void)>& Func)
-{
-	m_Evt_OnEnter = Func;
-}
-
-void fuiEditBox::OnRender(fuiRenderer* pRenderer)
-{
-	if(!m_Style.pFont)
-		return;
-
-	m_Style.pFont->SetColor(m_Style.FontColor);
-
-	float tLeft = GetRect().a.x;
-
-	// 绘制左侧
-	m_Style.pFont->DrawTextW(
-		pRenderer->GetGraph(), 
-		m_Text.c_str(), 
-		m_PointerLeftCount, 
-		fcyVec2(tLeft + m_PointerX - m_PointerLeftTextWidth, m_DrawPosY),
-		NULL);
-
-	// 绘制光标
-	if(m_Style.pPointer && m_bShowPointer)
+	pGraph->PushClipRect(tTextRect);
+	if(m_pFontProvider && m_pFontRenderer)
 	{
-		fcyRect tRect(tLeft + m_PointerX - m_Style.PointerSize.x / 2.f, m_DrawPosY - m_FontHeight / 2 - m_Style.PointerSize.y / 2,
-			tLeft + m_PointerX + m_Style.PointerSize.x / 2.f, m_DrawPosY - m_FontHeight / 2 + m_Style.PointerSize.y / 2);
-
-		m_Style.pPointer->Draw(pRenderer->GetGraph(), tRect);
+		m_pFontRenderer->SetColor(m_FontColor);
+		m_pFontRenderer->DrawTextW(pGraph->GetGraphics(), m_Text.c_str(), m_TextDrawAt);
 	}
+	pGraph->PopClipRect();
 
-	// 绘制右侧
-	m_Style.pFont->DrawTextW(
-		pRenderer->GetGraph(), 
-		&m_Text[m_PointerLeftCount], 
-		-1, 
-		fcyVec2(tLeft + m_PointerX, m_DrawPosY),
-		NULL);
-}
-
-void fuiEditBox::OnUpdate(fDouble ElapsedTime)
-{
-	if(m_bFocus)
+	if(m_bCursorVisiable && m_Cursor)
 	{
-		m_PointerTimer += (float)ElapsedTime;
-		if(m_Style.PointerFreq <= m_PointerTimer)
+		if(m_bFitCursor && m_pFontProvider)
 		{
-			m_PointerTimer = 0.f;
-			m_bShowPointer = !m_bShowPointer;
+			float tS = m_pFontProvider->GetLineHeight() / m_Cursor->GetSprite()->GetTexRect().GetHeight();
+			m_Cursor->GetSprite()->SetColor(0xFF000000);
+			m_Cursor->GetSprite()->Draw(pGraph->GetGraphics(), fcyVec2(m_CursorLeft, m_CursorDrawAtY), fcyVec2(1.f, tS));
+		}
+		else
+		{
+			m_Cursor->GetSprite()->SetColor(0xFF000000);
+			m_Cursor->GetSprite()->Draw(pGraph->GetGraphics(), fcyVec2(m_CursorLeft, m_CursorDrawAtY));
 		}
 	}
-}
-
-void fuiEditBox::OnResized(fcyRect& NewSize)
-{
-	resizeRect(NewSize);
-}
-
-void fuiEditBox::OnStyleChanged(fcStrW NewStyleName)
-{
-	fuiContext* pContext = NULL;
-
-	if(!GetParent() || !(pContext = GetParent()->GetContext()))
-		throw fcyException("fuiEditBox::OnStyleChanged", "Invalid parent or context pointer.");
-
-	// 获得样式并计算参数
-	fcyXmlNode* pStyleNode = pContext->GetStyle(ControlName, NewStyleName);
-	if(!pStyleNode)
-		throw fcyException("fuiEditBox::OnStyleChanged", "Style not exsited.");
-
-	// 获得参数节点
-	fcyXmlNode* pNode_Style = pStyleNode->GetNodeByName(L"Style", 0);
-	if(!pNode_Style)
-		throw fcyException("fuiEditBox::OnStyleChanged", "Node 'Style' not exsited.");
-
-	fcyXmlNode* pNode_Sprite = pStyleNode->GetNodeByName(L"Sprite", 0);
-	if(!pNode_Sprite)
-		throw fcyException("fuiEditBox::OnStyleChanged", "Node 'Sprite' not exsited.");
-
-	// 获得参数
-	EditBoxStyle tStyle;
-	fcStrW tFontName;
-	tFontName = pNode_Style->GetAttribute(L"Font");
-	tStyle.pFont = pContext->GetFont(tFontName);
-	tStyle.PointerFreq = (float)_wtof(pNode_Style->GetAttribute(L"PointerFreq"));
-	if(!fuiHelper::AttributeToVec2(pNode_Style, L"PointerSize", tStyle.PointerSize))
-		throw fcyException("fuiEditBox::OnStyleChanged", "Attribute PointerSize parse failed.");
-	if(!fuiHelper::AttributeToSprite(pContext, pNode_Sprite, L"Pointer", tStyle.pPointer))
-		throw fcyException("fuiEditBox::OnStyleChanged", "Sprite create failed.");
-	if(!tStyle.pFont)
-		throw fcyException("fuiEditBox::OnStyleChanged", "Font not exsited.");
-	swscanf_s(pNode_Style->GetAttribute(L"FontColor"), L"%x", &tStyle.FontColor);
-
-	m_FontHeight = tStyle.pFont->GetLineHeight();
-
-	m_Style = tStyle;
-	
-	setPointerPos(m_PointerLeftCount);
-	resizeRect(GetRect());
-
-	m_PointerX = 0.f;
-	adjustPointer();
-}
-
-void fuiEditBox::OnQueryControlName(wstring& Out)
-{
-	fuiControl::OnQueryControlName(Out);
-
-	Out += L",";
-	Out += ControlName;
-}
-
-fBool fuiEditBox::OnGetFocus()
-{
-	m_bFocus = true;
-	m_PointerTimer = 0.f;
-	m_bShowPointer = true;
-	return true;
-}
-
-void fuiEditBox::OnLostFocus()
-{
-	m_bFocus = false;
-	m_PointerTimer = 0.f;
-	m_bShowPointer = false;
-}
-
-fBool fuiEditBox::OnMouseMove(fFloat X, fFloat Y)
-{
-	return true;
-}
-
-void fuiEditBox::OnLMouseUp(fFloat X, fFloat Y)
-{
-}
-
-fBool fuiEditBox::OnLMouseDown(fFloat X, fFloat Y)
-{
-	GetFocus();
-
-	float tPointer;
-
-	// 计算击中哪个文字
-	m_PointerLeftCount = locatePos(X, tPointer);
-	m_PointerX = tPointer;
-	setPointerPos(m_PointerLeftCount);
-
-	m_PointerTimer = 0.f;
-	m_bShowPointer = true;
-
-	return true;
-}
-
-void fuiEditBox::OnKeyUp(F2DINPUTKEYCODE KeyCode)
-{
-}
-
-void fuiEditBox::OnKeyDown(F2DINPUTKEYCODE KeyCode)
-{
-	f2dFontRenderer* pFont = m_Style.pFont;
-	if(!pFont)
-		return;
-
-	m_PointerTimer = 0.f;
-	m_bShowPointer = true;
-
-	switch(KeyCode)
-	{
-	case F2DINPUTKEYCODE_RIGHT:
-		if(m_PointerLeftCount < m_Text.size())
-		{
-			fCharW tChar = m_Text[m_PointerLeftCount];
-			
-			fcyVec2 tStart;
-			fcyVec2 tEnd;
-			float tLen;
-			pFont->DrawTextW(NULL, &tChar, 1, tStart, &tEnd);
-			tLen = tEnd.x - tStart.x;
-
-			m_PointerLeftCount++;
-			m_PointerX += tLen;
-			setPointerPos(m_PointerLeftCount);
-
-			adjustPointer();
-		}
-		break;
-	case F2DINPUTKEYCODE_LEFT:
-		if(m_PointerLeftCount)
-		{
-			fCharW tChar = m_Text[m_PointerLeftCount - 1];
-			
-			fcyVec2 tStart;
-			fcyVec2 tEnd;
-			float tLen;
-			pFont->DrawTextW(NULL, &tChar, 1, tStart, &tEnd);
-			tLen = tEnd.x - tStart.x;
-
-			m_PointerLeftCount--;
-			m_PointerX -= tLen;
-			setPointerPos(m_PointerLeftCount);
-
-			adjustPointer();
-		}
-		break;
-	case F2DINPUTKEYCODE_BACK:
-		if(m_PointerLeftCount)
-		{
-			fCharW tChar = m_Text[m_PointerLeftCount - 1];
-
-			fcyVec2 tStart;
-			fcyVec2 tEnd;
-			float tLen;
-			pFont->DrawTextW(NULL, &tChar, 1, tStart, &tEnd);
-			tLen = tEnd.x - tStart.x;
-
-			m_Text.erase(m_Text.begin() + (m_PointerLeftCount - 1));
-			m_PointerLeftCount--;
-			m_PointerX -= tLen;
-			setPointerPos(m_PointerLeftCount);
-			adjustPointer();
-		}
-		break;
-	case F2DINPUTKEYCODE_RETURN:
-		if(m_Evt_OnEnter)
-			m_Evt_OnEnter();
-		break;
-	}
-}
-
-void fuiEditBox::OnCharInput(fCharW CharCode)
-{
-	if(iswcntrl(CharCode))
-		return;
-	if(CharCode == L'\n' || CharCode == L'\r')
-		return;
-
-	m_PointerTimer = 0.f;
-	m_bShowPointer = true;
-
-	m_Text.insert(m_Text.begin() + m_PointerLeftCount, CharCode);
-
-	f2dFontRenderer* pFont = m_Style.pFont;
-	if(!pFont)
-		return;
-
-	fcyVec2 tStart;
-	fcyVec2 tEnd;
-	float tLen;
-	pFont->DrawTextW(NULL, &CharCode, 1, tStart, &tEnd);
-	tLen = tEnd.x - tStart.x;
-
-	m_PointerX += tLen;
-	m_PointerLeftCount++;
-
-	setPointerPos(m_PointerLeftCount);
-	adjustPointer();
 }

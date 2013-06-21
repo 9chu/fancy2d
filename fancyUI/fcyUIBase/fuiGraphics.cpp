@@ -75,6 +75,27 @@ void fuiGraphics::PopOffset()
 	m_pGraphics2D->SetWorldTransform(m_TransMat);
 }
 
+fcyVec2 fuiGraphics::GetTopOffset()
+{
+	return m_Offsets.top();
+}
+
+void fuiGraphics::DisableOffset()
+{
+	if(!m_InRender)
+		return;
+
+	m_pGraphics2D->SetWorldTransform(m_OrgTransMat);
+}
+
+void fuiGraphics::RestoreOffset()
+{
+	if(!m_InRender)
+		return;
+
+	m_pGraphics2D->SetWorldTransform(m_TransMat);
+}
+
 fResult fuiGraphics::Begin()
 {
 	fResult tRet;

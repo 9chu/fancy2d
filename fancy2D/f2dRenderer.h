@@ -302,6 +302,10 @@ struct f2dFontRenderer :
 	/// @param[in] String 字符串
 	virtual fcyRect MeasureString(fcStrW String)=0;
 
+	/// @brief     测量一个字符串最终绘制的宽度
+	/// @param[in] String 字符串
+	virtual fFloat MeasureStringWidth(fcStrW String)=0;
+
 	/// @brief     绘制文字
 	/// @param[in] pGraph   渲染器
 	/// @param[in] Text     文字

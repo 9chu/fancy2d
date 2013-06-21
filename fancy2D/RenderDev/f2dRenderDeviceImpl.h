@@ -79,6 +79,7 @@ private:
 	IDirect3DSurface9* m_pWinSurface;
 private:
 	HRESULT doReset(D3DPRESENT_PARAMETERS* pD3DPP);  // 保证在主线程执行
+	HRESULT doTestCooperativeLevel();
 	void initState();         // 初始化状态
 	int sendDevLostMsg();     // 发送设备丢失事件, 返回对象数目
 	int sendDevResetMsg();    // 发送设备重置事件

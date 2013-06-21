@@ -88,6 +88,15 @@ enum F2DMSGTYPE
 	F2DMSG_WINDOW_ONKEYUP        = 27,    ///< @brief 按键放开     (fuInt KeyCode)
 	F2DMSG_WINDOW_ONKEYDOWN      = 28,    ///< @brief 按键按下     (fuInt KeyCode)
 
+	F2DMSG_IME_ONCLOSE            = 30,   ///< @brief IME关闭
+	F2DMSG_IME_ONACTIVATE         = 31,   ///< @brief IME激活       (fcStrW Desc)
+	F2DMSG_IME_ONSTARTCOMPOSITION = 32,   ///< @brief IME开始拼写
+	F2DMSG_IME_ONENDCOMPOSITION   = 33,   ///< @brief IME结束拼写
+	F2DMSG_IME_ONCOMPOSITION      = 34,   ///< @brief IME正在拼写   (fcStrW CompStr, fCharW Char)
+	F2DMSG_IME_ONOPENCANDIDATE    = 35,   ///< @brief IME打开候选词 (f2dIMECandidateList* Ptr)
+	F2DMSG_IME_ONCLOSECANDIDATE   = 36,   ///< @brief IME关闭候选词 (f2dIMECandidateList* Ptr)
+	F2DMSG_IME_ONCHANGECANDIDATE  = 37,   ///< @brief IME改变候选词 (f2dIMECandidateList* Ptr)
+
 	F2DMSG_RENDER_ONDEVLOST   = 50,       ///< @brief 设备丢失消息
 	F2DMSG_RENDER_ONDEVRESET  = 51,       ///< @brief 设备重置消息 
 	
@@ -251,6 +260,9 @@ struct f2dEngine : f2dInterface
 	/// @param[in] UpdateMaxFPS 更新线程最大FPS
 	/// @param[in] RenderMaxFPS 渲染线程最大FPS（仅完全多线程模式有效）
 	virtual void Run(F2DENGTHREADMODE ThreadMode, fuInt UpdateMaxFPS=0, fuInt RenderMaxFPS=0)=0;
+
+	/// @brief 返回线程模式
+	virtual F2DENGTHREADMODE GetCurrentThreadMode()=0;
 
 	// --- 消息控制 ---
 	/// @brief     发送消息

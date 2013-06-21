@@ -161,7 +161,10 @@ fcyRect f2dFontRendererImpl::MeasureString(fcStrW String)
 				float tTop = tStartPos.y - tInfo.BrushPos.y;
 				float tBottom = tStartPos.y + (tInfo.GlyphSize.y - tInfo.BrushPos.y);
 				float tLeft = tStartPos.x - tInfo.BrushPos.x;
-				float tRight = tStartPos.x + (tInfo.GlyphSize.x - tInfo.BrushPos.x);
+				float tWidth = tInfo.GlyphSize.x - tInfo.BrushPos.x;
+				if(tWidth < tInfo.Advance.x)
+					tWidth = tInfo.Advance.x;
+				float tRight = tStartPos.x + tWidth;
 
 				tBoundBox.a.x = FCYMIN(tBoundBox.a.x, tLeft);
 				tBoundBox.b.x = FCYMAX(tBoundBox.b.x, tRight);
@@ -177,6 +180,32 @@ fcyRect f2dFontRendererImpl::MeasureString(fcStrW String)
 		return tBoundBox;
 	else
 		return fcyRect();
+}
+
+fFloat f2dFontRendererImpl::MeasureStringWidth(fcStrW String)
+{
+	fcyVec2 tStartPos;
+	
+	fuInt tCount = wcslen(String);
+
+	f2dGlyphInfo tInfo;
+	for(fuInt i = 0; i<tCount; i++)
+	{
+		if(String[i] == L'\n')
+		{
+			tStartPos.x = 0;
+			tStartPos.y += m_pProvider->GetLineHeight();
+		}
+		else
+		{
+			if(FCYOK(m_pProvider->QueryGlyph(NULL, String[i], &tInfo)))
+			{
+				tStartPos += tInfo.Advance;
+			}
+		}
+	}
+
+	return tStartPos.x;
 }
 
 fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, const fcyVec2& StartPos)

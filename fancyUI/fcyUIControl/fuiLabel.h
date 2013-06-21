@@ -41,6 +41,7 @@ protected: //  Ù–‘
 	fuiPropertyAccessor<HALIGNMODE> m_HAlign_Accessor;
 	fuiPropertyAccessor<VALIGNMODE> m_VAlign_Accessor;
 protected: // ªÊÕº◊ ‘¥
+	fcyRefPointer<fuiFont> m_Font;
 	f2dFontProvider* m_pFontProvider;
 	f2dFontRenderer* m_pFontRenderer;
 

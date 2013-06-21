@@ -60,6 +60,18 @@
     <ClInclude Include="fcyUIControl\fuiLabel.h">
       <Filter>fcyUIControl\header</Filter>
     </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiButton.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiCursor.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiIME.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiEditBox.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fcyUIBase\fuiControl.cpp">
@@ -87,6 +99,18 @@
       <Filter>fcyUIBase\source</Filter>
     </ClCompile>
     <ClCompile Include="fcyUIControl\fuiLabel.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiButton.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiCursor.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiIME.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiEditBox.cpp">
       <Filter>fcyUIControl\source</Filter>
     </ClCompile>
   </ItemGroup>

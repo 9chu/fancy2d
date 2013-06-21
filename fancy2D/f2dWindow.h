@@ -20,6 +20,32 @@ enum F2DWINBORDERTYPE
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @brief fancy2d渲染窗口IME信息
+////////////////////////////////////////////////////////////////////////////////
+enum F2DIMEINFO
+{
+	F2DIMEINFO_NULL,
+	F2DIMEINFO_CANDIDATECOUNT,  ///< @brief 候选词个数
+	F2DIMEINFO_CANDIDATEINDEX,  ///< @brief 当前选中的候选词索引
+	F2DIMEINFO_PAGESIZE,        ///< @brief 一页的候选词个数
+	F2DIMEINFO_PAGESTART        ///< @brief 当前页面开始的候选词索引
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief fancy2d候选词列表
+////////////////////////////////////////////////////////////////////////////////
+struct f2dIMECandidateList
+{
+	virtual fuInt GetCount()=0;     ///< @brief 返回候选词数量
+	virtual fuInt GetCurIndex()=0;  ///< @brief 返回当前候选词索引
+	virtual fuInt GetPageSize()=0;  ///< @brief 返回单个页面候选词数量
+	virtual fuInt GetPageStart()=0; ///< @brief 返回当前页面首个候选词的索引
+	
+	/// @brief 查询候选词
+	virtual fcStrW GetCandidateStr(fuInt Index)=0;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 /// @brief fancy2D渲染窗口事件监听器
 /// @note  通过覆写这个类来实现消息回调
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,9 +84,28 @@ struct f2dWindowEventListener
 	virtual void OnIMEEndComposition() {}
 
 	/// @brief     输入法正在拼写
-	/// @param[in] CharCode 字符
-	/// @param[in] Flag     附带属性，请查阅MSDN
-	virtual void OnIMEComposition(fCharW CharCode, fuInt Flag) {}
+	/// @param[in] String   拼写串的文本指针，亦可由窗口接口获得
+	/// @param[in] CharCode 输入的字符
+	virtual void OnIMEComposition(fcStrW String, fCharW CharCode) {}
+
+	/// @brief     输入法激活
+	/// @param[in] Desc 输入法描述，亦可由窗口接口获得
+	virtual void OnIMEActivated(fcStrW Desc) {}
+
+	/// @brief 输入法关闭
+	virtual void OnIMEClosed() {}
+
+	/// @brief     输入法候选词改变
+	/// @param[in] pList 候选词列表，亦可由窗口接口获得
+	virtual void OnIMEChangeCandidate(f2dIMECandidateList* pList) {}
+
+	/// @brief 输入法候选词窗口打开
+	/// @param[in] pList 候选词列表，亦可由窗口接口获得
+	virtual void OnIMEOpenCandidate(f2dIMECandidateList* pList) {}
+
+	/// @brief 输入法候选词窗口打开
+	/// @param[in] pList 候选词列表，亦可由窗口接口获得
+	virtual void OnIMECloseCandidate(f2dIMECandidateList* pList) {}
 
 	/// @brief     鼠标移动
 	/// @param[in] X    鼠标横向位置
@@ -191,6 +236,30 @@ struct f2dWindow
 
 	/// @brief 设置置顶
 	virtual fResult SetTopMost(fBool TopMost)=0;
+	
+	/// @brief 隐藏鼠标
+	virtual void HideMouse(fBool bShow)=0;
+
+	/// @brief 隐藏IME
+	virtual fBool IsHideIME()=0;
+	
+	/// @brief 设置是否隐藏IME
+	virtual void SetHideIME(fBool bHide)=0;
+
+	/// @brief 返回IME描述
+	virtual fcStrW GetIMEDesc()=0;
+
+	/// @brief 返回IME信息
+	virtual fuInt GetIMEInfo(F2DIMEINFO InfoType)=0;
+
+	/// @brief 返回当前的拼写串
+	virtual fcStrW GetIMECompString()=0;
+
+	/// @brief 返回候选词个数
+	virtual fuInt GetIMECandidateCount()=0;
+
+	/// @brief 返回候选词
+	virtual fcStrW GetIMECandidate(fuInt Index)=0;
 };
 
 /// @}

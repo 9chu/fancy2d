@@ -1,5 +1,7 @@
 #include "fuiControl.h"
 
+#include <algorithm>
+
 #include "fuiPage.h"
 
 using namespace std;
@@ -7,7 +9,8 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 
 fuiControl::fuiControl(fuiPage* pRootControl, const std::wstring& Name)
-	: m_pRootPage(pRootControl), m_pStyle(NULL), m_pParent(NULL), m_Name(Name), m_bClip(false)
+	: m_pRootPage(pRootControl), m_pStyle(NULL), m_pParent(NULL), m_Name(Name), 
+	m_bClip(false), m_bMouseTrans(false), m_LayerPriority(0.f), m_bVisiable(true)
 {
 	if(m_pRootPage == NULL)
 		throw fcyException("fuiControl::fuiControl", "Param 'pRootControl' is null.");
@@ -89,6 +92,21 @@ void fuiControl::registerAllProperty()
 	);
 	// 裁剪
 	m_Clip_Accessor = fuiPropertyAccessor<bool>(&m_bClip);
+	// 穿透
+	m_MouseTrans_Accessor = fuiPropertyAccessor<bool>(&m_bMouseTrans);
+	// 层次优先级
+	m_LayerPriority_Accessor = fuiPropertyAccessor<fFloat>(
+		&m_LayerPriority,
+		[&](std::wstring& Prop, float* v) {
+			fuiPropertyAccessorHelper<float>::DefaultGetter(Prop, v);
+		},
+		[&](const std::wstring& Prop, float*) {
+			float v;
+			fuiPropertyAccessorHelper<float>::DefaultSetter(Prop, &v);
+			SetLayerPriority(v);
+		}
+	);
+	m_bVisiable_Accessor = fuiPropertyAccessor<bool>(&m_bVisiable);
 
 	// 注册属性访问器
 	RegisterProperty(L"Name", &m_Name_Accessor);
@@ -98,6 +116,8 @@ void fuiControl::registerAllProperty()
 	RegisterProperty(L"Width", &m_Width_Accessor);
 	RegisterProperty(L"Height", &m_Height_Accessor);
 	RegisterProperty(L"Clip", &m_Clip_Accessor);
+	RegisterProperty(L"MouseTrans", &m_MouseTrans_Accessor);
+	RegisterProperty(L"LayerPriority", &m_LayerPriority_Accessor);
 }
 
 void fuiControl::registerAllEvent()
@@ -140,6 +160,7 @@ fuiControl* fuiControl::attachSubControl(fuiControl* pControl)
 	else
 	{
 		m_SubControlList.push_back(pControl);
+		resortControl();
 		return this;
 	}
 }
@@ -197,6 +218,34 @@ void fuiControl::setSubControlLayer(fuiControl* pControl, fInt Index)
 		m_SubControlList.insert((m_SubControlList.rbegin() + (-(Index + 1))).base(), pControl);
 
 	pControl->Release();
+
+	resortControl();
+}
+
+void fuiControl::resortControl()
+{
+	struct {
+		bool operator()(const fcyRefPointer<fuiControl>& p1, const fcyRefPointer<fuiControl>& p2)
+		{
+			return p1->GetLayerPriority() < p2->GetLayerPriority();
+		}
+	} _SortOperator;
+
+	sort(m_SubControlList.begin(), m_SubControlList.end(), _SortOperator);
+}
+
+fcyVec2 fuiControl::GetAbsolutePos()
+{
+	fcyVec2 tRet = GetRect().a;
+	fuiControl* p = this;
+
+	while(p->GetParent() && p->GetParent() != this)
+	{
+		tRet += p->GetParent()->GetRect().a;
+		p = p->GetParent();
+	}
+
+	return tRet;
 }
 
 void fuiControl::SetParent(fuiControl* pParent)
@@ -321,4 +370,40 @@ void fuiControl::SetHeight(fFloat Value)
 
 	// 触发事件
 	ExecEvent(L"OnSizeChanged");
+}
+
+void fuiControl::SetLayerPriority(fFloat Value)
+{
+	m_LayerPriority = Value;
+	if(m_pParent && m_pParent != this)
+		m_pParent->resortControl();
+}
+
+void fuiControl::Update(fDouble ElapsedTime)
+{
+	for(fuInt i = 0; i<m_SubControlList.size(); i++)
+	{
+		m_SubControlList[i]->Update(ElapsedTime);
+	}
+}
+
+void fuiControl::Render(fuiGraphics* pGraph)
+{
+	for(fuInt i = 0; i<m_SubControlList.size(); i++)
+	{
+		fuiControl* p = m_SubControlList[i];
+
+		if(p->GetVisiable())
+		{
+			if(p->GetClip())
+				pGraph->PushClipRect(p->m_Rect);
+			pGraph->PushOffset(p->m_Rect.a);
+
+			p->Render(pGraph);
+
+			if(p->GetClip())
+				pGraph->PopClipRect();
+			pGraph->PopOffset();
+		}
+	}
 }

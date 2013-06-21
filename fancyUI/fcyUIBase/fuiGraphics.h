@@ -37,6 +37,9 @@ public:
 	void PopClipRect();
 	void PushOffset(const fcyVec2& Offset);
 	void PopOffset();
+	fcyVec2 GetTopOffset();
+	void DisableOffset();
+	void RestoreOffset();
 
 	fResult Begin();
 	void End();

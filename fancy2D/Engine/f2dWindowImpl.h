@@ -14,6 +14,7 @@
 #include <Windows.h>
 
 class f2dEngineImpl;
+class f2dWindowImpl;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief 窗口类
@@ -73,29 +74,59 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @brief IME候选词列表
+////////////////////////////////////////////////////////////////////////////////
+class f2dIMECandidateListImpl :
+	public f2dIMECandidateList
+{
+protected:
+	fuInt m_IMETotalCandidate;          ///< @brief 候选词个数
+	fuInt m_IMESelectedCandidate;       ///< @brief 选中的候选词索引
+	fuInt m_IMEPageStartCandidate;      ///< @brief 当前页码中第一个候选词的索引
+	fuInt m_IMEPageCandidateCount;      ///< @brief 一页的候选词个数
+	std::vector<std::wstring> m_IMECandidateList; ///< @brief 候选词列表
+public: // 接口实现
+	fuInt GetCount();
+	fuInt GetCurIndex();
+	fuInt GetPageSize();
+	fuInt GetPageStart();
+	fcStrW GetCandidateStr(fuInt Index);
+public:
+	f2dIMECandidateListImpl(f2dWindowImpl* pWindow);
+	f2dIMECandidateListImpl(const f2dIMECandidateListImpl& Right);
+	~f2dIMECandidateListImpl();
+};
+
+////////////////////////////////////////////////////////////////////////////////
 /// @brief 渲染窗口
 ////////////////////////////////////////////////////////////////////////////////
 class f2dWindowImpl :
 	public fcyRefObjImpl<f2dWindow>
 {
 	friend class f2dWindowClass;
+	friend class f2dIMECandidateListImpl;
 private:
 	class DefaultListener :
 		public f2dWindowEventListener
 	{
 	protected:
 		f2dEngineImpl* m_pEngine;
+		f2dWindowImpl* m_pThis;
 	public:
-		void OnIMEStartComposition() {}
-		void OnIMEEndComposition() {}
-		void OnIMEComposition(fCharW CharCode, fuInt Flag) {}
-
 		void OnClose();
 		void OnPaint();
 		void OnSize(fuInt ClientWidth, fuInt ClientHeight);
 		void OnKeyDown(fuInt KeyCode, fuInt Flag);
 		void OnKeyUp(fuInt KeyCode, fuInt Flag);
 		void OnCharInput(fCharW CharCode, fuInt Flag);
+		void OnIMEStartComposition();
+		void OnIMEEndComposition();
+		void OnIMEComposition(fcStrW String, fCharW CharCode);
+		void OnIMEActivated(fcStrW Desc);
+		void OnIMEClosed();
+		void OnIMEChangeCandidate(f2dIMECandidateList* pList);
+		void OnIMEOpenCandidate(f2dIMECandidateList* pList);
+		void OnIMECloseCandidate(f2dIMECandidateList* pList);
 		void OnMouseMove(fShort X, fShort Y, fuInt Flag);
 		void OnMouseWheel(fShort X, fShort Y, fFloat Wheel, fuInt Flag);
 		void OnMouseLBDown(fShort X, fShort Y, fuInt Flag);
@@ -110,8 +141,8 @@ private:
 		void OnGetFocus();
 		void OnLostFocus();
 	public:
-		DefaultListener(f2dEngineImpl* pEngine)
-			: m_pEngine(pEngine) {}
+		DefaultListener(f2dEngineImpl* pEngine, f2dWindowImpl* pThis)
+			: m_pEngine(pEngine), m_pThis(pThis) {}
 	};
 private:
 	// 状态
@@ -122,6 +153,30 @@ private:
 	// 监听器
 	DefaultListener m_DefaultListener;
 	f2dWindowEventListener* m_pListener;
+
+	// 输入法上下文
+	HIMC m_hIMC;
+	bool m_bHideIME;
+	std::wstring m_CurIMEDesc;          ///< @brief 输入法描述
+	std::wstring m_CurIMEComposition;   ///< @brief 输入法组词文本
+	fuInt m_IMETotalCandidate;          ///< @brief 候选词个数
+	fuInt m_IMESelectedCandidate;       ///< @brief 选中的候选词索引
+	fuInt m_IMEPageStartCandidate;      ///< @brief 当前页码中第一个候选词的索引
+	fuInt m_IMEPageCandidateCount;      ///< @brief 一页的候选词个数
+	std::vector<std::wstring> m_IMECandidateList; ///< @brief 候选词列表
+
+protected: // 内部方法
+	/// @brief 初始化输入法上下文
+	void InitIMEContext();
+	/// @brief 取消输入法上下文
+	void UninitIMEContext();
+	
+	/// @brief 处理IME语言变化
+	void HandleIMELanguageChanged();
+	/// @brief 处理组词
+	void HandleIMEComposition();
+	/// @brief 处理选词
+	void HandleIMECandidate();
 public: // 接口实现
 	f2dWindowEventListener* GetListener();
 	fResult SetListener(f2dWindowEventListener* pListener);
@@ -141,6 +196,45 @@ public: // 接口实现
 	void MoveToCenter();
 	fBool IsTopMost();
 	fResult SetTopMost(fBool TopMost);
+	void HideMouse(fBool bShow);
+
+	fBool IsHideIME() { return m_bHideIME; }
+	void SetHideIME(fBool v) { m_bHideIME = v; }
+
+	fcStrW GetIMEDesc()
+	{
+		return m_CurIMEDesc.c_str();
+	}
+	fuInt GetIMEInfo(F2DIMEINFO InfoType)
+	{
+		switch(InfoType)
+		{
+		case F2DIMEINFO_CANDIDATECOUNT:
+			return m_IMETotalCandidate;
+		case F2DIMEINFO_CANDIDATEINDEX:
+			return m_IMESelectedCandidate;
+		case F2DIMEINFO_PAGESIZE:
+			return m_IMEPageCandidateCount;
+		case F2DIMEINFO_PAGESTART:
+			return m_IMEPageStartCandidate;
+		}
+		return 0;
+	}
+	fcStrW GetIMECompString()
+	{
+		return m_CurIMEComposition.c_str();
+	}
+	fuInt GetIMECandidateCount()
+	{
+		return m_IMETotalCandidate;
+	}
+	fcStrW GetIMECandidate(fuInt Index)
+	{
+		if(Index > m_IMETotalCandidate)
+			return NULL;
+		else
+			return m_IMECandidateList[Index].c_str();
+	}
 protected:
 	f2dWindowImpl(f2dEngineImpl* pEngine, f2dWindowClass* WinCls, const fcyRect& Pos, fcStrW Title, fBool Visiable, F2DWINBORDERTYPE Border);
 	~f2dWindowImpl();

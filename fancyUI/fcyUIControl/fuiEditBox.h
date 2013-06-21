@@ -1,67 +1,80 @@
+////////////////////////////////////////////////////////////////////////////////
+/// @file  fuiEditBox.h
+/// @brief fancyUI 编辑框
+////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "../fcyUIBase/fuiControl.h"
 
-#include <functional>
-
+////////////////////////////////////////////////////////////////////////////////
+/// @brief UI 编辑框
+////////////////////////////////////////////////////////////////////////////////
 class fuiEditBox :
 	public fuiControl
 {
-private:
-	static const fCharW ControlName[];
-protected:
-	struct EditBoxStyle
-	{
-		fcyColor FontColor;
-		f2dFontRenderer* pFont;
-		f2dSprite* pPointer;
-		fcyVec2 PointerSize;
-		float PointerFreq;
-
-		EditBoxStyle()
-			: pFont(NULL), pPointer(NULL) {}
-	};
-protected:
-	EditBoxStyle m_Style;
-
+protected: // 属性
 	std::wstring m_Text;
-	float m_FontHeight;
-	float m_DrawPosY;
-	float m_PointerX;
-	float m_PointerLeftTextWidth;
-	fuInt m_PointerLeftCount;
+	std::wstring m_FontName;
+	fcyColor m_FontColor;
+	std::wstring m_CursorSprite;
+	fcyColor m_BlendColor;
+	std::wstring m_BorderSprite;
+	std::wstring m_ActiveBorderSprite;
+	fcyRect m_Margin;
+	fcyVec2 m_OffsetToInputBox;
+	float m_CursorDisplayInterval;
+	fBool m_bFitCursor;
 
-	fBool m_bFocus;
-	fBool m_bShowPointer;
-	float m_PointerTimer;
+	fuiPropertyAccessor<fcyVec2> m_OffsetToInputBox_Accessor;
+	fuiPropertyAccessor<std::wstring> m_Text_Accessor;
+	fuiPropertyAccessor<std::wstring> m_FontName_Accessor;
+	fuiPropertyAccessor<fcyColor> m_FontColor_Accessor;
+	fuiPropertyAccessor<std::wstring> m_CursorSprite_Accessor;
+	fuiPropertyAccessor<fcyColor> m_BlendColor_Accessor;
+	fuiPropertyAccessor<std::wstring> m_BorderSprite_Accessor;
+	fuiPropertyAccessor<std::wstring> m_ActiveBorderSprite_Accessor;
+	fuiPropertyAccessor<fcyRect> m_Margin_Accessor;
+	fuiPropertyAccessor<float> m_CursorDisplayInterval_Accessor;
+	fuiPropertyAccessor<fBool> m_FitCursor_Accessor;
+private:
+	fBool m_bInText;
 
-	// 回调
-	std::function<void(void)> m_Evt_OnEnter;
-protected:
-	void resizeRect(const fcyRect& Rect);
-	void setPointerPos(fuInt TextPos);
-	fuInt locatePos(float X, float& PointerPos);
-	void adjustPointer();
+	float m_LeftTextWidth;
+
+	fuInt m_CursorPos;
+
+	float m_CursorLeft;     ///< @brief 保存光标到Margin左侧的距离
+	fcyVec2 m_TextDrawAt;   ///< @brief 保存Text的笔触位置
+	float m_CursorDrawAtY;  ///< @brief 光标绘制位置
+
+	fBool m_bCursorVisiable; ///< @brief 光标是否可见
+	
+	double m_Timer;          ///< @brief 光标计时器
+
+	void adjustPos(); // 计算位置
+protected: // 绘图资源
+	fcyRefPointer<fuiSprite> m_Cursor;
+	fcyRefPointer<fuiBorderSprite> m_Border;
+	fcyRefPointer<fuiBorderSprite> m_ActiveBorder;
+	fcyRefPointer<fuiFont> m_Font;
+	f2dFontProvider* m_pFontProvider;
+	f2dFontRenderer* m_pFontRenderer;
+
+	void OnTextChanged(fuiControl* pThis, fuiEventArgs* pArgs);
+	void OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs);
+	void OnSizeChanged(fuiControl* pThis, fuiEventArgs* pArgs);
+
+	void OnCharInput(fuiControl* pThis, fuiEventArgs* pArgs);
+	void OnKeyUp(fuiControl* pThis, fuiEventArgs* pArgs);
+	void OnKeyDown(fuiControl* pThis, fuiEventArgs* pArgs);
+
+	void OnGetFocus(fuiControl* pThis, fuiEventArgs* pArgs);
+	void OnLostFocus(fuiControl* pThis, fuiEventArgs* pArgs);
+
+	void OnMouseLDown(fuiControl* pThis, fuiEventArgs* pArgs);
+public: // 实现接口
+	void Update(fDouble ElapsedTime);
+	void Render(fuiGraphics* pGraph);
 public:
-	const std::wstring& GetText();
-	void SetText(fcStrW Text);
-
-	void SetEvt_OnEnter(const std::function<void(void)>& Func);
-protected: // 覆写消息
-	void OnRender(fuiRenderer* pRenderer);
-	void OnUpdate(fDouble ElapsedTime); 
-	void OnResized(fcyRect& NewSize);
-	void OnStyleChanged(fcStrW NewStyleName);
-	void OnQueryControlName(std::wstring& Out);
-
-	fBool OnGetFocus();
-	void OnLostFocus();
-	fBool OnMouseMove(fFloat X, fFloat Y);
-	void OnLMouseUp(fFloat X, fFloat Y);
-	fBool OnLMouseDown(fFloat X, fFloat Y);
-	void OnKeyUp(F2DINPUTKEYCODE KeyCode);
-	void OnKeyDown(F2DINPUTKEYCODE KeyCode);
-	void OnCharInput(fCharW CharCode);
-public:
-	fuiEditBox(fuiContainer* pContainer);
-	~fuiEditBox(void);
+	fuiEditBox(fuiPage* pRootPage, const std::wstring& Name);
+	~fuiEditBox();
 };

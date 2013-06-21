@@ -76,7 +76,9 @@ public:
 		EVENTTYPE_POSITION,     ///< @brief 位置事件
 		EVENTTYPE_OBJECT,       ///< @brief UI对象事件
 		EVENTTYPE_KEY,          ///< @brief 按键事件
-		EVENTTYPE_CHAR          ///< @brief 字符事件
+		EVENTTYPE_CHAR,         ///< @brief 字符事件
+		EVENTTYPE_STRING,       ///< @brief 字符串事件
+		EVENTTYPE_IMECANDIDATE  ///< @brief IME候选词事件
 	};
 public:
 	/// @brief     查询事件
@@ -242,5 +244,67 @@ public: // 接口实现
 public:
 	fuiCharEventArgs() {}
 	~fuiCharEventArgs() {}
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief 字符串事件
+////////////////////////////////////////////////////////////////////////////////
+class fuiStringEventArgs :
+	public fuiEventArgs
+{
+protected:
+	std::wstring m_Str;
+public:
+	const std::wstring& GetString()const
+	{
+		return m_Str;
+	}
+	void SetString(const std::wstring& V)
+	{
+		m_Str = V;
+	}
+public: // 接口实现
+	void* QueryEvent(EVENTTYPE Type)
+	{
+		if(Type == EVENTTYPE_STRING)
+			return this;
+		else
+			return NULL;
+	}
+public:
+	fuiStringEventArgs() {}
+	~fuiStringEventArgs() {}
+};
+
+struct f2dIMECandidateList;
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief IME候选词事件
+////////////////////////////////////////////////////////////////////////////////
+class fuiIMECandidateEventArgs :
+	public fuiEventArgs
+{
+protected:
+	f2dIMECandidateList* m_pList;
+public:
+	f2dIMECandidateList* GetList()const
+	{
+		return m_pList;
+	}
+	void SetList(f2dIMECandidateList* pList)
+	{
+		m_pList = pList;
+	}
+public: // 接口实现
+	void* QueryEvent(EVENTTYPE Type)
+	{
+		if(Type == EVENTTYPE_IMECANDIDATE)
+			return this;
+		else
+			return NULL;
+	}
+public:
+	fuiIMECandidateEventArgs() {}
+	~fuiIMECandidateEventArgs() {}
 };
 

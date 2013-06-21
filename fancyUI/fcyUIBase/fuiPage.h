@@ -59,6 +59,9 @@ protected:
 
 	/// @brief 焦点 （上一个鼠标锁定对象）
 	fuiControl* m_pFocus;
+
+	/// @brief 鼠标上一次位置
+	fcyVec2 m_MouseLastPos;
 private:
 	/// @brief  加载布局节点
 	void loadLayoutNode(fcyXmlNode* pNode, fuiControl* pParent);
@@ -68,6 +71,8 @@ private:
 	/// @param[in] pControl 要测试的控件
 	/// @param[in] Pos      鼠标相对父控件的位置
 	fuiControl* getControlAtPos(fuiControl* pControl, const fcyVec2& Pos, fcyVec2& PosOut);
+	/// @brief 递归触发样式变更
+	void execStyleChanged(fuiControl* p);
 	/// @brief 投递子对象丢失焦点消息
 	void sendSubControlLostFocusMsg(fuiControl* pControl)
 	{
@@ -96,6 +101,17 @@ private:
 			p = p->GetParent();
 		}
 	}
+	/// @brief     处理鼠标移动消息
+	/// @param[in] MousePos 相对于父控件（屏幕）的位置
+	void sendMouseMove(const fcyVec2& MousePos);
+	/// @brief     处理鼠标按下消息
+	/// @param[in] Button   按钮
+	/// @param[in] MousePos 可选鼠标位置，重新发送消息到SendMouseMove
+	void sendMouseButtonDown(MOUSEBUTTON Button, fcyVec2* MousePos);
+	/// @brief     处理鼠标放开消息
+	/// @param[in] Button   按钮
+	/// @param[in] MousePos 可选鼠标位置，重新发送消息到SendMouseMove
+	void sendMouseButtonUp(MOUSEBUTTON Button, fcyVec2* MousePos);
 protected: // for fuiControl
 	/// @brief  注册一个控件
 	void RegisterControl(fuiControl* pControl);
@@ -107,8 +123,12 @@ public:
 	/// @brief  寻找控件
 	/// @return 控件弱引用或者NULL
 	fuiControl* FindControl(const std::wstring& Name);
+	/// @brief  是否DEBUG
+	fBool GetDebugMode()const { return m_bDebug; }
 	/// @brief  DEBUG模式
 	void SetDebugMode(fBool Value) { m_bDebug = Value; }
+	/// @brief  返回鼠标上一次绝对位置
+	const fcyVec2& GetMouseLastPos() { return m_MouseLastPos; }
 public: // 接口实现
 	fuiStyle* GetControlStyle()const;
 	void SetControlStyle(fuiStyle* pStyle);
@@ -116,25 +136,8 @@ public: // 接口实现
 	void Update(fDouble ElapsedTime);
 	void Render(fuiGraphics* pGraph=NULL);
 public: // UI消息
-	/// @brief     处理鼠标移动消息
-	/// @param[in] MousePos 相对于父控件（屏幕）的位置
-	void SendMouseMove(const fcyVec2& MousePos);
-	/// @brief     处理鼠标按下消息
-	/// @param[in] Button   按钮
-	/// @param[in] MousePos 可选鼠标位置，重新发送消息到SendMouseMove
-	void SendMouseButtonDown(MOUSEBUTTON Button, fcyVec2* MousePos);
-	/// @brief     处理鼠标放开消息
-	/// @param[in] Button   按钮
-	/// @param[in] MousePos 可选鼠标位置，重新发送消息到SendMouseMove
-	void SendMouseButtonUp(MOUSEBUTTON Button, fcyVec2* MousePos);
-	/// @brief 发送键盘按键按下消息
-	void SendKeyDown(F2DINPUTKEYCODE Key);
-	/// @brief 发送键盘按键放开消息
-	void SendKeyUp(F2DINPUTKEYCODE Key);
-	/// @brief 发送滚轮事件
-	void SendMouseWheel(fDouble Value);
-	/// @brief 发送字符输入事件
-	void SendCharInput(fCharW Char);
+	/// @brief 处理f2d消息
+	void DealF2DMsg(const f2dMsg& Msg);
 public:
 	fuiPage(const std::wstring& Name, f2dRenderer* pRenderer, f2dGraphics2D* pGraph);
 protected:

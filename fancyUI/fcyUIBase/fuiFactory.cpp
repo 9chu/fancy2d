@@ -1,6 +1,10 @@
 #include "fuiFactory.h"
 
 #include "../fcyUIControl/fuiLabel.h"
+#include "../fcyUIControl/fuiButton.h"
+#include "../fcyUIControl/fuiCursor.h"
+#include "../fcyUIControl/fuiIME.h"
+#include "../fcyUIControl/fuiEditBox.h"
 
 using namespace std;
 
@@ -9,6 +13,10 @@ using namespace std;
 fuiFactory::fuiFactory()
 {
 	RegisterControlCreator<fuiLabel>(L"fuiLabel");
+	RegisterControlCreator<fuiButton>(L"fuiButton");
+	RegisterControlCreator<fuiCursor>(L"fuiCursor");
+	RegisterControlCreator<fuiIME>(L"fuiIME");
+	RegisterControlCreator<fuiEditBox>(L"fuiEditBox");
 }
 
 fuiFactory::~fuiFactory()

@@ -189,7 +189,7 @@ fuInt f2dEngineImpl::RenderThread::ThreadJob()
 
 f2dEngineImpl::f2dEngineImpl(f2dEngineEventListener* pListener)
 	: m_bStop(true), m_pListener(pListener), m_LastErrTime(0), m_PumpIndex(0),
-	m_MainThreadID(GetCurrentThreadId()),
+	m_MainThreadID(GetCurrentThreadId()), m_ThreadMode(F2DENGTHREADMODE_SINGLETHREAD),
 	m_WinClass(this, L"F2DRenderWindow"),
 	m_pWindow(NULL), m_pSoundSys(NULL), m_pInputSys(NULL), m_pRenderer(NULL), m_pVideoSys(NULL)
 {
@@ -199,7 +199,7 @@ f2dEngineImpl::f2dEngineImpl(f2dEngineEventListener* pListener)
 
 f2dEngineImpl::f2dEngineImpl(const fcyRect& WinPos, fcStrW Title, fBool Windowed, fBool VSync, F2DAALEVEL AA, f2dEngineEventListener* pListener)
 	: m_bStop(true), m_pListener(pListener), m_LastErrTime(0), m_PumpIndex(0),
-	m_MainThreadID(GetCurrentThreadId()),
+	m_MainThreadID(GetCurrentThreadId()), m_ThreadMode(F2DENGTHREADMODE_SINGLETHREAD),
 	m_WinClass(this, L"F2DRenderWindow"),
 	m_pWindow(NULL), m_pSoundSys(NULL), m_pInputSys(NULL), m_pRenderer(NULL), m_pVideoSys(NULL)
 {
@@ -367,6 +367,8 @@ void f2dEngineImpl::Run(F2DENGTHREADMODE ThreadMode, fuInt UpdateMaxFPS, fuInt R
 	m_bStop = false;
 	m_Sec.UnLock();
 
+	m_ThreadMode = ThreadMode;
+
 	switch(ThreadMode)
 	{
 	case F2DENGTHREADMODE_SINGLETHREAD:
@@ -430,15 +432,6 @@ void f2dEngineImpl::Run_SingleThread(fuInt UpdateMaxFPS)
 				// 发送退出消息
 				if(tMsg.message == WM_QUIT)
 					SendMsg(F2DMSG_APP_ONEXIT);
-				else if(tMsg.message == WM_USER)
-				{
-					// 主线程委托
-					if(tMsg.lParam)
-					{
-						((f2dMainThreadDelegate*)tMsg.lParam)->Excute();
-						((f2dMainThreadDelegate*)tMsg.lParam)->Release();
-					}
-				}
 			}
 		}
 		tTimer.Resume();
@@ -476,20 +469,8 @@ void f2dEngineImpl::Run_MultiThread(fuInt UpdateMaxFPS)
 		// 应用程序消息处理
 		if(GetMessage(&tMsg, 0, 0, 0))
 		{
-			if(tMsg.message != WM_USER)
-			{
-				TranslateMessage(&tMsg);
-				DispatchMessage(&tMsg);
-			}
-			else
-			{
-				// 主线程委托
-				if(tMsg.lParam)
-				{
-					((f2dMainThreadDelegate*)tMsg.lParam)->Excute();
-					((f2dMainThreadDelegate*)tMsg.lParam)->Release();
-				}
-			}
+			TranslateMessage(&tMsg);
+			DispatchMessage(&tMsg);
 		}
 		else
 		{
@@ -526,20 +507,8 @@ void f2dEngineImpl::Run_FullMultiThread(fuInt UpdateMaxFPS, fuInt RenderMaxFPS)
 		// 应用程序消息处理
 		if(GetMessage(&tMsg, 0, 0, 0))
 		{
-			if(tMsg.message != WM_USER)
-			{
-				TranslateMessage(&tMsg);
-				DispatchMessage(&tMsg);
-			}
-			else
-			{
-				// 主线程委托
-				if(tMsg.lParam)
-				{
-					((f2dMainThreadDelegate*)tMsg.lParam)->Excute();
-					((f2dMainThreadDelegate*)tMsg.lParam)->Release();
-				}
-			}
+			TranslateMessage(&tMsg);
+			DispatchMessage(&tMsg);
 		}
 		else
 		{

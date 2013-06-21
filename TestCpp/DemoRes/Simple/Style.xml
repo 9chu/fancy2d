@@ -1,0 +1,14 @@
+﻿<fancyUIStyle>
+  <Font Name="IMEFont" FontSrc="Simple\msyh.ttf" FontSize="15,15" />
+  
+  <BorderSprite Name="IME_MultiLine"  Src="Simple\Simple.png" Rect="0,0,32,42" Margin="2,24,2,2" />
+  <BorderSprite Name="IME_SimpleLine" Src="Simple\Simple.png" Rect="0,22,32,42" Margin="2,2,2,2" />
+  
+  <BorderSprite Name="EditBox_Default" Src="Simple\Simple.png" Rect="0,42,32,74"  Margin="4,4,4,4" />
+  <BorderSprite Name="EditBox_Active"  Src="Simple\Simple.png" Rect="0,74,32,106" Margin="4,4,4,4" />
+  
+  <Sprite Name="EditBox_Cursor" Src="Simple\Simple.png" Rect="14,106,19,138" />
+  
+  <!-- TEST -->
+  <Font Name="Font0" FontSrc="Simple\msyh.ttf" FontSize="24,24" />
+</fancyUIStyle>

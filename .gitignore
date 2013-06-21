@@ -17,6 +17,7 @@ fancyUI/bak/
 TestCpp/bin/
 TestCpp/obj/
 TestCpp/DemoRes/bak/
+TestCpp/DemoRes/bak2/
 tools/FCYResPackageEditor/bin/
 tools/FCYResPackageEditor/obj/
 tools/FMM_3DSMAX_ExportPlugin/lib/
@@ -24,7 +25,7 @@ tools/FMM_3DSMAX_ExportPlugin/obj/
 WinConsole.lnk
 cloc.exe
 cloc.bat
-fancy2D.chm
+*.chm
 *.sdf
-*.suo
+*.opensdf
 .netrc

@@ -234,12 +234,11 @@ void fuiBorderSprite::ConstructRes(fuiResProvider* pProvider)
 		throw fcyException("fuiBorderSprite::ConstructRes", "f2dRenderer::CreateSprite2D failed.");
 
 	fcyRect tUVCoord = m_Margin;
-	tUVCoord.a += m_Rect.a;
-	tUVCoord.b = m_Rect.b - tUVCoord.b;
-	tUVCoord.a.x /= pTex->GetWidth();
-	tUVCoord.b.x /= pTex->GetWidth();
-	tUVCoord.a.y /= pTex->GetHeight();
-	tUVCoord.b.y /= pTex->GetHeight();
+	tUVCoord.b = m_Rect.b - m_Rect.a - tUVCoord.b;
+	tUVCoord.a.x /= m_Rect.GetWidth();
+	tUVCoord.b.x /= m_Rect.GetWidth();
+	tUVCoord.a.y /= m_Rect.GetHeight();
+	tUVCoord.b.y /= m_Rect.GetHeight();
 
 	m_Sprites[0][0] = fcyRect(0.f,          0.f, tUVCoord.a.x, tUVCoord.a.y); // ◊Û…œ
 	m_Sprites[0][1] = fcyRect(tUVCoord.a.x, 0.f, tUVCoord.b.x, tUVCoord.a.y); // …œ

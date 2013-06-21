@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 f2dSpriteImpl::f2dSpriteImpl(f2dTexture2D* pTex)
-	: m_pTex(NULL), m_FlipType(F2DSPRITEFLIP_NONE), m_ZValue(1.0f)
+	: m_pTex(NULL), m_FlipType(F2DSPRITEFLIP_NONE), m_ZValue(1.f)
 {
 	m_pTex = pTex;
 	m_pTex->AddRef();
@@ -17,7 +17,7 @@ f2dSpriteImpl::f2dSpriteImpl(f2dTexture2D* pTex)
 }
 
 f2dSpriteImpl::f2dSpriteImpl(f2dTexture2D* pTex, fcyRect SrcRect)
-	: m_pTex(NULL), m_FlipType(F2DSPRITEFLIP_NONE), m_ZValue(0.f)
+	: m_pTex(NULL), m_FlipType(F2DSPRITEFLIP_NONE), m_ZValue(1.f)
 {
 	m_pTex = pTex;
 	m_pTex->AddRef();
@@ -30,7 +30,7 @@ f2dSpriteImpl::f2dSpriteImpl(f2dTexture2D* pTex, fcyRect SrcRect)
 }
 
 f2dSpriteImpl::f2dSpriteImpl(f2dTexture2D* pTex, fcyRect SrcRect, fcyVec2 HotSpot)
-	: m_pTex(NULL), m_FlipType(F2DSPRITEFLIP_NONE), m_ZValue(0.f)
+	: m_pTex(NULL), m_FlipType(F2DSPRITEFLIP_NONE), m_ZValue(1.f)
 {
 	m_pTex = pTex;
 	m_pTex->AddRef();

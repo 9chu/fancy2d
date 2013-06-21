@@ -39,6 +39,7 @@ public: // 接口实现
 	void SetFlipType(F2DSPRITEFLIP Type);
 
 	fcyRect MeasureString(fcStrW String);
+	fFloat MeasureStringWidth(fcStrW String);
 
 	fResult DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, const fcyVec2& StartPos);
 	fResult DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, const fcyVec2& StartPos, fcyVec2* PosOut);

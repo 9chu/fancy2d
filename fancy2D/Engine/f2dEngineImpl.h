@@ -81,6 +81,7 @@ private:
 	// 锁
 	fcyCriticalSection m_Sec;
 	DWORD m_MainThreadID;
+	F2DENGTHREADMODE m_ThreadMode;
 
 	// CPU信息
 	std::string m_CPUString;
@@ -143,6 +144,7 @@ public: // 接口实现
 
 	void Abort();
 	void Run(F2DENGTHREADMODE ThreadMode, fuInt UpdateMaxFPS, fuInt RenderMaxFPS);
+	F2DENGTHREADMODE GetCurrentThreadMode() { return m_ThreadMode; }
 
 	fResult SendMsg(const f2dMsg& Msg, f2dInterface* pMemObj = NULL);
 	fResult SendMsg(F2DMSGTYPE Type, fuLong Param1 = 0, fuLong Param2 = 0, fuLong Param3 = 0, fuLong Param4 = 0, f2dInterface* pMemObj = NULL)
@@ -153,52 +155,25 @@ public: // 接口实现
 
 	fResult InvokeDelegate(f2dMainThreadDelegate* pDelegate)
 	{
-		if(!pDelegate)
+		if(!pDelegate || !m_pWindow)
 			return FCYERR_INVAILDPARAM;
 
-		if(TRUE == PostThreadMessage(m_MainThreadID, WM_USER, 0, (LPARAM)pDelegate))
-		{
-			pDelegate->AddRef();
+		pDelegate->AddRef();
+		if(TRUE == PostMessage((HWND)m_pWindow->GetHandle(), WM_USER, 0, (LPARAM)pDelegate))
 			return FCYERR_OK;
-		}
 		else
 			return FCYERR_INTERNALERR;
 	}
 	fResult InvokeDelegateAndWait(f2dMainThreadDelegate* pDelegate)
 	{
-		struct _WaitableWork : 
-			public fcyRefObjImpl<f2dMainThreadDelegate>
-		{
-			f2dMainThreadDelegate* pOrg;
-			fcyEvent Evt;
-
-			void Excute()
-			{
-				pOrg->Excute();
-				Evt.Set();
-			}
-
-			_WaitableWork(f2dMainThreadDelegate* p)
-				: pOrg(p) { p->AddRef(); }
-			~_WaitableWork() { FCYSAFEKILL(pOrg); }
-		};
-
-		if(!pDelegate)
+		if(!pDelegate || !m_pWindow)
 			return FCYERR_INVAILDPARAM;
 
-		_WaitableWork* tWork = new _WaitableWork(pDelegate);
-		tWork->Evt.Reset();
-
-		if(TRUE == PostThreadMessage(m_MainThreadID, WM_USER, 0, (LPARAM)tWork))
-		{
-			tWork->Evt.Wait();
+		pDelegate->AddRef();
+		if(TRUE == SendMessage((HWND)m_pWindow->GetHandle(), WM_USER, 0, (LPARAM)pDelegate))
 			return FCYERR_OK;
-		}
 		else
-		{
-			FCYSAFEKILL(tWork);
 			return FCYERR_INTERNALERR;
-		}
 	}
 
 	void GetCPUInfo(f2dCPUInfo& tInfo)

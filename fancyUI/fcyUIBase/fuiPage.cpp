@@ -282,6 +282,27 @@ fuiPage::fuiPage(const std::wstring& Name, f2dRenderer* pRenderer, f2dGraphics2D
 	m_pDefaultStyle.DirectSet(new fuiStyle());
 
 	m_Rect = fcyRect(0.f, 0.f, (float)pRenderer->GetDevice()->GetBufferWidth(), (float)pRenderer->GetDevice()->GetBufferHeight());
+
+	RegisterEvent(L"OnGlobalMouseMove");
+	RegisterEvent(L"OnGlobalMouseLDown");
+	RegisterEvent(L"OnGlobalMouseLUp");
+	RegisterEvent(L"OnGlobalMouseMDown");
+	RegisterEvent(L"OnGlobalMouseMUp");
+	RegisterEvent(L"OnGlobalMouseRDown");
+	RegisterEvent(L"OnGlobalMouseRUp");
+
+	RegisterEvent(L"OnIMEClosed");
+	RegisterEvent(L"OnIMEActivated");
+	RegisterEvent(L"OnIMEStartComposition");
+	RegisterEvent(L"OnIMEEndComposition");
+	RegisterEvent(L"OnIMEComposition");
+	RegisterEvent(L"OnIMEOpenCandidate");
+	RegisterEvent(L"OnIMECloseCandidate");
+	RegisterEvent(L"OnIMEChangeCandidate");
+
+	RegisterEvent(L"OnTextInputStart");
+	RegisterEvent(L"OnTextInputPosChanged");
+	RegisterEvent(L"OnTextInputEnd");
 }
 
 fuiPage::~fuiPage()
@@ -407,6 +428,9 @@ void fuiPage::debugDraw(fuiGraphics* pGraph, fuiControl* pControl)
 
 fuiControl* fuiPage::getControlAtPos(fuiControl* pControl, const fcyVec2& Pos, fcyVec2& PosOut)
 {
+	if(pControl->GetMouseTrans())
+		return NULL;
+
 	fcyVec2 tPos = Pos - pControl->m_Rect.a;
 
 	if(pControl->m_Rect.Contain(Pos) && pControl->HitTest(tPos))
@@ -430,6 +454,166 @@ fuiControl* fuiPage::getControlAtPos(fuiControl* pControl, const fcyVec2& Pos, f
 	}
 	else
 		return NULL;
+}
+
+void fuiPage::execStyleChanged(fuiControl* p)
+{
+	// 触发所有控件的OnStyleChanged事件
+	for(fuInt i = 0; i<p->m_SubControlList.size(); i++)
+	{
+		p->ExecEvent(L"OnStyleChanged");
+
+		execStyleChanged(p->m_SubControlList[i]);
+	}
+}
+
+void fuiPage::sendMouseMove(const fcyVec2& MousePos)
+{
+	m_MouseLastPos = MousePos;
+
+	// 发送全局消息
+	{
+		fuiPositionEventArgs tArgs;
+		tArgs.SetPos(MousePos);
+		ExecEvent(L"OnGlobalMouseMove", &tArgs);
+	}
+
+	m_pControlAtMousePos = getControlAtPos(this, MousePos, m_ControlMousePos);
+
+	if(m_pLockMouseControl) // 若鼠标事件被锁定
+	{
+		// 发送鼠标移动消息
+		fuiPositionEventArgs tArgs;
+		tArgs.SetPos(MousePos - m_ControlOrigin);
+		m_pLastMouseMoveControl->ExecEvent(L"OnMouseMove", &tArgs);
+	}
+	else // 未被锁定
+	{
+		// 对象发生变化
+		if(m_pLastMouseMoveControl != m_pControlAtMousePos)
+		{
+			// 发送鼠标移出消息
+			if(m_pLastMouseMoveControl)
+				m_pLastMouseMoveControl->ExecEvent(L"OnMouseLeave");
+
+			m_pLastMouseMoveControl = m_pControlAtMousePos;
+		}
+
+		// 发送鼠标移动消息
+		if(m_pLastMouseMoveControl)
+		{
+			fuiPositionEventArgs tArgs;
+			tArgs.SetPos(m_ControlMousePos);
+			m_pLastMouseMoveControl->ExecEvent(L"OnMouseMove", &tArgs);
+		}
+
+		// 计算当前控件原点
+		m_ControlOrigin = MousePos - m_ControlMousePos;
+	}
+}
+
+void fuiPage::sendMouseButtonDown(MOUSEBUTTON Button, fcyVec2* MousePos)
+{
+	// 发送全局消息
+	{
+		switch(Button)
+		{
+		case MOUSEBUTTON_L:
+			ExecEvent(L"OnGlobalMouseLDown");
+			break;
+		case MOUSEBUTTON_M:
+			ExecEvent(L"OnGlobalMouseMDown");
+			break;
+		case MOUSEBUTTON_R:
+			ExecEvent(L"OnGlobalMouseRDown");
+			break;
+		}
+	}
+
+	if(MousePos)
+		sendMouseMove(*MousePos);
+
+	if(!m_pLockMouseControl) // 未锁定，则锁定鼠标消息
+	{
+		m_pLockMouseControl = m_pControlAtMousePos;
+		m_MouseUnlockEvent = Button;
+
+		// 处理焦点
+		if(m_pFocus != m_pLockMouseControl)
+		{
+			if(m_pFocus)
+			{
+				m_pFocus->ExecEvent(L"OnLostFocus");
+				sendSubControlLostFocusMsg(m_pFocus);
+			}
+
+			m_pFocus = m_pLockMouseControl;
+
+			if(m_pFocus)
+			{
+				m_pFocus->ExecEvent(L"OnGetFocus");
+				sendSubControlGetFocusMsg(m_pFocus);
+			}
+		}
+	}
+	
+	// 直接向控件发送消息
+	if(m_pLockMouseControl)
+	{
+		switch(Button)
+		{
+		case MOUSEBUTTON_L:
+			m_pLockMouseControl->ExecEvent(L"OnMouseLDown");
+			break;
+		case MOUSEBUTTON_M:
+			m_pLockMouseControl->ExecEvent(L"OnMouseMDown");
+			break;
+		case MOUSEBUTTON_R:
+			m_pLockMouseControl->ExecEvent(L"OnMouseRDown");
+			break;
+		}
+	}
+}
+
+void fuiPage::sendMouseButtonUp(MOUSEBUTTON Button, fcyVec2* MousePos)
+{
+	// 发送全局消息
+	{
+		switch(Button)
+		{
+		case MOUSEBUTTON_L:
+			ExecEvent(L"OnGlobalMouseLDown");
+			break;
+		case MOUSEBUTTON_M:
+			ExecEvent(L"OnGlobalMouseMDown");
+			break;
+		case MOUSEBUTTON_R:
+			ExecEvent(L"OnGlobalMouseRDown");
+			break;
+		}
+	}
+
+	if(MousePos)
+		sendMouseMove(*MousePos);
+
+	if(m_pLockMouseControl)
+	{
+		switch(Button)
+		{
+		case MOUSEBUTTON_L:
+			m_pLockMouseControl->ExecEvent(L"OnMouseLUp");
+			break;
+		case MOUSEBUTTON_M:
+			m_pLockMouseControl->ExecEvent(L"OnMouseMUp");
+			break;
+		case MOUSEBUTTON_R:
+			m_pLockMouseControl->ExecEvent(L"OnMouseRUp");
+			break;
+		}
+
+		if(m_MouseUnlockEvent == Button) // 解锁
+			m_pLockMouseControl = NULL;
+	}
 }
 
 void fuiPage::RegisterControl(fuiControl* pControl)
@@ -502,21 +686,12 @@ void fuiPage::SetControlStyle(fuiStyle* pStyle)
 {
 	m_pDefaultStyle = pStyle;
 
-	ExecEvent(L"OnStyleChanged");
-
-	// 触发所有控件的OnStyleChanged事件
-	for(fuInt i = 0; i<m_SubControlList.size(); i++)
-	{
-		m_SubControlList[i]->ExecEvent(L"OnStyleChanged");
-	}
+	execStyleChanged(this);
 }
 
 void fuiPage::Update(fDouble ElapsedTime)
 {
-	for(fuInt i = 0; i<m_SubControlList.size(); i++)
-	{
-		m_SubControlList[i]->Update(ElapsedTime);
-	}
+	fuiControl::Update(ElapsedTime);
 }
 
 void fuiPage::Render(fuiGraphics* pGraph)
@@ -524,6 +699,7 @@ void fuiPage::Render(fuiGraphics* pGraph)
 	if(pGraph == NULL)
 		pGraph = &m_pGraphics;
 
+	// 绘制所有控件
 	if(FCYFAILED(pGraph->Begin()))
 		return;
 
@@ -531,20 +707,8 @@ void fuiPage::Render(fuiGraphics* pGraph)
 		pGraph->PushClipRect(m_Rect);
 	pGraph->PushOffset(m_Rect.a);
 
-	for(fuInt i = 0; i<m_SubControlList.size(); i++)
-	{
-		fuiControl* p = m_SubControlList[i];
-		
-		if(p->GetClip())
-			pGraph->PushClipRect(p->m_Rect);
-		pGraph->PushOffset(p->m_Rect.a);
-
-		p->Render(pGraph);
-
-		if(p->GetClip())
-			pGraph->PopClipRect();
-		pGraph->PopOffset();
-	}
+	if(GetVisiable())
+		fuiControl::Render(pGraph);
 
 	if(GetClip())
 		pGraph->PopClipRect();
@@ -578,151 +742,106 @@ void fuiPage::Render(fuiGraphics* pGraph)
 	}
 }
 
-void fuiPage::SendMouseMove(const fcyVec2& MousePos)
+void fuiPage::DealF2DMsg(const f2dMsg& Msg)
 {
-	m_pControlAtMousePos = getControlAtPos(this, MousePos, m_ControlMousePos);
-
-	if(m_pLockMouseControl) // 若鼠标事件被锁定
+	switch(Msg.Type)
 	{
-		// 发送鼠标移动消息
-		fuiPositionEventArgs tArgs;
-		tArgs.SetPos(MousePos - m_ControlOrigin);
-		m_pLastMouseMoveControl->ExecEvent(L"OnMouseMove", &tArgs);
-	}
-	else // 未被锁定
-	{
-		// 对象发生变化
-		if(m_pLastMouseMoveControl != m_pControlAtMousePos)
+	case F2DMSG_WINDOW_ONMOUSEMOVE:
+		sendMouseMove(fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
+		break;
+	case F2DMSG_WINDOW_ONMOUSELDOWN:
+		sendMouseButtonDown(fuiPage::MOUSEBUTTON_L, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
+		break;
+	case F2DMSG_WINDOW_ONMOUSELUP:
+		sendMouseButtonUp(fuiPage::MOUSEBUTTON_L, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
+		break;
+	case F2DMSG_WINDOW_ONMOUSERDOWN:
+		sendMouseButtonDown(fuiPage::MOUSEBUTTON_R, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
+		break;
+	case F2DMSG_WINDOW_ONMOUSERUP:
+		sendMouseButtonUp(fuiPage::MOUSEBUTTON_R, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
+		break;
+	case F2DMSG_WINDOW_ONMOUSEMDOWN:
+		sendMouseButtonDown(fuiPage::MOUSEBUTTON_M, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
+		break;
+	case F2DMSG_WINDOW_ONMOUSEMUP:
+		sendMouseButtonUp(fuiPage::MOUSEBUTTON_M, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
+		break;
+	case F2DMSG_WINDOW_ONKEYDOWN:
+		if(m_pFocus)
 		{
-			// 发送鼠标移出消息
-			if(m_pLastMouseMoveControl)
-				m_pLastMouseMoveControl->ExecEvent(L"OnMouseLeave");
-
-			m_pLastMouseMoveControl = m_pControlAtMousePos;
+			fuiKeyEventArgs tArgs;
+			tArgs.SetKeyCode(fuiPage::VKKeyToF2DKey((fuInt)Msg.Param1));
+			m_pFocus->ExecEvent(L"OnKeyDown", &tArgs);
 		}
-
-		// 发送鼠标移动消息
-		if(m_pLastMouseMoveControl)
+		break;
+	case F2DMSG_WINDOW_ONKEYUP:
+		if(m_pFocus)
+		{
+			fuiKeyEventArgs tArgs;
+			tArgs.SetKeyCode(fuiPage::VKKeyToF2DKey((fuInt)Msg.Param1));
+			m_pFocus->ExecEvent(L"OnKeyUp", &tArgs);
+		}
+		break;
+	case F2DMSG_WINDOW_ONMOUSEWHEEL:
+		if(m_pFocus)
 		{
 			fuiPositionEventArgs tArgs;
-			tArgs.SetPos(m_ControlMousePos);
-			m_pLastMouseMoveControl->ExecEvent(L"OnMouseMove", &tArgs);
+			tArgs.SetPos(fcyVec2((float)*(fDouble*)&Msg.Param3, 0));
+			m_pFocus->ExecEvent(L"OnMouseWheel", &tArgs);
 		}
-
-		// 计算当前控件原点
-		m_ControlOrigin = MousePos - m_ControlMousePos;
-	}
-}
-
-void fuiPage::SendMouseButtonDown(MOUSEBUTTON Button, fcyVec2* MousePos)
-{
-	if(MousePos)
-		SendMouseMove(*MousePos);
-
-	if(!m_pLockMouseControl) // 未锁定，则锁定鼠标消息
-	{
-		m_pLockMouseControl = m_pControlAtMousePos;
-		m_MouseUnlockEvent = Button;
-
-		// 处理焦点
-		if(m_pFocus != m_pLockMouseControl)
+		break;
+	case F2DMSG_WINDOW_ONCHARINPUT:
+		if(m_pFocus)
 		{
-			if(m_pFocus)
-			{
-				m_pFocus->ExecEvent(L"OnLostFocus");
-				sendSubControlLostFocusMsg(m_pFocus);
-			}
-
-			m_pFocus = m_pLockMouseControl;
-
-			if(m_pFocus)
-			{
-				m_pFocus->ExecEvent(L"OnGetFocus");
-				sendSubControlGetFocusMsg(m_pFocus);
-			}
+			fuiCharEventArgs tArgs;
+			tArgs.SetChar((fCharW)Msg.Param1);
+			m_pFocus->ExecEvent(L"OnCharInput", &tArgs);
 		}
-	}
-	
-	// 直接向控件发送消息
-	fuiPositionEventArgs tArgs;
-	tArgs.SetPos(*MousePos - m_ControlMousePos);
-	switch(Button)
-	{
-	case MOUSEBUTTON_L:
-		m_pLockMouseControl->ExecEvent(L"OnMouseLDown", &tArgs);
 		break;
-	case MOUSEBUTTON_M:
-		m_pLockMouseControl->ExecEvent(L"OnMouseMDown", &tArgs);
+	case F2DMSG_IME_ONCLOSE:
+		ExecEvent(L"OnIMEClosed");
 		break;
-	case MOUSEBUTTON_R:
-		m_pLockMouseControl->ExecEvent(L"OnMouseRDown", &tArgs);
-		break;
-	}
-}
-
-void fuiPage::SendMouseButtonUp(MOUSEBUTTON Button, fcyVec2* MousePos)
-{
-	if(MousePos)
-		SendMouseMove(*MousePos);
-
-	if(m_pLockMouseControl)
-	{
-		fuiPositionEventArgs tArgs;
-		tArgs.SetPos(*MousePos - m_ControlMousePos);
-		switch(Button)
+	case F2DMSG_IME_ONACTIVATE:
 		{
-		case MOUSEBUTTON_L:
-			m_pLockMouseControl->ExecEvent(L"OnMouseLUp", &tArgs);
-			break;
-		case MOUSEBUTTON_M:
-			m_pLockMouseControl->ExecEvent(L"OnMouseMUp", &tArgs);
-			break;
-		case MOUSEBUTTON_R:
-			m_pLockMouseControl->ExecEvent(L"OnMouseRUp", &tArgs);
-			break;
+			fuiStringEventArgs tArgs;
+			tArgs.SetString((fcStrW)Msg.Param1);
+			ExecEvent(L"OnIMEActivated", &tArgs);
 		}
-
-		if(m_MouseUnlockEvent == Button) // 解锁
-			m_pLockMouseControl = NULL;
-	}
-}
-
-void fuiPage::SendKeyDown(F2DINPUTKEYCODE Key)
-{
-	if(m_pFocus)
-	{
-		fuiKeyEventArgs tArgs;
-		tArgs.SetKeyCode(Key);
-		m_pFocus->ExecEvent(L"OnKeyDown", &tArgs);
-	}
-}
-
-void fuiPage::SendKeyUp(F2DINPUTKEYCODE Key)
-{
-	if(m_pFocus)
-	{
-		fuiKeyEventArgs tArgs;
-		tArgs.SetKeyCode(Key);
-		m_pFocus->ExecEvent(L"OnKeyUp", &tArgs);
-	}
-}
-
-void fuiPage::SendMouseWheel(fDouble Value)
-{
-	if(m_pFocus)
-	{
-		fuiPositionEventArgs tArgs;
-		tArgs.SetPos(fcyVec2((float)Value, 0));
-		m_pFocus->ExecEvent(L"OnMouseWheel", &tArgs);
-	}
-}
-
-void fuiPage::SendCharInput(fCharW Char)
-{
-	if(m_pFocus)
-	{
-		fuiCharEventArgs tArgs;
-		tArgs.SetChar(Char);
-		m_pFocus->ExecEvent(L"OnCharInput", &tArgs);
+		break;
+	case F2DMSG_IME_ONOPENCANDIDATE:
+		{
+			fuiIMECandidateEventArgs tArgs;
+			tArgs.SetList((f2dIMECandidateList*)Msg.Param1);
+			ExecEvent(L"OnIMEOpenCandidate", &tArgs);
+		}
+		break;
+	case F2DMSG_IME_ONCLOSECANDIDATE:
+		{
+			fuiIMECandidateEventArgs tArgs;
+			tArgs.SetList((f2dIMECandidateList*)Msg.Param1);
+			ExecEvent(L"OnIMECloseCandidate", &tArgs);
+		}
+		break;
+	case F2DMSG_IME_ONCHANGECANDIDATE:
+		{
+			fuiIMECandidateEventArgs tArgs;
+			tArgs.SetList((f2dIMECandidateList*)Msg.Param1);
+			ExecEvent(L"OnIMEChangeCandidate", &tArgs);
+		}
+		break;
+	case F2DMSG_IME_ONSTARTCOMPOSITION:
+		ExecEvent(L"OnIMEStartComposition");
+		break;
+	case F2DMSG_IME_ONENDCOMPOSITION:
+		ExecEvent(L"OnIMEEndComposition");
+		break;
+	case F2DMSG_IME_ONCOMPOSITION:
+		{
+			fuiStringEventArgs tArgs;
+			tArgs.SetString((fcStrW)Msg.Param1);
+			ExecEvent(L"OnIMEComposition", &tArgs);
+		}
+		break;
 	}
 }

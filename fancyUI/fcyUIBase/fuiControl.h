@@ -39,18 +39,24 @@ protected:
 	// ========== 属性&事件 ==========
 protected: // 属性
 	// 属性成员
-	std::wstring m_Name;    ///< @brief [只读] 控件名
-	fcyRect m_Rect;         ///< @brief [读写] 控件位置
-	fBool m_bClip;          ///< @brief [读写] 裁剪
+	std::wstring m_Name;     ///< @brief [只读] 控件名
+	fcyRect m_Rect;          ///< @brief [读写] 控件位置
+	fBool m_bClip;           ///< @brief [读写] 裁剪
+	fBool m_bMouseTrans;     ///< @brief [读写] 鼠标穿透
+	fFloat m_LayerPriority;  ///< @brief [读写] 层次优先权
+	fBool m_bVisiable;       ///< @brief [读写] 是否可见
 
 	// 访问器
-	fuiPropertyAccessor<std::wstring> m_Name_Accessor; ///< @brief 控件名访问器 
-	fuiPropertyAccessor<fcyRect> m_Rect_Accessor;      ///< @brief 控件范围访问器
-	fuiPropertyAccessor<float> m_Left_Accessor;        ///< @brief 左侧距离访问器 
-	fuiPropertyAccessor<float> m_Top_Accessor;         ///< @brief 顶端距离访问器 
-	fuiPropertyAccessor<float> m_Width_Accessor;       ///< @brief 宽度访问器 
-	fuiPropertyAccessor<float> m_Height_Accessor;      ///< @brief 高度访问器
-	fuiPropertyAccessor<bool> m_Clip_Accessor;         ///< @brief 裁剪访问器
+	fuiPropertyAccessor<std::wstring> m_Name_Accessor;   ///< @brief 控件名访问器 
+	fuiPropertyAccessor<fcyRect> m_Rect_Accessor;        ///< @brief 控件范围访问器
+	fuiPropertyAccessor<float> m_Left_Accessor;          ///< @brief 左侧距离访问器 
+	fuiPropertyAccessor<float> m_Top_Accessor;           ///< @brief 顶端距离访问器 
+	fuiPropertyAccessor<float> m_Width_Accessor;         ///< @brief 宽度访问器 
+	fuiPropertyAccessor<float> m_Height_Accessor;        ///< @brief 高度访问器
+	fuiPropertyAccessor<bool> m_Clip_Accessor;           ///< @brief 裁剪访问器
+	fuiPropertyAccessor<bool> m_MouseTrans_Accessor;     ///< @brief 鼠标穿透访问器
+	fuiPropertyAccessor<float> m_LayerPriority_Accessor; ///< @brief 层次优先权访问器
+	fuiPropertyAccessor<bool> m_bVisiable_Accessor;      ///< @brief 可见性访问器
 
 	// 注册所有默认属性
 	void registerAllProperty();
@@ -77,8 +83,12 @@ protected: // for fuiControl
 	virtual fuInt getSubControlLayer(const fuiControl* pControl);
 	/// @brief 设置子控件的层次
 	virtual void setSubControlLayer(fuiControl* pControl, fInt Index);
+	/// @brief 重新排列控件
+	virtual void resortControl();
 public:
 	// === 未注册属性 ===
+	/// @brief 返回屏幕绝对位置
+	fcyVec2 GetAbsolutePos();
 	/// @brief 获得根控件
 	fuiPage* GetRoot()const { return m_pRootPage; }
 	/// @brief 获得父对象
@@ -128,11 +138,23 @@ public:
 	fBool GetClip()const { return m_bClip; }
 	/// @brief 设置是否裁剪
 	void SetClip(fBool Value) { m_bClip = Value; }
+	/// @brief 返回是否穿透
+	fBool GetMouseTrans()const { return m_bMouseTrans; }
+	/// @brief 设置是否穿透
+	void SetMouseTrans(fBool Value) { m_bMouseTrans = Value; }
+	/// @brief 返回层次优先级
+	fFloat GetLayerPriority()const { return m_LayerPriority; }
+	/// @brief 设置层次优先级
+	void SetLayerPriority(fFloat Value);
+	/// @brief 返回可见性
+	fBool GetVisiable()const { return m_bVisiable; }
+	/// @brief 设置可见性
+	void SetVisiable(fBool Value) { m_bVisiable = Value; }
 public:  // 覆写操作
 	/// @brief 更新控件状态
-	virtual void Update(fDouble ElapsedTime) {}
+	virtual void Update(fDouble ElapsedTime);
 	/// @brief 渲染控件
-	virtual void Render(fuiGraphics* pGraph) {}
+	virtual void Render(fuiGraphics* pGraph);
 	/// @brief     Hit测试
 	/// @param[in] Pos 相对控件左上角的位置
 	virtual fBool HitTest(const fcyVec2& Pos) { return true; }

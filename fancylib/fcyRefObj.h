@@ -82,29 +82,17 @@ public:
 		}
 		return *this;
 	}
-	T*& operator->()
+	T* operator->()const
 	{
 		return m_pPointer;
 	}
-	T*& operator->()const
-	{
-		return m_pPointer;
-	}
-	T*& operator*()
-	{
-		return m_pPointer;
-	}
-	T*& operator*()const
+	T* operator*()const
 	{
 		return m_pPointer;
 	}
 	T** operator&()
 	{
 		return &m_pPointer;
-	}
-	operator T*()
-	{
-		return m_pPointer;
 	}
 	operator T*()const
 	{

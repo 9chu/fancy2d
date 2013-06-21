@@ -17,16 +17,6 @@
 
 using namespace std;
 
-class MyUIControl : 
-	public fuiControl
-{
-public:
-	MyUIControl(fuiPage* pRootPage, const std::wstring& Name)
-		: fuiControl(pRootPage, Name)
-	{
-	}
-};
-
 class MyApp :
 	public f2dEngineEventListener
 {
@@ -43,10 +33,6 @@ private:
 	// 渲染器
 	fcyRefPointer<f2dGraphics2D> m_pGraph2D;
 	fcyRefPointer<f2dGraphics3D> m_pGraph3D;
-
-	// FPS绘制用
-	fcyRefPointer<f2dFontProvider> m_FPSFontProvider;
-	fcyRefPointer<f2dFontRenderer> m_FPSFontRenderer;
 
 	// 键盘
 	fcyRefPointer<f2dInputKeyboard> m_KeyBoard;
@@ -103,23 +89,6 @@ private:  // 功能函数
 
 		cout<<endl;
 	}
-	void drawFPS(f2dFPSController* pFPS, const std::wstring& AdditionData = L"")
-	{
-		m_pDev->ClearZBuffer();
-		m_pGraph2D->Begin();
-
-		fCharW tBuffer[1024];
-		swprintf_s(tBuffer, L"FPS %4.2lf",
-			pFPS->GetFPS()
-			);
-
-		m_FPSFontRenderer->SetColor(0xFF000000);
-		m_FPSFontRenderer->DrawTextW(m_pGraph2D, tBuffer, fcyVec2(5.f, 5.f) + fcyVec2(0.f, m_FPSFontProvider->GetAscender()));
-		m_FPSFontRenderer->SetColor(0xFF00FF00);
-		m_FPSFontRenderer->DrawTextW(m_pGraph2D, tBuffer, fcyVec2(4.f, 4.f) + fcyVec2(0.f, m_FPSFontProvider->GetAscender()));
-
-		m_pGraph2D->End();
-	}
 protected: // 引擎消息
 	fBool OnUpdate(fDouble ElapsedTime, f2dFPSController* pFPSController, f2dMsgPump* pMsgPump)
 	{
@@ -132,39 +101,8 @@ protected: // 引擎消息
 			case F2DMSG_WINDOW_ONCLOSE:
 				m_pEngine->Abort();
 				break;
-
-			case F2DMSG_WINDOW_ONMOUSEMOVE:
-				m_pRootUIPage->SendMouseMove(fcyVec2((float)tMsg.Param1, (float)tMsg.Param2));
-				break;
-			case F2DMSG_WINDOW_ONMOUSELDOWN:
-				m_pRootUIPage->SendMouseButtonDown(fuiPage::MOUSEBUTTON_L, &fcyVec2((float)tMsg.Param1, (float)tMsg.Param2));
-				break;
-			case F2DMSG_WINDOW_ONMOUSELUP:
-				m_pRootUIPage->SendMouseButtonUp(fuiPage::MOUSEBUTTON_L, &fcyVec2((float)tMsg.Param1, (float)tMsg.Param2));
-				break;
-			case F2DMSG_WINDOW_ONMOUSERDOWN:
-				m_pRootUIPage->SendMouseButtonDown(fuiPage::MOUSEBUTTON_R, &fcyVec2((float)tMsg.Param1, (float)tMsg.Param2));
-				break;
-			case F2DMSG_WINDOW_ONMOUSERUP:
-				m_pRootUIPage->SendMouseButtonUp(fuiPage::MOUSEBUTTON_R, &fcyVec2((float)tMsg.Param1, (float)tMsg.Param2));
-				break;
-			case F2DMSG_WINDOW_ONMOUSEMDOWN:
-				m_pRootUIPage->SendMouseButtonDown(fuiPage::MOUSEBUTTON_M, &fcyVec2((float)tMsg.Param1, (float)tMsg.Param2));
-				break;
-			case F2DMSG_WINDOW_ONMOUSEMUP:
-				m_pRootUIPage->SendMouseButtonUp(fuiPage::MOUSEBUTTON_M, &fcyVec2((float)tMsg.Param1, (float)tMsg.Param2));
-				break;
-			case F2DMSG_WINDOW_ONKEYDOWN:
-				m_pRootUIPage->SendKeyDown(fuiPage::VKKeyToF2DKey(tMsg.Param1));
-				break;
-			case F2DMSG_WINDOW_ONKEYUP:
-				m_pRootUIPage->SendKeyUp(fuiPage::VKKeyToF2DKey(tMsg.Param1));
-				break;
-			case F2DMSG_WINDOW_ONMOUSEWHEEL:
-				m_pRootUIPage->SendMouseWheel(*(fDouble*)&tMsg.Param3);
-				break;
-			case F2DMSG_WINDOW_ONCHARINPUT:
-				m_pRootUIPage->SendCharInput(tMsg.Param1);
+			default:
+				m_pRootUIPage->DealF2DMsg(tMsg);
 				break;
 			}
 		}
@@ -177,21 +115,14 @@ protected: // 引擎消息
 	fBool OnRender(fDouble ElapsedTime, f2dFPSController* pFPSController)
 	{
 		// 作图
-		m_pDev->Clear();
+		m_pDev->Clear(0xFF000000);
 
 		m_pGraph2D->Begin();
 
 		m_pGraph2D->End();
 
-		fCharW tBuffer[256];
-		swprintf_s(tBuffer, L"FPS %4.2lf", pFPSController->GetFPS());
-		m_pRootUIPage->FindControl(L"FPSLabel")->RawSetProperty(L"Text", tBuffer);
-
 		// 绘制UI
 		m_pRootUIPage->Render();
-
-		// 绘制FPS数据
-		// drawFPS(pFPSController);
 
 		return true; 
 	}
@@ -213,10 +144,10 @@ public:
 			fcyRect(50.f, 50.f, 640.f + 50.f, 480.f + 50.f), // 640x480
 			L"无标题",               // 标题
 			true,
-			false,  // VSYNC
+			true,  // VSYNC
 			F2DAALEVEL_2,
 			this,
-			&*m_pEngine,
+			&m_pEngine,
 			&tErrCallBack)))
 		{ return; }
 
@@ -235,6 +166,7 @@ public:
 		{
 			// 映射本地文件夹DemoRes到节点Res
 			m_pFileSys->LoadRealPath(L"Res", L"E:\\Projects\\fancy2D\\TestCpp\\DemoRes\\");
+			m_pFileSys->LoadRealPath(L"Simple", L"E:\\Projects\\fancy2D\\TestCpp\\DemoRes\\Simple\\");
 
 			// 创建渲染器
 			m_pDev->CreateGraphics2D(0, 0, &m_pGraph2D);
@@ -246,87 +178,19 @@ public:
 			// 创建键盘
 			m_pInputSys->CreateKeyboard(-1, false, &m_KeyBoard);
 
-			// 加载FPS字体
-			m_pRenderer->CreateFontFromFile(m_pFileSys->GetStream(L"Res\\Droid Sans Fallback.ttf"), 0, fcyVec2(16, 16), F2DFONTFLAG_NONE, &m_FPSFontProvider);
-			m_pRenderer->CreateFontRenderer(m_FPSFontProvider, &m_FPSFontRenderer);
-
-			// 测试
-			// m_pDev->CreateTextureFromStream(m_pFileSys->GetStream(L"Res\\Loading.png"), 0, 0, false, true, &m_pTexture);
-			// m_pRenderer->CreateSprite2D(m_pTexture, &m_pSprite);
-
-			fuiFactory::GetInstace()->RegisterControlCreator<MyUIControl>(L"MyUIControl");
-
 			tProvider = fuiResProviderImpl(m_pFileSys, m_pRenderer);
 
 			try
 			{
 				m_pRootUIPage.DirectSet(new fuiPage(L"Main", m_pRenderer, m_pGraph2D));
-				m_pRootUIPage->GetControlStyle()->LoadResFromFile(m_pFileSys->GetStream(L"Res\\UIStyle.xml"), &tProvider);
-				m_pRootUIPage->LoadLayoutFromFile(m_pFileSys->GetStream(L"Res\\UILayout.xml"));
-				m_pRootUIPage->SetDebugMode(true);
+				m_pRootUIPage->GetControlStyle()->LoadResFromFile(m_pFileSys->GetStream(L"Simple\\Style.xml"), &tProvider);
+				m_pRootUIPage->LoadLayoutFromFile(m_pFileSys->GetStream(L"Simple\\Layout.xml"));
+				m_pRootUIPage->SetDebugMode(false);
 
-				m_pRootUIPage->FindControl(L"Label_0")->GetEvent(L"OnCharInput") +=
-					[&](fuiControl* pControl, fuiEventArgs* pArgs)
+				m_pRootUIPage->FindControl(L"TestEditBox")->GetEvent(L"OnTextChanged") +=
+					[&](fuiControl* p, fuiEventArgs* pArgs)
 					{
-						fuiCharEventArgs* tPos = (fuiCharEventArgs*)pArgs->QueryEvent(fuiEventArgs::EVENTTYPE_CHAR);
-						
-						pControl->RawSetProperty(L"Text", pControl->RawGetProperty(L"Text") + tPos->GetChar());
-					};
-
-				m_pRootUIPage->FindControl(L"Label")->GetEvent(L"OnMouseMove") +=
-					[&](fuiControl* pControl, fuiEventArgs* pArgs)
-					{
-						fuiPositionEventArgs* pPosArgs = (fuiPositionEventArgs*)pArgs->QueryEvent(fuiEventArgs::EVENTTYPE_POSITION);
-
-						fCharW tBuffer[256];
-						swprintf_s(tBuffer, L"X=%.2f Y=%.2f", pPosArgs->GetPos().x, pPosArgs->GetPos().y);
-
-						pControl->RawSetProperty(L"Text", tBuffer);
-					};
-				m_pRootUIPage->FindControl(L"Label")->GetEvent(L"OnMouseLeave") +=
-					[&](fuiControl* pControl, fuiEventArgs* pArgs)
-					{
-						pControl->RawSetProperty(L"Text", L"鼠标移出");
-					};
-				m_pRootUIPage->FindControl(L"Label")->GetEvent(L"OnMouseLDown") +=
-					[&](fuiControl* pControl, fuiEventArgs* pArgs)
-					{
-						pControl->RawSetProperty(L"Text", L"鼠标左键按下");
-					};
-				m_pRootUIPage->FindControl(L"Label")->GetEvent(L"OnMouseLUp") +=
-					[&](fuiControl* pControl, fuiEventArgs* pArgs)
-					{
-						pControl->RawSetProperty(L"Text", L"鼠标左键放开");
-					};
-				m_pRootUIPage->FindControl(L"Label")->GetEvent(L"OnMouseMDown") +=
-					[&](fuiControl* pControl, fuiEventArgs* pArgs)
-					{
-						pControl->RawSetProperty(L"Text", L"鼠标中键按下");
-					};
-				m_pRootUIPage->FindControl(L"Label")->GetEvent(L"OnMouseMUp") +=
-					[&](fuiControl* pControl, fuiEventArgs* pArgs)
-					{
-						pControl->RawSetProperty(L"Text", L"鼠标中键放开");
-					};
-				m_pRootUIPage->FindControl(L"Label")->GetEvent(L"OnMouseRDown") +=
-					[&](fuiControl* pControl, fuiEventArgs* pArgs)
-					{
-						pControl->RawSetProperty(L"Text", L"鼠标右键按下");
-					};
-				m_pRootUIPage->FindControl(L"Label")->GetEvent(L"OnMouseRUp") +=
-					[&](fuiControl* pControl, fuiEventArgs* pArgs)
-					{
-						pControl->RawSetProperty(L"Text", L"鼠标右键放开");
-					};
-				m_pRootUIPage->FindControl(L"Label")->GetEvent(L"OnGetFocus") +=
-					[&](fuiControl* pControl, fuiEventArgs* pArgs)
-					{
-						pControl->RawSetProperty(L"Text", L"获得焦点");
-					};
-				m_pRootUIPage->FindControl(L"Label")->GetEvent(L"OnLostFocus") +=
-					[&](fuiControl* pControl, fuiEventArgs* pArgs)
-					{
-						pControl->RawSetProperty(L"Text", L"失去焦点");
+						m_pRootUIPage->FindControl(L"TestLabel")->RawSetProperty(L"Text", p->RawGetProperty(L"Text"));
 					};
 			}
 			catch(const fcyException& e)
@@ -341,6 +205,9 @@ public:
 
 		// 显示窗口
 		m_pEngine->GetMainWindow()->SetVisiable(true);
+
+		// 隐藏鼠标
+		m_pEngine->GetMainWindow()->HideMouse(false);
 
 		// 启动
 		m_pEngine->Run(F2DENGTHREADMODE_MULTITHREAD);

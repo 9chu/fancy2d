@@ -46,8 +46,8 @@ f2dFontFileProvider::f2dFontFileProvider(f2dRenderDevice* pParent, f2dStream* pS
 
 	// --- 构建缓冲区 ---
 	// 获得字体大小
-	m_PerGlyphSize.x = widthSizeToPixel(abs(m_Face->bbox.xMax - m_Face->bbox.xMin)) + s_Magin * 2.f;
-	m_PerGlyphSize.y = heightSizeToPixel(abs(m_Face->bbox.yMax - m_Face->bbox.yMin)) + s_Magin * 2.f;
+	m_PerGlyphSize.x = ceil(widthSizeToPixel(abs(m_Face->bbox.xMax - m_Face->bbox.xMin)) + s_Magin * 2.f);
+	m_PerGlyphSize.y = ceil(heightSizeToPixel(abs(m_Face->bbox.yMax - m_Face->bbox.yMin)) + s_Magin * 2.f);
 
 	// 计算行列的文字数
 	if(1024.f / m_PerGlyphSize.x < 10.f || 1024.f / m_PerGlyphSize.y < 10.f)
@@ -261,15 +261,18 @@ bool f2dFontFileProvider::makeCache(fuInt Size)
 	m_FreeNodeList = m_Cache;
 
 	// 初始化信息
+	int tCurIndex = 0;
 	for(fuInt j = 0; j<m_CacheYCount; j++)
 		for(fuInt i = 0; i<m_CacheXCount; i++)
 		{
-			int tCurIndex = j * m_CacheYCount + i;
 			m_Cache[ tCurIndex ].CacheSize = fcyRect(
 					i * m_PerGlyphSize.x, j * m_PerGlyphSize.y, 
 					(i+1) * m_PerGlyphSize.x, (j+1) * m_PerGlyphSize.y
 					);
+			
 			m_Cache[ tCurIndex ].Character = L'\0';
+			
+			tCurIndex++;
 		}
 
 	// 连接缓冲区
@@ -300,7 +303,7 @@ bool f2dFontFileProvider::renderCache(FontCacheInfo* pCache, fCharW Char)
 	pCache->BrushPos = fcyVec2(-(float)m_Face->glyph->bitmap_left, (float)m_Face->glyph->bitmap_top);
 	pCache->UV = fcyRect(
 		pCache->CacheSize.a + fcyVec2((float)s_Magin, (float)s_Magin),
-		pCache->CacheSize.a + fcyVec2((float)s_Magin, (float)s_Magin) + fcyVec2((float)tBitmap->width, (float)tBitmap->rows)
+		pCache->CacheSize.a + fcyVec2((float)tBitmap->width, (float)tBitmap->rows) + fcyVec2((float)s_Magin, (float)s_Magin)
 		);
 	pCache->GlyphSize = fcyVec2((float)m_Face->glyph->bitmap.width, (float)m_Face->glyph->bitmap.rows); 
 	
@@ -394,10 +397,18 @@ fResult f2dFontFileProvider::CacheString(fcStrW String)
 
 fResult f2dFontFileProvider::QueryGlyph(f2dGraphics* pGraph, fCharW Character, f2dGlyphInfo* InfoOut)
 {
-	if(iswcntrl(Character))
+	if(Character != L'\t' && iswcntrl(Character))
 		return FCYERR_INVAILDPARAM;
 	if(!InfoOut)
 		return FCYERR_INVAILDPARAM;
+
+	if(Character == L'\t')
+	{
+		fResult tRet = QueryGlyph(pGraph, L' ', InfoOut);
+		if(FCYOK(tRet))
+			InfoOut->Advance.x *= 2.f;
+		return tRet;
+	}
 
 	if(pGraph)  // 绘制过程
 	{

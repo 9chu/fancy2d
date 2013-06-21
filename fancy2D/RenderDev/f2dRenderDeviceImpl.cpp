@@ -180,7 +180,7 @@ HRESULT f2dRenderDeviceImpl::doReset(D3DPRESENT_PARAMETERS* pD3DPP)
 		void Excute() { HR = pDev->Reset(D3DPP); }
 
 		_Work(IDirect3DDevice9* p, D3DPRESENT_PARAMETERS* pp)
-			: pDev(p), D3DPP(pp) {}
+			: pDev(p), D3DPP(pp), HR(D3DERR_DEVICELOST) {}
 	};
 
 	if(GetCurrentThreadId() != m_CreateThreadID)
@@ -198,6 +198,37 @@ HRESULT f2dRenderDeviceImpl::doReset(D3DPRESENT_PARAMETERS* pD3DPP)
 	else
 	{
 		return m_pDev->Reset(pD3DPP);
+	}
+}
+
+HRESULT f2dRenderDeviceImpl::doTestCooperativeLevel()
+{
+	struct _Work : public fcyRefObjImpl<f2dMainThreadDelegate>
+	{
+		IDirect3DDevice9* pDev;
+		HRESULT HR;
+		
+		void Excute() { HR = pDev->TestCooperativeLevel(); }
+
+		_Work(IDirect3DDevice9* p)
+			: pDev(p), HR(S_OK) {}
+	};
+
+	if(GetCurrentThreadId() != m_CreateThreadID)
+	{
+		HRESULT tHR;
+		_Work* tWork = new _Work(m_pDev);
+
+		m_pEngine->InvokeDelegateAndWait(tWork);
+
+		tHR = tWork->HR;
+		FCYSAFEKILL(tWork);
+
+		return tHR;
+	}
+	else
+	{
+		return m_pDev->TestCooperativeLevel();
 	}
 }
 
@@ -307,7 +338,7 @@ int f2dRenderDeviceImpl::sendDevResetMsg()
 
 fResult f2dRenderDeviceImpl::SyncDevice()
 {
-	HRESULT tHR = m_pDev->TestCooperativeLevel();	// 设备协作测试
+	HRESULT tHR = doTestCooperativeLevel();	// 设备协作测试
 	
 	if(m_bDevLost) // 设备已经丢失
 	{	

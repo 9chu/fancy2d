@@ -19,6 +19,10 @@
     <ClInclude Include="fcyUIBase\fuiRes.h" />
     <ClInclude Include="fcyUIBase\fuiStyle.h" />
     <ClInclude Include="fcyUIBase\fuiGraphics.h" />
+    <ClInclude Include="fcyUIControl\fuiButton.h" />
+    <ClInclude Include="fcyUIControl\fuiCursor.h" />
+    <ClInclude Include="fcyUIControl\fuiEditBox.h" />
+    <ClInclude Include="fcyUIControl\fuiIME.h" />
     <ClInclude Include="fcyUIControl\fuiLabel.h" />
   </ItemGroup>
   <ItemGroup>
@@ -30,7 +34,11 @@
     <ClCompile Include="fcyUIBase\fuiProperty.cpp" />
     <ClCompile Include="fcyUIBase\fuiRes.cpp" />
     <ClCompile Include="fcyUIBase\fuiStyle.cpp" />
+    <ClCompile Include="fcyUIControl\fuiButton.cpp" />
+    <ClCompile Include="fcyUIControl\fuiCursor.cpp" />
+    <ClCompile Include="fcyUIControl\fuiIME.cpp" />
     <ClCompile Include="fcyUIControl\fuiLabel.cpp" />
+    <ClCompile Include="fcyUIControl\fuiEditBox.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5745204B-573E-49A9-9145-8031BDF53235}</ProjectGuid>

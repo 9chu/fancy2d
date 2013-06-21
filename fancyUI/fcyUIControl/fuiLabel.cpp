@@ -15,78 +15,90 @@ fuiLabel::fuiLabel(fuiPage* pRootPage, const std::wstring& Name)
 
 	// 设置访问器
 	m_Text_Accessor = fuiPropertyAccessor<wstring>(
-			&m_Text,
-			[&](std::wstring& Prop, std::wstring* Value)
-			{
-				Prop = *Value;
-			},
-			[&](const std::wstring& Prop, std::wstring* Value)
-			{
-				*Value = Prop;
+		&m_Text,
+		[&](std::wstring& Prop, std::wstring* Value)
+		{
+			Prop = *Value;
+		},
+		[&](const std::wstring& Prop, std::wstring* Value)
+		{
+			*Value = Prop;
+			ExecEvent(L"OnTextChanged");
+		}
+	);
+	m_FontName_Accessor = fuiPropertyAccessor<wstring>
+	(
+		&m_FontName,
+		[&](std::wstring& Prop, std::wstring* Value)
+		{
+			Prop = *Value;
+		},
+		[&](const std::wstring& Prop, std::wstring* Value)
+		{
+			*Value = Prop;
 
-				ExecEvent(L"OnTextChanged");
-			}
-		);
-	m_FontName_Accessor = fuiPropertyAccessor<wstring>(&m_FontName);
+			ExecEvent(L"OnStyleChanged");
+		}
+	);
 	m_FontColor_Accessor = fuiPropertyAccessor<fcyColor>(&m_FontColor);
 	m_HAlign_Accessor = fuiPropertyAccessor<HALIGNMODE>(
-			&m_HAlign,
-			[&](std::wstring& Prop, HALIGNMODE* Value){
-				switch(*Value)
-				{
-				case HALIGNMODE_LEFT:
-					Prop = L"Left";
-					break;
-				case HALIGNMODE_CENTER:
-					Prop = L"Center";
-					break;
-				case HALIGNMODE_RIGHT:
-					Prop = L"Right";
-					break;
-				default:
-					throw fcyException("lambda [&](std::wstring&, HALIGNMODE*)", "Value of HALIGNMODE is invalid.");
-				}
-			},
-			[&](const std::wstring& Prop, HALIGNMODE* Value){
-				if(_wcsicmp(Prop.c_str(), L"left")==0)
-					*Value = HALIGNMODE_LEFT;
-				else if(_wcsicmp(Prop.c_str(), L"center")==0)
-					*Value = HALIGNMODE_CENTER;
-				else if(_wcsicmp(Prop.c_str(), L"right")==0)
-					*Value = HALIGNMODE_RIGHT;
-				else
-					throw fcyException("lambda [&](const std::wstring&, HALIGNMODE*)", "Property string is not correct.");
+		&m_HAlign,
+		[&](std::wstring& Prop, HALIGNMODE* Value){
+			switch(*Value)
+			{
+			case HALIGNMODE_LEFT:
+				Prop = L"Left";
+				break;
+			case HALIGNMODE_CENTER:
+				Prop = L"Center";
+				break;
+			case HALIGNMODE_RIGHT:
+				Prop = L"Right";
+				break;
+			default:
+				throw fcyException("lambda [&](std::wstring&, HALIGNMODE*)", "Value of HALIGNMODE is invalid.");
 			}
-		);
+		},
+		[&](const std::wstring& Prop, HALIGNMODE* Value){
+			if(_wcsicmp(Prop.c_str(), L"left")==0)
+				*Value = HALIGNMODE_LEFT;
+			else if(_wcsicmp(Prop.c_str(), L"center")==0)
+				*Value = HALIGNMODE_CENTER;
+			else if(_wcsicmp(Prop.c_str(), L"right")==0)
+				*Value = HALIGNMODE_RIGHT;
+			else
+				throw fcyException("lambda [&](const std::wstring&, HALIGNMODE*)", "Property string is not correct.");
+		}
+	);
 	m_VAlign_Accessor = fuiPropertyAccessor<VALIGNMODE>(
-			&m_VAlign,
-			[&](std::wstring& Prop, VALIGNMODE* Value){
-				switch(*Value)
-				{
-				case VALIGNMODE_TOP:
-					Prop = L"Top";
-					break;
-				case VALIGNMODE_CENTER:
-					Prop = L"Center";
-					break;
-				case VALIGNMODE_BOTTOM:
-					Prop = L"Bottom";
-					break;
-				default:
-					throw fcyException("lambda [&](std::wstring&, VALIGNMODE*)", "Value of VALIGNMODE is invalid.");
-				}
-			},
-			[&](const std::wstring& Prop, VALIGNMODE* Value){
-				if(_wcsicmp(Prop.c_str(), L"top")==0)
-					*Value = VALIGNMODE_TOP;
-				else if(_wcsicmp(Prop.c_str(), L"center")==0)
-					*Value = VALIGNMODE_CENTER;
-				else if(_wcsicmp(Prop.c_str(), L"bottom")==0)
-					*Value = VALIGNMODE_BOTTOM;
-				else
-					throw fcyException("lambda [&](const std::wstring&, VALIGNMODE*)", "Property string is not correct.");
+		&m_VAlign,
+		[&](std::wstring& Prop, VALIGNMODE* Value){
+			switch(*Value)
+			{
+			case VALIGNMODE_TOP:
+				Prop = L"Top";
+				break;
+			case VALIGNMODE_CENTER:
+				Prop = L"Center";
+				break;
+			case VALIGNMODE_BOTTOM:
+				Prop = L"Bottom";
+				break;
+			default:
+				throw fcyException("lambda [&](std::wstring&, VALIGNMODE*)", "Value of VALIGNMODE is invalid.");
 			}
-		);
+		},
+		[&](const std::wstring& Prop, VALIGNMODE* Value){
+		if(_wcsicmp(Prop.c_str(), L"top")==0)
+				*Value = VALIGNMODE_TOP;
+			else if(_wcsicmp(Prop.c_str(), L"center")==0)
+				*Value = VALIGNMODE_CENTER;
+			else if(_wcsicmp(Prop.c_str(), L"bottom")==0)
+				*Value = VALIGNMODE_BOTTOM;
+			else
+				throw fcyException("lambda [&](const std::wstring&, VALIGNMODE*)", "Property string is not correct.");
+		}
+	);
 
 	// 注册属性
 	RegisterProperty(L"Text", &m_Text_Accessor);
@@ -116,8 +128,7 @@ void fuiLabel::OnTextChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 	{
 		for(fuInt i = 0; i<m_Lines.size(); i++)
 		{
-			fcyRect tRect = m_pFontRenderer->MeasureString(m_Lines[i].c_str());
-			m_LineWidth[i] = tRect.GetWidth() + 2.f;
+			m_LineWidth[i] = m_pFontRenderer->MeasureStringWidth(m_Lines[i].c_str()) + 2.f;
 		}
 
 		m_TextHeight = m_Lines.size() * m_pFontProvider->GetLineHeight();
@@ -126,18 +137,21 @@ void fuiLabel::OnTextChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 
 void fuiLabel::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 {
-	fuiRes* pFont = GetControlStyle()->QueryRes(m_FontName);
+	m_pFontProvider = NULL;
+	m_pFontRenderer = NULL;
 
-	if(pFont && pFont->GetResType() == fuiRes::RESTYPE_FONT)
-	{
-		m_pFontProvider = ((fuiFont*)pFont)->GetFontProvider();
-		m_pFontRenderer = ((fuiFont*)pFont)->GetFontRenderer();
+	m_Font = (fuiFont*)GetControlStyle()->QueryRes(m_FontName);
 
-		// 重新布局
-		OnTextChanged(pThis, pArgs);
-	}
-	else
+	if(!m_FontName.empty() && !m_Font)
+		throw fcyException("fuiLabel::OnStyleChanged", "Res not found.");
+	if(m_Font && m_Font->GetResType() != fuiRes::RESTYPE_FONT)
 		throw fcyException("fuiLabel::OnStyleChanged", "Font res error.");
+
+	m_pFontProvider = ((fuiFont*)m_Font)->GetFontProvider();
+	m_pFontRenderer = ((fuiFont*)m_Font)->GetFontRenderer();
+
+	// 重新布局
+	OnTextChanged(pThis, pArgs);
 }
 
 void fuiLabel::Update(fDouble ElapsedTime)
