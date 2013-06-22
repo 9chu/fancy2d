@@ -20,7 +20,7 @@ fuiIME::fuiIME(fuiPage* pRootPage, const std::wstring& Name)
 	// …Ë÷√∑√Œ ∆˜
 	m_SingleLineSkin_Accessor = fuiPropertyAccessor<std::wstring>(
 		&m_SingleLineSkin,
-		[&](std::wstring& Prop, std::wstring* Value)
+		[&](std::wstring& Prop, const std::wstring* Value)
 		{
 			Prop = *Value;
 		},
@@ -32,7 +32,7 @@ fuiIME::fuiIME(fuiPage* pRootPage, const std::wstring& Name)
 	);
 	m_MultiLineSkin_Accessor = fuiPropertyAccessor<std::wstring>(
 		&m_MultiLineSkin,
-		[&](std::wstring& Prop, std::wstring* Value)
+		[&](std::wstring& Prop, const std::wstring* Value)
 		{
 			Prop = *Value;
 		},

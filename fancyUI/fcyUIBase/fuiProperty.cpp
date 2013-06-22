@@ -6,7 +6,7 @@ using namespace std;
 
 // int
 
-void fuiPropertyAccessorHelper<int>::DefaultGetter(std::wstring& PropData, int* Value)
+void fuiPropertyAccessorHelper<int>::DefaultGetter(std::wstring& PropData, const int* Value)
 {
 	fCharW tBuffer[256];
 	swprintf_s(tBuffer, L"%d", *Value);
@@ -26,7 +26,7 @@ void fuiPropertyAccessorHelper<int>::DefaultSetter(const std::wstring& PropData,
 
 // bool
 
-void fuiPropertyAccessorHelper<bool>::DefaultGetter(std::wstring& PropData, bool* Value)
+void fuiPropertyAccessorHelper<bool>::DefaultGetter(std::wstring& PropData, const bool* Value)
 {
 	if(*Value == true)
 		PropData = L"true";
@@ -54,7 +54,7 @@ void fuiPropertyAccessorHelper<bool>::DefaultSetter(const std::wstring& PropData
 
 // float
 
-void fuiPropertyAccessorHelper<float>::DefaultGetter(std::wstring& PropData, float* Value)
+void fuiPropertyAccessorHelper<float>::DefaultGetter(std::wstring& PropData, const float* Value)
 {
 	fCharW tBuffer[256];
 	swprintf_s(tBuffer, L"%f", *Value);
@@ -74,7 +74,7 @@ void fuiPropertyAccessorHelper<float>::DefaultSetter(const std::wstring& PropDat
 
 // fcyVec2
 
-void fuiPropertyAccessorHelper<fcyVec2>::DefaultGetter(std::wstring& PropData, fcyVec2* Value)
+void fuiPropertyAccessorHelper<fcyVec2>::DefaultGetter(std::wstring& PropData, const fcyVec2* Value)
 {
 	fCharW tBuffer[256];
 	swprintf_s(tBuffer, L"%f,%f", Value->x, Value->y);
@@ -94,7 +94,7 @@ void fuiPropertyAccessorHelper<fcyVec2>::DefaultSetter(const std::wstring& PropD
 
 // fcyVec3
 
-void fuiPropertyAccessorHelper<fcyVec3>::DefaultGetter(std::wstring& PropData, fcyVec3* Value)
+void fuiPropertyAccessorHelper<fcyVec3>::DefaultGetter(std::wstring& PropData, const fcyVec3* Value)
 {
 	fCharW tBuffer[256];
 	swprintf_s(tBuffer, L"%f,%f,%f", Value->x, Value->y, Value->z);
@@ -114,7 +114,7 @@ void fuiPropertyAccessorHelper<fcyVec3>::DefaultSetter(const std::wstring& PropD
 
 // fcyVec4
 
-void fuiPropertyAccessorHelper<fcyVec4>::DefaultGetter(std::wstring& PropData, fcyVec4* Value)
+void fuiPropertyAccessorHelper<fcyVec4>::DefaultGetter(std::wstring& PropData, const fcyVec4* Value)
 {
 	fCharW tBuffer[256];
 	swprintf_s(tBuffer, L"%f,%f,%f,%f", Value->x, Value->y, Value->z, Value->w);
@@ -134,7 +134,7 @@ void fuiPropertyAccessorHelper<fcyVec4>::DefaultSetter(const std::wstring& PropD
 
 // fcyRect
 
-void fuiPropertyAccessorHelper<fcyRect>::DefaultGetter(std::wstring& PropData, fcyRect* Value)
+void fuiPropertyAccessorHelper<fcyRect>::DefaultGetter(std::wstring& PropData, const fcyRect* Value)
 {
 	fCharW tBuffer[256];
 	swprintf_s(tBuffer, L"%f,%f,%f,%f", Value->a.x, Value->a.y, Value->b.x, Value->b.y);
@@ -154,7 +154,7 @@ void fuiPropertyAccessorHelper<fcyRect>::DefaultSetter(const std::wstring& PropD
 
 // fcyColor
 
-void fuiPropertyAccessorHelper<fcyColor>::DefaultGetter(std::wstring& PropData, fcyColor* Value)
+void fuiPropertyAccessorHelper<fcyColor>::DefaultGetter(std::wstring& PropData, const fcyColor* Value)
 {
 	fCharW tBuffer[256];
 	swprintf_s(tBuffer, L"%hhu,%hhu,%hhu,%hhu", Value->a, Value->r, Value->g, Value->b);
@@ -179,7 +179,7 @@ void fuiPropertyAccessorHelper<fcyColor>::DefaultSetter(const std::wstring& Prop
 
 // std::wstring
 
-void fuiPropertyAccessorHelper<std::wstring>::DefaultGetter(std::wstring& PropData, std::wstring* Value)
+void fuiPropertyAccessorHelper<std::wstring>::DefaultGetter(std::wstring& PropData, const std::wstring* Value)
 {
 	PropData = *Value;
 }

@@ -15,7 +15,7 @@ fuiEditBox::fuiEditBox(fuiPage* pRootPage, const std::wstring& Name)
 	// …Ë÷√∑√Œ ∆˜
 	m_Text_Accessor = fuiPropertyAccessor<wstring>(
 		&m_Text,
-		[&](std::wstring& Prop, std::wstring* Value)
+		[&](std::wstring& Prop, const std::wstring* Value)
 		{
 			Prop = *Value;
 		},
@@ -28,7 +28,7 @@ fuiEditBox::fuiEditBox(fuiPage* pRootPage, const std::wstring& Name)
 	m_FontName_Accessor = fuiPropertyAccessor<wstring>
 	(
 		&m_FontName,
-		[&](std::wstring& Prop, std::wstring* Value)
+		[&](std::wstring& Prop, const std::wstring* Value)
 		{
 			Prop = *Value;
 		},
@@ -44,7 +44,7 @@ fuiEditBox::fuiEditBox(fuiPage* pRootPage, const std::wstring& Name)
 	m_CursorSprite_Accessor = fuiPropertyAccessor<wstring>
 	(
 		&m_CursorSprite,
-		[&](std::wstring& Prop, std::wstring* Value)
+		[&](std::wstring& Prop, const std::wstring* Value)
 		{
 			Prop = *Value;
 		},
@@ -57,7 +57,7 @@ fuiEditBox::fuiEditBox(fuiPage* pRootPage, const std::wstring& Name)
 	);
 	m_Margin_Accessor = fuiPropertyAccessor<fcyRect>(
 		&m_Margin,
-		[&](std::wstring& Prop, fcyRect* Value)
+		[&](std::wstring& Prop, const fcyRect* Value)
 		{
 			fuiPropertyAccessorHelper<fcyRect>::DefaultGetter(Prop, Value);
 		},
@@ -71,7 +71,7 @@ fuiEditBox::fuiEditBox(fuiPage* pRootPage, const std::wstring& Name)
 	m_BorderSprite_Accessor = fuiPropertyAccessor<wstring>
 	(
 		&m_BorderSprite,
-		[&](std::wstring& Prop, std::wstring* Value)
+		[&](std::wstring& Prop, const std::wstring* Value)
 		{
 			Prop = *Value;
 		},
@@ -85,7 +85,7 @@ fuiEditBox::fuiEditBox(fuiPage* pRootPage, const std::wstring& Name)
 	m_ActiveBorderSprite_Accessor = fuiPropertyAccessor<wstring>
 	(
 		&m_ActiveBorderSprite,
-		[&](std::wstring& Prop, std::wstring* Value)
+		[&](std::wstring& Prop, const std::wstring* Value)
 		{
 			Prop = *Value;
 		},

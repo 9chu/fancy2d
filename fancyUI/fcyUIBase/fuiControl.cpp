@@ -67,7 +67,7 @@ void fuiControl::registerAllProperty()
 	// 宽度
 	m_Width_Accessor = fuiPropertyAccessor<float>(
 		NULL, 
-		[&](std::wstring& Prop, float*) {
+		[&](std::wstring& Prop, const float*) {
 			float v = GetWidth();
 			fuiPropertyAccessorHelper<float>::DefaultGetter(Prop, &v);
 		},
@@ -80,7 +80,7 @@ void fuiControl::registerAllProperty()
 	// 高度
 	m_Height_Accessor = fuiPropertyAccessor<float>(
 		NULL, 
-		[&](std::wstring& Prop, float*) {
+		[&](std::wstring& Prop, const float*) {
 			float v = m_Rect.GetHeight();
 			fuiPropertyAccessorHelper<float>::DefaultGetter(Prop, &v);
 		},
@@ -97,7 +97,7 @@ void fuiControl::registerAllProperty()
 	// 层次优先级
 	m_LayerPriority_Accessor = fuiPropertyAccessor<fFloat>(
 		&m_LayerPriority,
-		[&](std::wstring& Prop, float* v) {
+		[&](std::wstring& Prop, const float* v) {
 			fuiPropertyAccessorHelper<float>::DefaultGetter(Prop, v);
 		},
 		[&](const std::wstring& Prop, float*) {
@@ -118,6 +118,7 @@ void fuiControl::registerAllProperty()
 	RegisterProperty(L"Clip", &m_Clip_Accessor);
 	RegisterProperty(L"MouseTrans", &m_MouseTrans_Accessor);
 	RegisterProperty(L"LayerPriority", &m_LayerPriority_Accessor);
+	RegisterProperty(L"Visiable", &m_bVisiable_Accessor);
 }
 
 void fuiControl::registerAllEvent()

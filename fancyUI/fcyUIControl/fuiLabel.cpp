@@ -16,7 +16,7 @@ fuiLabel::fuiLabel(fuiPage* pRootPage, const std::wstring& Name)
 	// …Ë÷√∑√Œ ∆˜
 	m_Text_Accessor = fuiPropertyAccessor<wstring>(
 		&m_Text,
-		[&](std::wstring& Prop, std::wstring* Value)
+		[&](std::wstring& Prop, const std::wstring* Value)
 		{
 			Prop = *Value;
 		},
@@ -29,7 +29,7 @@ fuiLabel::fuiLabel(fuiPage* pRootPage, const std::wstring& Name)
 	m_FontName_Accessor = fuiPropertyAccessor<wstring>
 	(
 		&m_FontName,
-		[&](std::wstring& Prop, std::wstring* Value)
+		[&](std::wstring& Prop, const std::wstring* Value)
 		{
 			Prop = *Value;
 		},
@@ -43,7 +43,7 @@ fuiLabel::fuiLabel(fuiPage* pRootPage, const std::wstring& Name)
 	m_FontColor_Accessor = fuiPropertyAccessor<fcyColor>(&m_FontColor);
 	m_HAlign_Accessor = fuiPropertyAccessor<HALIGNMODE>(
 		&m_HAlign,
-		[&](std::wstring& Prop, HALIGNMODE* Value){
+		[&](std::wstring& Prop, const HALIGNMODE* Value){
 			switch(*Value)
 			{
 			case HALIGNMODE_LEFT:
@@ -72,7 +72,7 @@ fuiLabel::fuiLabel(fuiPage* pRootPage, const std::wstring& Name)
 	);
 	m_VAlign_Accessor = fuiPropertyAccessor<VALIGNMODE>(
 		&m_VAlign,
-		[&](std::wstring& Prop, VALIGNMODE* Value){
+		[&](std::wstring& Prop, const VALIGNMODE* Value){
 			switch(*Value)
 			{
 			case VALIGNMODE_TOP:

@@ -32,12 +32,12 @@ struct fuiProperty
 template<class T>
 struct fuiPropertyAccessorHelper
 {
-	static void DefaultGetter(std::wstring&, T*);
+	static void DefaultGetter(std::wstring&, const T*);
 	static void DefaultSetter(const std::wstring&, T*);
 };
 
 template<class T>
-void fuiPropertyAccessorHelper<T>::DefaultGetter(std::wstring&, T*)
+void fuiPropertyAccessorHelper<T>::DefaultGetter(std::wstring&, const T*)
 {
 	throw fcyException("fuiPropertyAccessorHelper<T>::DefaultGetter", "Property type is not support.");
 }
@@ -54,63 +54,63 @@ void fuiPropertyAccessorHelper<T>::DefaultSetter(const std::wstring&, T*)
 template<>
 struct fuiPropertyAccessorHelper<int>
 {
-	static void DefaultGetter(std::wstring&, int*);
+	static void DefaultGetter(std::wstring&, const int*);
 	static void DefaultSetter(const std::wstring&, int*);
 };
 
 template<>
 struct fuiPropertyAccessorHelper<bool>
 {
-	static void DefaultGetter(std::wstring&, bool*);
+	static void DefaultGetter(std::wstring&, const bool*);
 	static void DefaultSetter(const std::wstring&, bool*);
 };
 
 template<>
 struct fuiPropertyAccessorHelper<float>
 {
-	static void DefaultGetter(std::wstring&, float*);
+	static void DefaultGetter(std::wstring&, const float*);
 	static void DefaultSetter(const std::wstring&, float*);
 };
 
 template<>
 struct fuiPropertyAccessorHelper<fcyVec2>
 {
-	static void DefaultGetter(std::wstring&, fcyVec2*);
+	static void DefaultGetter(std::wstring&, const fcyVec2*);
 	static void DefaultSetter(const std::wstring&, fcyVec2*);
 };
 
 template<>
 struct fuiPropertyAccessorHelper<fcyVec3>
 {
-	static void DefaultGetter(std::wstring&, fcyVec3*);
+	static void DefaultGetter(std::wstring&, const fcyVec3*);
 	static void DefaultSetter(const std::wstring&, fcyVec3*);
 };
 
 template<>
 struct fuiPropertyAccessorHelper<fcyVec4>
 {
-	static void DefaultGetter(std::wstring&, fcyVec4*);
+	static void DefaultGetter(std::wstring&, const fcyVec4*);
 	static void DefaultSetter(const std::wstring&, fcyVec4*);
 };
 
 template<>
 struct fuiPropertyAccessorHelper<fcyRect>
 {
-	static void DefaultGetter(std::wstring&, fcyRect*);
+	static void DefaultGetter(std::wstring&, const fcyRect*);
 	static void DefaultSetter(const std::wstring&, fcyRect*);
 };
 
 template<>
 struct fuiPropertyAccessorHelper<fcyColor>
 {
-	static void DefaultGetter(std::wstring&, fcyColor*);
+	static void DefaultGetter(std::wstring&, const fcyColor*);
 	static void DefaultSetter(const std::wstring&, fcyColor*);
 };
 
 template<>
 struct fuiPropertyAccessorHelper<std::wstring>
 {
-	static void DefaultGetter(std::wstring&, std::wstring*);
+	static void DefaultGetter(std::wstring&, const std::wstring*);
 	static void DefaultSetter(const std::wstring&, std::wstring*);
 };
 
@@ -122,7 +122,7 @@ class fuiPropertyAccessor :
 	public fuiProperty
 {
 public:
-	typedef fcyFunctor<void(std::wstring&, T*)>       PropGetter;
+	typedef fcyFunctor<void(std::wstring&, const T*)> PropGetter;
 	typedef fcyFunctor<void(const std::wstring&, T*)> PropSetter;
 protected:
 	T* m_pObj;               ///< @brief 关联的属性成员

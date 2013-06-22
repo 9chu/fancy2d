@@ -165,8 +165,8 @@ public:
 		// 加载资源
 		{
 			// 映射本地文件夹DemoRes到节点Res
-			m_pFileSys->LoadRealPath(L"Res", L"E:\\Projects\\fancy2D\\TestCpp\\DemoRes\\");
-			m_pFileSys->LoadRealPath(L"Simple", L"E:\\Projects\\fancy2D\\TestCpp\\DemoRes\\Simple\\");
+			m_pFileSys->LoadRealPath(L"Res", L"DemoRes\\");
+			m_pFileSys->LoadRealPath(L"Simple", L"DemoRes\\Simple\\");
 
 			// 创建渲染器
 			m_pDev->CreateGraphics2D(0, 0, &m_pGraph2D);

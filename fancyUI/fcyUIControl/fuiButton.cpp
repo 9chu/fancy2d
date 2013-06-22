@@ -22,7 +22,7 @@ fuiButton::fuiButton(fuiPage* pRootPage, const std::wstring& Name)
 	// …Ë÷√∑√Œ ∆˜
 	m_DefaultSprite_Accessor = fuiPropertyAccessor<wstring>(
 			&m_DefaultSprite,
-			[&](std::wstring& Prop, std::wstring* Value)
+			[&](std::wstring& Prop, const std::wstring* Value)
 			{
 				Prop = *Value;
 			},
@@ -35,7 +35,7 @@ fuiButton::fuiButton(fuiPage* pRootPage, const std::wstring& Name)
 		);
 	m_MouseOnSprite_Accessor = fuiPropertyAccessor<wstring>(
 			&m_MouseOnSprite,
-			[&](std::wstring& Prop, std::wstring* Value)
+			[&](std::wstring& Prop, const std::wstring* Value)
 			{
 				Prop = *Value;
 			},
@@ -48,7 +48,7 @@ fuiButton::fuiButton(fuiPage* pRootPage, const std::wstring& Name)
 		);
 	m_MouseDownSprite_Accessor = fuiPropertyAccessor<wstring>(
 			&m_MouseDownSprite,
-			[&](std::wstring& Prop, std::wstring* Value)
+			[&](std::wstring& Prop, const std::wstring* Value)
 			{
 				Prop = *Value;
 			},

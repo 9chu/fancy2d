@@ -123,7 +123,7 @@ fuiRes::fuiRes(RESTYPE Type, const std::wstring& Name)
 {
 	m_Type_Accessor = fuiPropertyAccessor<RESTYPE>(
 		&m_Type,
-		[&](std::wstring& Prop, RESTYPE* Value)
+		[&](std::wstring& Prop, const RESTYPE* Value)
 		{
 			fuiPropertyAccessorHelper<int>::DefaultGetter(Prop, (int*)Value);
 		},
