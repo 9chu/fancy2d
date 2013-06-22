@@ -11,4 +11,5 @@
   
   <!-- TEST -->
   <Font Name="Font0" FontSrc="Simple\msyh.ttf" FontSize="24,24" />
+  <Sprite Name="Logo" Src="Simple\Logo.png" Rect="0,0,60,60" />
 </fancyUIStyle>

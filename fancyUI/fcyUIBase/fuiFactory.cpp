@@ -5,6 +5,7 @@
 #include "../fcyUIControl/fuiCursor.h"
 #include "../fcyUIControl/fuiIME.h"
 #include "../fcyUIControl/fuiEditBox.h"
+#include "../fcyUIControl/fuiImageBox.h"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ fuiFactory::fuiFactory()
 	RegisterControlCreator<fuiCursor>(L"fuiCursor");
 	RegisterControlCreator<fuiIME>(L"fuiIME");
 	RegisterControlCreator<fuiEditBox>(L"fuiEditBox");
+	RegisterControlCreator<fuiImageBox>(L"fuiImageBox");
 }
 
 fuiFactory::~fuiFactory()

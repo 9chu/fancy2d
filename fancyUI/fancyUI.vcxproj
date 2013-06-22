@@ -22,6 +22,7 @@
     <ClInclude Include="fcyUIControl\fuiButton.h" />
     <ClInclude Include="fcyUIControl\fuiCursor.h" />
     <ClInclude Include="fcyUIControl\fuiEditBox.h" />
+    <ClInclude Include="fcyUIControl\fuiImageBox.h" />
     <ClInclude Include="fcyUIControl\fuiIME.h" />
     <ClInclude Include="fcyUIControl\fuiLabel.h" />
   </ItemGroup>
@@ -36,6 +37,7 @@
     <ClCompile Include="fcyUIBase\fuiStyle.cpp" />
     <ClCompile Include="fcyUIControl\fuiButton.cpp" />
     <ClCompile Include="fcyUIControl\fuiCursor.cpp" />
+    <ClCompile Include="fcyUIControl\fuiImageBox.cpp" />
     <ClCompile Include="fcyUIControl\fuiIME.cpp" />
     <ClCompile Include="fcyUIControl\fuiLabel.cpp" />
     <ClCompile Include="fcyUIControl\fuiEditBox.cpp" />

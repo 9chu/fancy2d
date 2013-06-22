@@ -30,4 +30,9 @@
             FontName="Font0" FontColor="255,0,255,0" 
             HAlign="Center" VAlign="Center"
             />
+  <fuiImageBox Name="TestImage"
+            Left="20" Top="300" Width="100" Height="100"
+            Image="Logo" BlendColor="200,0,0,0"
+            FillMethod="Stretch"
+            />
 </fancyUILayout>

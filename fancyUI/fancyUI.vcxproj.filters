@@ -72,6 +72,9 @@
     <ClInclude Include="fcyUIControl\fuiEditBox.h">
       <Filter>fcyUIControl\header</Filter>
     </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiImageBox.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fcyUIBase\fuiControl.cpp">
@@ -111,6 +114,9 @@
       <Filter>fcyUIControl\source</Filter>
     </ClCompile>
     <ClCompile Include="fcyUIControl\fuiEditBox.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiImageBox.cpp">
       <Filter>fcyUIControl\source</Filter>
     </ClCompile>
   </ItemGroup>
