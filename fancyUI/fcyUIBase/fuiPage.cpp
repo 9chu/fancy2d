@@ -655,7 +655,7 @@ void fuiPage::UnregisterControl(fuiControl* pControl)
 	m_ControlMap.erase(i);
 }
 
-void fuiPage::LoadLayoutFromFile(f2dStream* pStream)
+void fuiPage::LoadLayoutFromFile(fcyStream* pStream)
 {
 	if(!pStream)
 		throw fcyException("fuiPage::LoadLayoutFromFile", "Param 'pStream' is null.");
@@ -687,6 +687,27 @@ void fuiPage::SetControlStyle(fuiStyle* pStyle)
 	m_pDefaultStyle = pStyle;
 
 	execStyleChanged(this);
+}
+
+void fuiPage::SetFocusControl(fuiControl* p)
+{
+	if(p && p->GetParent() != this)
+		throw fcyException("fuiPage::SetFocusControl", "Invalid control.");
+
+	m_pLockMouseControl = NULL;
+	if(m_pFocus)
+	{
+		m_pFocus->ExecEvent(L"OnLostFocus");
+		sendSubControlLostFocusMsg(m_pFocus);
+	}
+
+	m_pFocus = p;
+
+	if(m_pFocus)
+	{
+		m_pFocus->ExecEvent(L"OnGetFocus");
+		sendSubControlGetFocusMsg(m_pFocus);
+	}
 }
 
 void fuiPage::Update(fDouble ElapsedTime)

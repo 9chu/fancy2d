@@ -60,6 +60,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\fancylib\;$(SolutionDir)\fancy2D\;$(SolutionDir)\fancyUI\</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -67,6 +68,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\fancylib\bin\;$(SolutionDir)\fancy2D\bin\;$(SolutionDir)\fancyUI\bin\</AdditionalLibraryDirectories>
       <AdditionalDependencies>fancy2D_d.lib;fancylib_d.lib;fancyUI_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

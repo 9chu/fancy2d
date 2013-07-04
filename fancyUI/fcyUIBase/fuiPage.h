@@ -119,7 +119,7 @@ protected: // for fuiControl
 	void UnregisterControl(fuiControl* pControl);
 public:
 	/// @brief  加载布局文件
-	void LoadLayoutFromFile(f2dStream* pStream);
+	void LoadLayoutFromFile(fcyStream* pStream);
 	/// @brief  寻找控件
 	/// @return 控件弱引用或者NULL
 	fuiControl* FindControl(const std::wstring& Name);
@@ -129,6 +129,10 @@ public:
 	void SetDebugMode(fBool Value) { m_bDebug = Value; }
 	/// @brief  返回鼠标上一次绝对位置
 	const fcyVec2& GetMouseLastPos() { return m_MouseLastPos; }
+	/// @brief 返回焦点
+	fuiControl* GetFocusControl() { return m_pFocus; }
+	/// @brief 设置焦点
+	void SetFocusControl(fuiControl* p);
 public: // 接口实现
 	fuiStyle* GetControlStyle()const;
 	void SetControlStyle(fuiStyle* pStyle);

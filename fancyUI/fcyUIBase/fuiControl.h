@@ -40,6 +40,7 @@ protected:
 protected: // 属性
 	// 属性成员
 	std::wstring m_Name;     ///< @brief [只读] 控件名
+	std::wstring m_Tag;      ///< @brief [读写] 附带属性
 	fcyRect m_Rect;          ///< @brief [读写] 控件位置
 	fBool m_bClip;           ///< @brief [读写] 裁剪
 	fBool m_bMouseTrans;     ///< @brief [读写] 鼠标穿透
@@ -48,6 +49,7 @@ protected: // 属性
 
 	// 访问器
 	fuiPropertyAccessor<std::wstring> m_Name_Accessor;   ///< @brief 控件名访问器 
+	fuiPropertyAccessor<std::wstring> m_Tag_Accessor;    ///< @brief 额外属性访问器 
 	fuiPropertyAccessor<fcyRect> m_Rect_Accessor;        ///< @brief 控件范围访问器
 	fuiPropertyAccessor<float> m_Left_Accessor;          ///< @brief 左侧距离访问器 
 	fuiPropertyAccessor<float> m_Top_Accessor;           ///< @brief 顶端距离访问器 
@@ -114,6 +116,10 @@ public:
 	// === 快速访问属性 ===
 	/// @brief 获得控件唯一名称
 	const std::wstring& GetName()const { return m_Name; }
+	/// @brief 返回额外数据
+	const std::wstring& GetTag()const { return m_Tag; }
+	/// @brief 设置额外数据
+	void SetTag(const std::wstring& Str) { m_Tag = Str; }
 	/// @brief 获得控件矩形位置
 	const fcyRect& GetRect()const { return m_Rect; }
 	/// @brief 设置控件矩形位置

@@ -61,10 +61,12 @@ class fcyRefPointer
 protected:
 	T* m_pPointer;
 public:
-	void DirectSet(T* Ptr)
+	fcyRefPointer& DirectSet(T* Ptr)
 	{
 		FCYSAFEKILL(m_pPointer);
 		m_pPointer = Ptr;
+
+		return *this;
 	}
 public:
 	bool operator==(const fcyRefPointer& Right)const

@@ -34,6 +34,8 @@ void fuiControl::registerAllProperty()
 		fuiPropertyAccessorHelper<std::wstring>::DefaultGetter, // 可读
 		fuiPropertyAccessor<std::wstring>::PropSetter()         // 拒绝写
 	);
+	// 额外属性
+	m_Tag_Accessor = fuiPropertyAccessor<std::wstring>(&m_Tag);
 	// 控件位置
 	m_Rect_Accessor = fuiPropertyAccessor<fcyRect>(
 		&m_Rect,
@@ -110,6 +112,7 @@ void fuiControl::registerAllProperty()
 
 	// 注册属性访问器
 	RegisterProperty(L"Name", &m_Name_Accessor);
+	RegisterProperty(L"Tag", &m_Tag_Accessor);
 	RegisterProperty(L"Rect", &m_Rect_Accessor);
 	RegisterProperty(L"Left", &m_Left_Accessor);
 	RegisterProperty(L"Top", &m_Top_Accessor);

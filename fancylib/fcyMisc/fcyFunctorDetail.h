@@ -112,6 +112,13 @@ public:
 		else
 			return m_pCallBack->Invoke( FCYFUNCTOR_MAKEARG1(FCYMAKEFUNCTOR, p) ); // (p1, p2, p3...)
 	}
+	R operator() ( FCYFUNCTOR_MAKEARG2(FCYMAKEFUNCTOR, P, p) )const // (P1 p1, P2 p2, P3 p3...)
+	{
+		if(!m_pCallBack)
+			throw fcyException("fcyFunctor::operator()const", "Invalid pointer.");
+		else
+			return m_pCallBack->Invoke( FCYFUNCTOR_MAKEARG1(FCYMAKEFUNCTOR, p) ); // (p1, p2, p3...)
+	}
 public:
 	bool Empty()const
 	{

@@ -180,6 +180,9 @@ protected:
 	/// @brief 注册属性
 	void RegisterProperty(const std::wstring& Str, fuiProperty* pProp);
 public: // 属性操作
+	/// @brief     返回属性接口
+	/// @param[in] Prop 属性名
+	fuiProperty* QueryPropertyInterface(const std::wstring& Prop);
 	/// @brief     获得原始属性字符串
 	/// @param[in] PropName 属性名称
 	const std::wstring& RawGetProperty(const std::wstring& PropName)const;

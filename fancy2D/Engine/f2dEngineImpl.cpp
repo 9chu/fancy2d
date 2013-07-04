@@ -464,7 +464,18 @@ void f2dEngineImpl::Run_MultiThread(fuInt UpdateMaxFPS)
 		m_Sec.UnLock();
 
 		if(bExit)
+		{
+			while(WAIT_TIMEOUT == WaitForSingleObject(tThread.GetHandle(), 10))
+			{
+				if(PeekMessage(&tMsg, 0, 0, 0, PM_REMOVE))
+				{
+					TranslateMessage(&tMsg);
+					DispatchMessage(&tMsg);
+				}
+			}
+			
 			break;
+		}
 
 		// 应用程序消息处理
 		if(GetMessage(&tMsg, 0, 0, 0))
@@ -502,7 +513,22 @@ void f2dEngineImpl::Run_FullMultiThread(fuInt UpdateMaxFPS, fuInt RenderMaxFPS)
 		m_Sec.UnLock();
 
 		if(bExit)
+		{
+			while(1)
+			{
+				if(WAIT_TIMEOUT != WaitForSingleObject(tUpdateThread.GetHandle(), 10))
+					if(WAIT_TIMEOUT != WaitForSingleObject(tRenderThread.GetHandle(), 10))
+						break;
+
+				if(PeekMessage(&tMsg, 0, 0, 0, PM_REMOVE))
+				{
+					TranslateMessage(&tMsg);
+					DispatchMessage(&tMsg);
+				}
+			}
+			
 			break;
+		}
 
 		// 应用程序消息处理
 		if(GetMessage(&tMsg, 0, 0, 0))

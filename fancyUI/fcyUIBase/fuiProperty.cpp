@@ -196,6 +196,15 @@ void fuiPropertySet::RegisterProperty(const std::wstring& Str, fuiProperty* pPro
 	m_PropList[Str] = pProp;
 }
 
+fuiProperty* fuiPropertySet::QueryPropertyInterface(const std::wstring& Prop)
+{
+	unordered_map<std::wstring, fuiProperty*>::const_iterator i = m_PropList.find(Prop);
+	if(i == m_PropList.end())
+		throw fcyException("fuiControl::RawGetProperty", "Property is not exsit.");
+	else
+		return (i->second);
+}
+
 const std::wstring& fuiPropertySet::RawGetProperty(const std::wstring& PropName)const
 {
 	unordered_map<std::wstring, fuiProperty*>::const_iterator i = m_PropList.find(PropName);

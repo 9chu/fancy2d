@@ -61,6 +61,7 @@
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <MinimalRebuild>true</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -68,6 +69,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\fancylib\bin\;extern\DirectShowClass\bin\$(Configuration)\;extern\DXSDK\lib\x86;extern\libvorbis\lib\$(Configuration)\;extern\libogg\lib\$(Configuration)\;extern\freetype\bin\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>fancylib_d.lib;Strmiids.lib;strmbasd.lib;dxguid.lib;winmm.lib;libvorbis.lib;libogg.lib;freetype.lib;%(AdditionalDependencies);Imm32.lib</AdditionalDependencies>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
