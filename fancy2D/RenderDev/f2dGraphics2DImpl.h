@@ -51,7 +51,7 @@ private:
 	// 坐标修复
 	void inline coordFix(float& x)
 	{
-		x = ((float)ftol_ieee_M(x)) + 0.5f;
+		x = ((float)ftol_ieee_M(x)) - 0.5f;
 	}
 	// 执行所有绘图指令
 	void flush(bool Discard=false);

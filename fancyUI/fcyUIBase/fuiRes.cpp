@@ -96,7 +96,7 @@ f2dFontProvider* fuiResProviderImpl::QuerySpriteFont(const std::wstring& TexSrc,
 		f2dTexture2D* pTex = QueryTexture(TexSrc);
 
 		// »ñÈ¡Á÷
-		f2dStream* pStream = m_pFileSys->GetStream(TexSrc.c_str());
+		f2dStream* pStream = m_pFileSys->GetStream(DefineSrc.c_str());
 		if(!pStream)
 			throw fcyException("fuiResProviderImpl::QuerySpriteFont", "Stream not found.");
 		pStream->SetPosition(FCYSEEKORIGIN_BEG, 0);

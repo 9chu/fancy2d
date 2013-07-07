@@ -8,7 +8,7 @@ fuiImageBox::fuiImageBox(fuiPage* pRootPage, const std::wstring& Name)
 	: fuiControl(pRootPage, Name), m_ImageFillMethod(IMAGEFILLMETHOD_LEFTTOP)
 {
 	// ƒ¨»œ Ù–‘
-	SetClip(true);
+	SetClip(false);
 
 	m_Image_Accessor = fuiPropertyAccessor<wstring>(
 		&m_Image,
