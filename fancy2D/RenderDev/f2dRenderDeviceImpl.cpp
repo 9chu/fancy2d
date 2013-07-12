@@ -499,7 +499,7 @@ IDirect3DVertexDeclaration9* f2dRenderDeviceImpl::RegisterVertexDeclare(f2dVerte
 	// === Hash¼ì²é ===
 	fuInt HashCode = fcyHash::SuperFastHash((fcData)pElement, sizeof(f2dVertexElement) * ElementCount);
 	
-	for(fuInt i = 0; i<m_VDCache.size(); i++)
+	for(fuInt i = 0; i<m_VDCache.size(); ++i)
 	{
 		if(m_VDCache[i].ElementData.size() == ElementCount && m_VDCache[i].Hash == HashCode)
 		{
@@ -530,7 +530,7 @@ IDirect3DVertexDeclaration9* f2dRenderDeviceImpl::RegisterVertexDeclare(f2dVerte
 
 	fuInt tOffset = 0;
 
-	for(fuInt i = 0; i<ElementCount; i++)
+	for(fuInt i = 0; i<ElementCount; ++i)
 	{
 		pElementArr[i].Stream = 0;
 		pElementArr[i].Offset = tOffset;
@@ -579,7 +579,7 @@ IDirect3DVertexDeclaration9* f2dRenderDeviceImpl::RegisterVertexDeclare(f2dVerte
 	tInfo.Hash = HashCode;
 	tInfo.pVertexDeclare = pVD;
 	tInfo.ElementData.resize(ElementCount);
-	for(fuInt i = 0; i<ElementCount; i++)
+	for(fuInt i = 0; i<ElementCount; ++i)
 	{
 		tInfo.ElementData[i] = pElement[i];
 	}

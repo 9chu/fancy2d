@@ -311,7 +311,7 @@ fResult f2dInputJoystickImpl::UpdateState()
 		}
 	}
 
-	for(fuInt i = 0; i<tSize; i++)
+	for(fuInt i = 0; i<tSize; ++i)
 	{
 		float tValue = 0.f;
 		switch(tRawData[i].dwOfs)

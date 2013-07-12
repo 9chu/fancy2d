@@ -6,7 +6,7 @@ using namespace std;
 
 fcyRefPointer<fcyModelLabel> fcyModelMeshFile::FindLabel(fuLong LabelName)
 {
-	for(fuInt i = 0; i<m_Labels.size(); i++)
+	for(fuInt i = 0; i<m_Labels.size(); ++i)
 	{
 		if(m_Labels[i]->GetLabelName() == LabelName)
 			return m_Labels[i];
@@ -34,7 +34,7 @@ void fcyModelMeshFile::Load(fcyStream* pStream, fBool IgnoreUnsupportLabel)
 	m_Description = fcyModelLabel::ReadString(pStream);
 
 	// 读取块
-	for(fuInt i = 0; i<tBlockCount; i++)
+	for(fuInt i = 0; i<tBlockCount; ++i)
 	{
 		fuLong tLable = tReader.ReadUInt64(); // 块标签头
 		fuInt tLen = tReader.ReadUInt32();    // 块大小
@@ -83,7 +83,7 @@ void fcyModelMeshFile::Save(fcyStream* pStream)
 	fcyModelLabel::WriteString(pStream, m_Description);
 
 	// 写入块
-	for(fuInt i = 0; i<m_Labels.size(); i++)
+	for(fuInt i = 0; i<m_Labels.size(); ++i)
 	{
 		// 写入标签头
 		tWritter.Write((fuLong)m_Labels[i]->GetLabelName());

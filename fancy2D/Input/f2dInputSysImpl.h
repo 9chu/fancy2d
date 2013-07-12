@@ -61,7 +61,7 @@ public:  // 内部方法
 				break;
 			}
 			else
-				i++;
+				++i;
 		}
 	}
 	void Update()  // 更新所有设备状态
@@ -71,7 +71,7 @@ public:  // 内部方法
 		{
 			(*i)->UpdateState();
 
-			i++;
+			++i;
 		}
 	}
 public:  // 接口实现

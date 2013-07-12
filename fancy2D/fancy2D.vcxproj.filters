@@ -207,6 +207,12 @@
     <ClInclude Include="Engine\f2dMsgPumpImpl.h">
       <Filter>Engine\header</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer\f2dSpriteAnimationImpl.h">
+      <Filter>Renderer\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\f2dParticle.h">
+      <Filter>Renderer\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\f2dEngineImpl.cpp">
@@ -304,6 +310,12 @@
     </ClCompile>
     <ClCompile Include="RenderDev\f2dGraphics3DImpl.cpp">
       <Filter>RenderDev\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\f2dSpriteAnimationImpl.cpp">
+      <Filter>Renderer\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\f2dParticle.cpp">
+      <Filter>Renderer\source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -88,7 +88,7 @@ public:
 		while(i != m_ObjCache.end())
 		{
 			delete(i->second);
-			i++;
+			++i;
 		}
 	}
 };
@@ -344,7 +344,7 @@ protected:
 		while(i != m_ObjCache.end())
 		{
 			delete(i->second);
-			i++;
+			++i;
 		}
 	}
 };
@@ -399,7 +399,7 @@ protected:
 	{
 		D3DXTECHNIQUE_DESC tTechDesc;
 		((ID3DXEffect*)m_pParent->GetHandle())->GetTechniqueDesc(pTechnique, &tTechDesc);
-		for(fuInt i = 0; i<tTechDesc.Passes; i++)
+		for(fuInt i = 0; i<tTechDesc.Passes; ++i)
 		{
 			if(pThisHandle == ((ID3DXEffect*)m_pParent->GetHandle())->GetPass(pTechnique, i))
 			{
@@ -416,7 +416,7 @@ protected:
 		while(i != m_ObjCache.end())
 		{
 			delete(i->second);
-			i++;
+			++i;
 		}
 	}
 };
@@ -502,7 +502,7 @@ protected:
 		while(i != m_ObjCache.end())
 		{
 			delete(i->second);
-			i++;
+			++i;
 		}
 
 		std::unordered_map<D3DXHANDLE, f2dEffectPassImpl*>::iterator j = m_PassCache.begin();
@@ -596,7 +596,7 @@ protected: // 设备丢失
 
 		// 刷新所有缓存的纹理
 		for(std::unordered_map<D3DXHANDLE, f2dTexture*>::iterator i = m_CachedTex.begin();
-			i != m_CachedTex.end(); i++)
+			i != m_CachedTex.end(); ++i)
 		{
 			m_pEffect->SetTexture(i->first, (IDirect3DBaseTexture9*)i->second->GetHandle());
 		}

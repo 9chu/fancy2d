@@ -37,8 +37,10 @@ public: // 接口实现
 	fFloat GetZ()const;
 	fResult SetZ(fFloat Value);
 	fcyColor GetColor(fuInt Index)const;
+	void GetColor(fcyColor* pOut)const;
 	fResult SetColor(fcyColor Color);
 	fResult SetColor(fuInt Index, fcyColor Color);
+	fResult SetColor(fcyColor* pArr);
 	fResult Draw(f2dGraphics2D* pGraph, const fcyRect& Dest);
 	fResult Draw(f2dGraphics2D* pGraph, const fcyRect& Dest, const fcyRect& SubTex);
 	fResult Draw(f2dGraphics2D* pGraph, const fcyVec2& Center);
@@ -46,9 +48,10 @@ public: // 接口实现
 	fResult Draw(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, const fcyRect& SubTex);
 	fResult Draw(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation);
 	fResult Draw(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation, const fcyRect& SubTex);
-protected:
+public:
 	f2dSpriteImpl(f2dTexture2D* pTex);
 	f2dSpriteImpl(f2dTexture2D* pTex, fcyRect SrcRect);
 	f2dSpriteImpl(f2dTexture2D* pTex, fcyRect SrcRect, fcyVec2 HotSpot);
+	f2dSpriteImpl(const f2dSpriteImpl* pOrg);
 	~f2dSpriteImpl();
 };

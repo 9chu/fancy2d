@@ -400,7 +400,7 @@ fResult f2dInputKeyboardImpl::UpdateState()
 		}
 	}
 
-	for(fuInt i = 0; i<tSize; i++)
+	for(fuInt i = 0; i<tSize; ++i)
 	{
 		fuInt tKeyCode = tRawData[i].dwOfs;
 		bool tKeyDown = (LOWORD(tRawData[i].dwData) & 0x80) != 0;

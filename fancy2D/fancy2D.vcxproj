@@ -116,6 +116,8 @@
     <ClInclude Include="Renderer\f2dFontRendererImpl.h" />
     <ClInclude Include="Renderer\f2dFontTexProvider.h" />
     <ClInclude Include="Renderer\f2dGeometryRendererImpl.h" />
+    <ClInclude Include="Renderer\f2dParticle.h" />
+    <ClInclude Include="Renderer\f2dSpriteAnimationImpl.h" />
     <ClInclude Include="Renderer\f2dSpriteImpl.h" />
     <ClInclude Include="f2dVideoSys.h" />
     <ClInclude Include="f2dWindow.h" />
@@ -154,6 +156,8 @@
     <ClCompile Include="Renderer\f2dFontRendererImpl.cpp" />
     <ClCompile Include="Renderer\f2dFontTexProvider.cpp" />
     <ClCompile Include="Renderer\f2dGeometryRendererImpl.cpp" />
+    <ClCompile Include="Renderer\f2dParticle.cpp" />
+    <ClCompile Include="Renderer\f2dSpriteAnimationImpl.cpp" />
     <ClCompile Include="Renderer\f2dSpriteImpl.cpp" />
     <ClCompile Include="Input\f2dInputJoystickImpl.cpp" />
     <ClCompile Include="Input\f2dInputKeyboardImpl.cpp" />

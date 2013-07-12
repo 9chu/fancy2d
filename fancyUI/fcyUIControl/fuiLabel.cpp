@@ -126,7 +126,7 @@ void fuiLabel::OnTextChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 	// 度量每行的宽度
 	if(m_pFontRenderer && m_pFontProvider)
 	{
-		for(fuInt i = 0; i<m_Lines.size(); i++)
+		for(fuInt i = 0; i<m_Lines.size(); ++i)
 		{
 			m_LineWidth[i] = m_pFontRenderer->MeasureStringWidth(m_Lines[i].c_str()) + 2.f;
 		}
@@ -168,7 +168,7 @@ void fuiLabel::Render(fuiGraphics* pGraph)
 		float tAscender = m_pFontProvider->GetAscender();
 		float tDescender = m_pFontProvider->GetDescender();
 		float tLineHeight = m_pFontProvider->GetLineHeight();
-		for(fuInt i = 0; i<m_Lines.size(); i++)
+		for(fuInt i = 0; i<m_Lines.size(); ++i)
 		{
 			fcyVec2 tPos;
 

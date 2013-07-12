@@ -19,7 +19,7 @@ void fcyIniSection::writeToStr(std::wstring& Out)
 	while(i!=m_KeyList.end())
 	{
 		Out += ((*i) + L"=" + m_Dict[(*i)] + L"\n");
-		i++;
+		++i;
 	}
 
 	Out += L"\n";
@@ -133,7 +133,7 @@ fcyIni::~fcyIni(void)
 	{
 		FCYSAFEDEL(i->second);
 
-		i++;
+		++i;
 	}
 }
 
@@ -254,7 +254,7 @@ fBool fcyIni::Remove(fcStrW SecName)
 {
 	vector<wstring>::iterator i = 
 		m_SecList.begin();
-	for(; i != m_SecList.end(); i++)
+	for(; i != m_SecList.end(); ++i)
 	{
 		if((*i) == SecName)
 			break;
@@ -312,7 +312,7 @@ void fcyIni::WriteToStr(std::wstring& Out)
 	{
 		m_Dict[(*i)]->writeToStr(Out);
 
-		i++;
+		++i;
 	}
 }
 

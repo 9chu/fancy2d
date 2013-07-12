@@ -5,6 +5,8 @@
 #include "f2dFontRendererImpl.h"
 #include "f2dFontFileProvider.h"
 #include "f2dFontTexProvider.h"
+#include "f2dSpriteAnimationImpl.h"
+#include "f2dParticle.h"
 
 #include "../Engine/f2dEngineImpl.h"
 
@@ -59,6 +61,7 @@ fResult f2dRendererImpl::CreateSprite2D(f2dTexture2D* pTex, f2dSprite** pOut)
 	catch(const fcyException& e)
 	{
 		m_pEngine->ThrowException(e);
+		return FCYERR_INTERNALERR;
 	}
 
 	return FCYERR_OK;
@@ -81,6 +84,7 @@ fResult f2dRendererImpl::CreateSprite2D(f2dTexture2D* pTex, const fcyRect& Org, 
 	catch(const fcyException& e)
 	{
 		m_pEngine->ThrowException(e);
+		return FCYERR_INTERNALERR;
 	}
 
 	return FCYERR_OK;
@@ -103,6 +107,7 @@ fResult f2dRendererImpl::CreateSprite2D(f2dTexture2D* pTex, const fcyRect& Org, 
 	catch(const fcyException& e)
 	{
 		m_pEngine->ThrowException(e);
+		return FCYERR_INTERNALERR;
 	}
 
 	return FCYERR_OK;
@@ -122,6 +127,7 @@ fResult f2dRendererImpl::CreateGeometryRenderer(f2dGeometryRenderer** pOut)
 	catch(const fcyException& e)
 	{
 		m_pEngine->ThrowException(e);
+		return FCYERR_INTERNALERR;
 	}
 
 	return FCYERR_OK;
@@ -141,6 +147,7 @@ fResult f2dRendererImpl::CreateFontRenderer(f2dFontProvider* pProvider, f2dFontR
 	catch(const fcyException& e)
 	{
 		m_pEngine->ThrowException(e);
+		return FCYERR_INTERNALERR;
 	}
 
 	return FCYERR_OK;
@@ -163,6 +170,7 @@ fResult f2dRendererImpl::CreateFontFromFile(f2dStream* pStream, fuInt FaceIndex,
 	catch(const fcyException& e)
 	{
 		m_pEngine->ThrowException(e);
+		return FCYERR_INTERNALERR;
 	}
 
 	return FCYERR_OK;
@@ -185,6 +193,7 @@ fResult f2dRendererImpl::CreateFontFromTex(f2dStream* pDefineFile, f2dTexture2D*
 	catch(const fcyException& e)
 	{
 		m_pEngine->ThrowException(e);
+		return FCYERR_INTERNALERR;
 	}
 
 	return FCYERR_OK;
@@ -207,6 +216,47 @@ fResult f2dRendererImpl::CreateFontFromTex(fcStrW pDefineText, f2dTexture2D* pTe
 	catch(const fcyException& e)
 	{
 		m_pEngine->ThrowException(e);
+		return FCYERR_INTERNALERR;
+	}
+
+	return FCYERR_OK;
+}
+
+fResult f2dRendererImpl::CreateSpriteAnimation(f2dSpriteAnimation** pOut)
+{
+	if(pOut)
+		*pOut = NULL;
+	else
+		return FCYERR_INVAILDPARAM;
+
+	try
+	{
+		*pOut = new f2dSpriteAnimationImpl();
+	}
+	catch(const fcyException& e)
+	{
+		m_pEngine->ThrowException(e);
+		return FCYERR_INTERNALERR;
+	}
+
+	return FCYERR_OK;
+}
+
+fResult f2dRendererImpl::CreateParticlePool(f2dParticlePool** pOut)
+{
+	if(pOut)
+		*pOut = NULL;
+	else
+		return FCYERR_INVAILDPARAM;
+
+	try
+	{
+		*pOut = new f2dParticlePoolImpl();
+	}
+	catch(const fcyException& e)
+	{
+		m_pEngine->ThrowException(e);
+		return FCYERR_INTERNALERR;
 	}
 
 	return FCYERR_OK;

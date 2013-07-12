@@ -104,7 +104,7 @@ void fuiIME::recalcuStr()
 	if(m_bHMode)
 	{
 		// 水平模式
-		for(fuInt i = 0; i<m_CandidateList.size(); i++)
+		for(fuInt i = 0; i<m_CandidateList.size(); ++i)
 		{
 			tCandidateStr += m_CandidateList[i];
 			if(i < m_CandidateList.size() - 1)
@@ -114,7 +114,7 @@ void fuiIME::recalcuStr()
 	else
 	{
 		// 垂直模式
-		for(fuInt i = 0; i<m_CandidateList.size(); i++)
+		for(fuInt i = 0; i<m_CandidateList.size(); ++i)
 		{
 			tCandidateStr += m_CandidateList[i];
 			if(i < m_CandidateList.size() - 1)
@@ -148,7 +148,7 @@ void fuiIME::readCandidate(f2dIMECandidateList* pList)
 	m_CandidateList.clear();
 	m_CandidateList.reserve(pList->GetCount());
 	fuInt tIndex = 1;
-	for(fuInt i = pList->GetPageStart(); i<pList->GetCount(); i++)
+	for(fuInt i = pList->GetPageStart(); i<pList->GetCount(); ++i)
 	{
 		wstring tStr = fcyStringHelper::ToWideStr((int)tIndex);
 		m_CandidateList.push_back(tStr + L". " + pList->GetCandidateStr(i));
@@ -351,7 +351,7 @@ void fuiIME::Render(fuiGraphics* pGraph)
 	{
 		if(m_bHMode)
 		{
-			for(fuInt i = 0; i<m_CandidateList.size(); i++)
+			for(fuInt i = 0; i<m_CandidateList.size(); ++i)
 			{
 				if((int)i == m_ActiveIndex)
 					m_pFontRenderer->SetColor(m_ActiveFontColor);
@@ -363,7 +363,7 @@ void fuiIME::Render(fuiGraphics* pGraph)
 		}
 		else
 		{
-			for(fuInt i = 0; i<m_CandidateList.size(); i++)
+			for(fuInt i = 0; i<m_CandidateList.size(); ++i)
 			{
 				if((int)i == m_ActiveIndex)
 					m_pFontRenderer->SetColor(m_ActiveFontColor);

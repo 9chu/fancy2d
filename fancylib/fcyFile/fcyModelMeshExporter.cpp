@@ -23,7 +23,7 @@ fcyModelMeshExporter::ModelMeshInfo fcyModelMeshExporter::ExportMesh(fcyModelMes
 	// 创建顶点声明
 	vector<f2dVertexElement> tVertexElementList;
 	tVertexElementList.resize(((fcyModelVertexLabel*)*tVertexLabel)->GetVertexElementSize());
-	for(fuInt i = 0; i<tVertexElementList.size(); i++)
+	for(fuInt i = 0; i<tVertexElementList.size(); ++i)
 	{
 		fcyModelVertexLabel::VertexElement& tElement = ((fcyModelVertexLabel*)*tVertexLabel)->GetVertexElement(i);
 		
@@ -89,7 +89,7 @@ fcyModelMeshExporter::ModelMeshInfo fcyModelMeshExporter::ExportMesh(fcyModelMes
 
 	fByte* pIndex = NULL;
 	(*pOut)->LockIndexData(0, ((fcyModelIndexLabel*)*tIndexLabel)->GetSize(), (void**)&pIndex);
-	for(fuInt i = 0; i<((fcyModelIndexLabel*)*tIndexLabel)->GetSize(); i++)
+	for(fuInt i = 0; i<((fcyModelIndexLabel*)*tIndexLabel)->GetSize(); ++i)
 	{
 		if(tInt32Index)
 		{
@@ -107,7 +107,7 @@ fcyModelMeshExporter::ModelMeshInfo fcyModelMeshExporter::ExportMesh(fcyModelMes
 	// 遍历并拷贝子集
 	fuInt tID = 0;
 	ModelMeshInfo tInfo;
-	for(fuInt i = 0; i<Mesh.GetLabelList().size(); i++)
+	for(fuInt i = 0; i<Mesh.GetLabelList().size(); ++i)
 	{
 		fcyRefPointer<fcyModelLabel> tSubsetLabel = Mesh.GetLabelList()[i];
 		if(tSubsetLabel->GetLabelName() == FFM_MAKE_LABELNAME8(fcyModelSubsetLabel::LABELNAME))
@@ -129,7 +129,7 @@ fcyModelMeshExporter::ModelMeshInfo fcyModelMeshExporter::ExportMesh(fcyModelMes
 	}
 
 	// 遍历拷贝材质
-	for(fuInt i = 0; i<Mesh.GetLabelList().size(); i++)
+	for(fuInt i = 0; i<Mesh.GetLabelList().size(); ++i)
 	{
 		fcyRefPointer<fcyModelLabel> tMaterialLabel = Mesh.GetLabelList()[i];
 		if(tMaterialLabel->GetLabelName() == FFM_MAKE_LABELNAME8(fcyModelMaterialLabel::LABELNAME))

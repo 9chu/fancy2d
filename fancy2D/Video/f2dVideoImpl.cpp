@@ -60,7 +60,7 @@ f2dVideoImpl::f2dVideoImpl(f2dVideoSysImpl* pParent, f2dStream* pStream, fuInt F
 		registerDebug();
 
 	// --- º”‘ÿFilter ---
-	for(fuInt i = 0; i<pParent->m_FliterGUIDList.size(); i++)
+	for(fuInt i = 0; i<pParent->m_FliterGUIDList.size(); ++i)
 		addFilter(pParent->m_FliterGUIDList[i]);
 
 	// --- π“Ω” ”∆µ‰÷»æ∆˜ ---

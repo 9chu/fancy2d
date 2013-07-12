@@ -55,7 +55,7 @@ f2dFileFolderNodeForReal::~f2dFileFolderNodeForReal()
 	while( i != m_SubNodes.end() )
 	{
 		FCYSAFEKILL(*i);
-		i++;
+		++i;
 	}
 	m_SubNodes.clear();
 	m_NodeList.clear();
@@ -204,7 +204,7 @@ f2dFileFolderNodeForPackage::~f2dFileFolderNodeForPackage()
 	while(i != m_NodesCache.end())
 	{
 		FCYSAFEKILL(i->second);
-		i++;
+		++i;
 	}
 	m_NodesCache.clear();
 
@@ -381,7 +381,7 @@ fResult f2dFileFolderNodeImpl::Clear()
 	while(i != m_NodeList.end())
 	{
 		i->second->Release();
-		i++;
+		++i;
 	}
 
 	m_NodeList.clear();
@@ -538,7 +538,7 @@ f2dFileNode* f2dFileSysImpl::traverseNode(fcStrW NodePath, f2dFileFolderNode** p
 
 	f2dFileNode* pNode = GetRootNode();
 	f2dFileFolderNode* pParentNode = GetRootNode();
-	for(fuInt i = 0; i<tPathList.size(); i++)
+	for(fuInt i = 0; i<tPathList.size(); ++i)
 	{
 		pParentNode = pNode->ToFolder();
 		if(!pParentNode)
@@ -577,7 +577,7 @@ f2dFileNode* f2dFileSysImpl::traverseNode(fcStrW NodePath, wstring& NodeName, f2
 
 	f2dFileNode* pNode = GetRootNode();
 	f2dFileFolderNode* pParentNode = GetRootNode();
-	for(fuInt i = 0; i<tPathList.size(); i++)
+	for(fuInt i = 0; i<tPathList.size(); ++i)
 	{
 		pParentNode = pNode->ToFolder();
 		if(!pParentNode)
@@ -619,7 +619,7 @@ fResult f2dFileSysImpl::makeNode(fcStrW NodePath, fBool MakeDir, std::wstring& N
 
 	f2dFileNode* pNode = GetRootNode();
 	f2dFileFolderNode* pParentNode = GetRootNode();
-	for(fuInt i = 0; i<tPathList.size()-1; i++) // 遍历到倒数第二层
+	for(fuInt i = 0; i<tPathList.size()-1; ++i) // 遍历到倒数第二层
 	{
 		pParentNode = pNode->ToFolder();
 		if(!pParentNode)

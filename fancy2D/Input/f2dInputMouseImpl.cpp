@@ -196,7 +196,7 @@ fResult f2dInputMouseImpl::UpdateState()
 		}
 	}
 
-	for(fuInt i = 0; i<tSize; i++)
+	for(fuInt i = 0; i<tSize; ++i)
 	{
 		switch(tRawData[i].dwOfs)
 		{

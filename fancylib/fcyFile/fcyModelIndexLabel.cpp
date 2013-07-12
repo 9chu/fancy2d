@@ -9,7 +9,7 @@ const char fcyModelIndexLabel::LABELNAME[8] = { "INDEX" };
 fBool fcyModelIndexLabel::IsIndex32()
 {
 	fBool tRet = false;
-	for(fuInt i = 0; i<m_IndexData.size(); i++)
+	for(fuInt i = 0; i<m_IndexData.size(); ++i)
 		if(m_IndexData[i] > 65535)
 		{
 			tRet = true;
@@ -37,7 +37,7 @@ void fcyModelIndexLabel::ReadData(fcyStream* pStream)
 	
 	// 读取索引数据
 	m_IndexData.resize(tIndexCount);
-	for(fuInt i = 0; i<tIndexCount; i++)
+	for(fuInt i = 0; i<tIndexCount; ++i)
 	{
 		if(tUseInt32Index)
 			m_IndexData[i] = tReader.ReadUInt32();
@@ -59,7 +59,7 @@ void fcyModelIndexLabel::WriteData(fcyStream* pStream)
 	tWritter.Write((fByte)0);                  // 流标记
 
 	// 写出索引
-	for(fuInt i = 0; i<m_IndexData.size(); i++)
+	for(fuInt i = 0; i<m_IndexData.size(); ++i)
 	{
 		if(tIndex32)
 			tWritter.Write((fuInt)m_IndexData[i]);

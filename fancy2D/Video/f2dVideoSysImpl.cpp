@@ -27,7 +27,7 @@ GUID f2dVideoSysImpl::strToGUID(fcStrW pGUIDStr)
 		&tData[4], &tData[5],
 		&tData[6], &tData[7]);
 
-	for(int i = 0; i<8; i++)
+	for(int i = 0; i<8; ++i)
 		tRet.Data4[i] = tData[i];
 
 	return tRet;
@@ -76,7 +76,7 @@ fResult f2dVideoSysImpl::LoadFilter(fcStrW pGUIDStr)
 
 	FCYSAFEKILL(pFilter);
 
-	for(fuInt i = 0; i<m_FliterGUIDList.size(); i++)
+	for(fuInt i = 0; i<m_FliterGUIDList.size(); ++i)
 		if(m_FliterGUIDList[i].FilterGUID == tGUID)
 			return FCYERR_OBJEXSITED;
 
@@ -101,7 +101,7 @@ fResult f2dVideoSysImpl::LoadFilterFromAX(fcStrW AXFilePath, fcStrW pGUIDStr)
 
 	FCYSAFEKILL(pFilter);
 
-	for(fuInt i = 0; i<m_FliterGUIDList.size(); i++)
+	for(fuInt i = 0; i<m_FliterGUIDList.size(); ++i)
 		if(m_FliterGUIDList[i].FilterGUID == tGUID)
 			return FCYERR_OBJEXSITED;
 

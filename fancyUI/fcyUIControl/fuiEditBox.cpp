@@ -322,7 +322,7 @@ void fuiEditBox::OnMouseLDown(fuiControl* pThis, fuiEventArgs* pArgs)
 		float tLastLen = 0.f;
 		fuInt i = 0;
 
-		for(i = 0; i<m_Text.length(); i++)
+		for(i = 0; i<m_Text.length(); ++i)
 		{
 			fCharW tStr[2] = { m_Text[i] , 0 };
 			float tTextLen = m_pFontRenderer->MeasureStringWidth(tStr);
@@ -334,7 +334,7 @@ void fuiEditBox::OnMouseLDown(fuiControl* pThis, fuiEventArgs* pArgs)
 					break;
 				else
 				{
-					i++;
+					++i;
 					break;
 				}
 			}

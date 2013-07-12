@@ -111,7 +111,7 @@ void f2dGraphics2DImpl::flush(bool Discard)
 		m_VBUsedCount += i->VertCount;
 		m_IBUsedCount += i->IndexCount;
 
-		i++;
+		++i;
 	}
 
 	m_Commands.clear();
@@ -166,7 +166,7 @@ void f2dGraphics2DImpl::pushCommand(f2dTexture2D* pTex, fuInt VertCount, fuInt I
 		{
 			// µ÷ÕûË÷Òý
 			fuShort* pIndex = (m_pIBData + m_IBAlloced - IndexCount);
-			for(fuInt i = 0; i<IndexCount; i++)
+			for(fuInt i = 0; i<IndexCount; ++i)
 				pIndex[i] += pCmd->VertCount;
 
 			pCmd->VertCount += VertCount;
@@ -368,7 +368,7 @@ fResult f2dGraphics2DImpl::DrawRaw(f2dTexture2D* pTex, fuInt VertCount, fuInt In
 
 	if(bAutoFixCoord)
 	{
-		for(fuInt i = 0; i<VertCount; i++)
+		for(fuInt i = 0; i<VertCount; ++i)
 		{
 			coordFix(pVerts[i].x);
 			coordFix(pVerts[i].y);

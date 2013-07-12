@@ -144,7 +144,7 @@ void fcyJsonString::writeToStr(std::wstring& OutStr)
 {
 	OutStr += L"\"";
 
-	for(fuInt i = 0; i<m_Str.size(); i++)
+	for(fuInt i = 0; i<m_Str.size(); ++i)
 	{
 		switch(m_Str[i])
 		{
@@ -214,7 +214,7 @@ void fcyJsonList::writeToStr(std::wstring& OutStr)
 {
 	OutStr += L"[ ";
 
-	for(fuInt i = 0; i<m_ObjList.size(); i++)
+	for(fuInt i = 0; i<m_ObjList.size(); ++i)
 	{
 		m_ObjList[i]->writeToStr(OutStr);
 
@@ -274,7 +274,7 @@ void fcyJsonList::Clear()
 	while(i!=m_ObjList.end())
 	{
 		FCYSAFEDEL(*i);
-		i++;
+		++i;
 	}
 
 	m_ObjList.clear();
@@ -300,7 +300,7 @@ void fcyJsonDict::writeToStr(std::wstring& OutStr)
 {
 	OutStr += L"{ ";
 
-	for(fuInt i = 0; i<m_ObjList.size(); i++)
+	for(fuInt i = 0; i<m_ObjList.size(); ++i)
 	{
 		fcyJsonValue* pObj = m_Cache[m_ObjList[i]];
 

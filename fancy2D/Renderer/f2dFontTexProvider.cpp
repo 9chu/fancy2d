@@ -67,7 +67,7 @@ void f2dFontTexProvider::loadDefine(fcyXml& Xml)
 
 	// ¶ÁÈ¡×Ö·û±í
 	fuInt tSubNodeCount = pCharList->GetNodeCount(L"Item");
-	for(fuInt i = 0; i<tSubNodeCount; i++)
+	for(fuInt i = 0; i<tSubNodeCount; ++i)
 	{
 		fcyXmlNode* pSub = pCharList->GetNodeByName(L"Item", i);
 

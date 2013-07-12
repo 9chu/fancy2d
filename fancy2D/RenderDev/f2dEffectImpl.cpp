@@ -151,7 +151,7 @@ f2dEffectImpl::f2dEffectImpl(f2dRenderDeviceImpl* pDev, f2dStream* pStream, fBoo
 	m_pParent->AttachListener(this, 16);
 
 	// === 扫描所有变量并记录带语义变量 ===
-	for(fuInt i = 0; i<GetParamCount(); i++)
+	for(fuInt i = 0; i<GetParamCount(); ++i)
 	{
 		f2dEffectParam* pParam = GetParam(i);
 		
@@ -185,7 +185,7 @@ f2dEffectImpl::~f2dEffectImpl()
 	while(i != m_ParamCache.end())
 	{
 		delete(i->second);
-		i++;
+		++i;
 	}
 
 	std::unordered_map<D3DXHANDLE, f2dEffectFunctionImpl*>::iterator j = m_FuncCache.begin();
@@ -204,7 +204,7 @@ f2dEffectImpl::~f2dEffectImpl()
 
 	// === 释放所有缓存的纹理 ===
 	for(unordered_map<D3DXHANDLE, f2dTexture*>::iterator i = m_CachedTex.begin();
-		i != m_CachedTex.end(); i++)
+		i != m_CachedTex.end(); ++i)
 	{
 		FCYSAFEKILL(i->second);
 	}

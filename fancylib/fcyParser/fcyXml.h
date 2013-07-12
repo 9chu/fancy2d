@@ -53,12 +53,12 @@ public:
 		}
 		AttributeIterator& operator--()
 		{
-			i--;
+			--i;
 			return *this;
 		}
 		AttributeIterator& operator++()
 		{
-			i++;
+			++i;
 			return *this;
 		}
 	protected:

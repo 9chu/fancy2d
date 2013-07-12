@@ -42,6 +42,19 @@ f2dSpriteImpl::f2dSpriteImpl(f2dTexture2D* pTex, fcyRect SrcRect, fcyVec2 HotSpo
 	recalcu();
 }
 
+f2dSpriteImpl::f2dSpriteImpl(const f2dSpriteImpl* pOrg)
+	: m_pTex(pOrg->m_pTex), m_FlipType(pOrg->m_FlipType), m_Org(pOrg->m_Org), 
+	m_HotSpot(pOrg->m_HotSpot), m_ZValue(pOrg->m_ZValue), m_UV(pOrg->m_UV), m_SpriteRect(pOrg->m_SpriteRect)
+{
+	m_Color[0] = pOrg->m_Color[0];
+	m_Color[1] = pOrg->m_Color[1];
+	m_Color[2] = pOrg->m_Color[2];
+	m_Color[3] = pOrg->m_Color[3];
+
+	if(m_pTex)
+		m_pTex->AddRef();
+}
+
 f2dSpriteImpl::~f2dSpriteImpl()
 {
 	FCYSAFEKILL(m_pTex);
@@ -168,6 +181,14 @@ fcyColor f2dSpriteImpl::GetColor(fuInt Index)const
 		return m_Color[Index];
 }
 
+void f2dSpriteImpl::GetColor(fcyColor* pOut)const
+{
+	if(!pOut)
+		return;
+
+	memcpy(pOut, m_Color, sizeof(fcyColor)*4);
+}
+
 fResult f2dSpriteImpl::SetColor(fcyColor Color)
 {
 	m_Color[0] = Color;
@@ -184,6 +205,16 @@ fResult f2dSpriteImpl::SetColor(fuInt Index, fcyColor Color)
 		return FCYERR_INVAILDPARAM;
 
 	m_Color[Index] = Color;
+
+	return FCYERR_OK;
+}
+
+fResult f2dSpriteImpl::SetColor(fcyColor* pArr)
+{
+	if(!pArr)
+		return FCYERR_INVAILDPARAM;
+
+	memcpy(m_Color, pArr, sizeof(fcyColor)*4);
 
 	return FCYERR_OK;
 }
@@ -303,7 +334,7 @@ fResult f2dSpriteImpl::Draw(f2dGraphics2D* pGraph, const fcyVec2& Center, const 
 	float tCos = cos(Rotation);
 
 	fcyVec2* p;
-	for(int i = 0; i<4; i++)
+	for(int i = 0; i<4; ++i)
 	{
 		p = (fcyVec2*)&tVerts[i];
 		p->RotationSC(tSin, tCos);
@@ -340,7 +371,7 @@ fResult f2dSpriteImpl::Draw(f2dGraphics2D* pGraph, const fcyVec2& Center, const 
 	float tCos = cos(Rotation);
 
 	fcyVec2* p;
-	for(int i = 0; i<4; i++)
+	for(int i = 0; i<4; ++i)
 	{
 		p = (fcyVec2*)&tVerts[i];
 		p->RotationSC(tSin, tCos);

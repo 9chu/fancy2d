@@ -190,7 +190,7 @@ fcyResPackageNode* fcyResPackageFloderNode::GetNode(fcStrW Name)
 	{
 		if(wcscmp((*i)->GetName(), Name)==0)
 			return (*i);
-		i++;
+		++i;
 	}
 
 	return NULL;
@@ -223,7 +223,7 @@ fBool fcyResPackageFloderNode::Remove(fcStrW Name)
 			m_NodeList.erase(i);
 			return true;
 		}
-		i++;
+		++i;
 	}
 
 	return false;
@@ -236,7 +236,7 @@ void fcyResPackageFloderNode::Clear()
 	while( i != m_NodeList.end() )
 	{
 		FCYSAFEDEL(*i);
-		i++;
+		++i;
 	}
 
 	m_NodeList.clear();
@@ -247,7 +247,7 @@ fResult fcyResPackageFloderNode::Read(fcyStream* pStream, fcyXmlNode* pXmlNode)
 	Clear();
 
 	fuInt tCount = pXmlNode->GetNodeCount();
-	for(fuInt i = 0; i<tCount; i++)
+	for(fuInt i = 0; i<tCount; ++i)
 	{
 		fcyXmlNode* pSubXmlNode = pXmlNode->GetNode(i);
 		fcyResPackageNode* tNode = NULL;

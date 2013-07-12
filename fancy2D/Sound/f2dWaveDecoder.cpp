@@ -137,7 +137,7 @@ void f2dWaveDecoder::clear()
 	while(i != m_ChunkList.end())
 	{
 		FCYSAFEDEL(*i);
-		i++;
+		++i;
 	}
 }
 

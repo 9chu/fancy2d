@@ -44,7 +44,7 @@ private:
 		// 记录分配的空间
 		m_AllocMemPtr.push_back(tPtr);
 		// 记录所有内存块
-		for(fuInt i = 0; i<BlockCount; i++)
+		for(fuInt i = 0; i<BlockCount; ++i)
 		{
 			m_FreeMemPool.push_back(tPtr);
 			tPtr += BlockSize;
@@ -111,7 +111,7 @@ public:
 		if(GetTotalSize()!=GetFreeSize())
 			fcyDebug::Trace(L"fcyMemPool(@ %x):: MemLeak!\n", (fuInt)this);
 #endif
-		for(std::vector<void*>::iterator i = m_AllocMemPtr.begin(); i != m_AllocMemPtr.end(); i++)
+		for(std::vector<void*>::iterator i = m_AllocMemPtr.begin(); i != m_AllocMemPtr.end(); ++i)
 		{
 			free((*i));
 		}

@@ -81,7 +81,7 @@ void f2dVideoRenderer::renderYUY2Sample(fcData pVideo, fcyColor* pTex)
 	{
 		fuInt tX = 0, tY = 0;
 
-		for(fLen i = 0; i<tDataCount; i++)
+		for(fLen i = 0; i<tDataCount; ++i)
 		{
 			// Y0 U0 Y1 V0 数据
 			fByte Y0 = *(pVideo++);
@@ -126,7 +126,7 @@ void f2dVideoRenderer::renderYUY2Sample(fcData pVideo, fcyColor* pTex)
 	}
 	else
 	{	
-		for(fLen i = 0; i<tDataCount; i++)
+		for(fLen i = 0; i<tDataCount; ++i)
 		{
 			// Y0 U0 Y1 V0 数据
 			fByte Y0 = *(pVideo++);

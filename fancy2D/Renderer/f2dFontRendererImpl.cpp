@@ -145,7 +145,7 @@ fcyRect f2dFontRendererImpl::MeasureString(fcStrW String)
 	fuInt tCount = wcslen(String);
 
 	f2dGlyphInfo tInfo;
-	for(fuInt i = 0; i<tCount; i++)
+	for(fuInt i = 0; i<tCount; ++i)
 	{
 		if(String[i] == L'\n')
 		{
@@ -189,7 +189,7 @@ fFloat f2dFontRendererImpl::MeasureStringWidth(fcStrW String)
 	fuInt tCount = wcslen(String);
 
 	f2dGlyphInfo tInfo;
-	for(fuInt i = 0; i<tCount; i++)
+	for(fuInt i = 0; i<tCount; ++i)
 	{
 		if(String[i] == L'\n')
 		{
@@ -241,7 +241,7 @@ fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt
 		return FCYERR_INTERNALERR;
 
 	f2dGlyphInfo tInfo;
-	for(fuInt i = 0; i<tCount; i++)
+	for(fuInt i = 0; i<tCount; ++i)
 	{
 		// 换行处理
 		if(Text[i] == L'\n')
@@ -325,7 +325,7 @@ fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt
 		return FCYERR_INTERNALERR;
 
 	f2dGlyphInfo tInfo;
-	for(fuInt i = 0; i<tCount; i++)
+	for(fuInt i = 0; i<tCount; ++i)
 	{
 		// 换行处理
 		if(Text[i] == L'\n')

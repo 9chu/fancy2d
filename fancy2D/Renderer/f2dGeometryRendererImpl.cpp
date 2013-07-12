@@ -147,7 +147,7 @@ fResult f2dGeometryRendererImpl::DrawCircle(f2dGraphics2D* pGraph, const fcyVec2
 	m_CacheIndex.resize(Divide * 12);
 
 	float tAng = 3.14f*2.f / (float)Divide;
-	for(fuInt i = 0; i<Divide; i++)
+	for(fuInt i = 0; i<Divide; ++i)
 	{
 		// 计算单位向量
 		fcyVec2 tDirect(cos(tAng * i), sin(tAng * i));
@@ -261,7 +261,7 @@ fResult f2dGeometryRendererImpl::FillCircle(f2dGraphics2D* pGraph, const fcyVec2
 	m_CacheVerts[0].y = Center.y;
 	m_CacheVerts[0].u = m_CacheVerts[0].v = 0.f;
 	m_CacheVerts[0].z = m_ZValue;
-	for(fuInt i = 1; i<=Divide; i++)
+	for(fuInt i = 1; i<=Divide; ++i)
 	{
 		// 计算单位向量
 		fcyVec2 tDirect(cos(tAng * i), sin(tAng * i));
@@ -274,7 +274,7 @@ fResult f2dGeometryRendererImpl::FillCircle(f2dGraphics2D* pGraph, const fcyVec2
 		m_CacheVerts[i].z = m_ZValue;
 	}
 
-	for(fuInt i = 0; i<Divide; i++)
+	for(fuInt i = 0; i<Divide; ++i)
 	{
 		fuShort* pIndex = &m_CacheIndex[i*3];
 

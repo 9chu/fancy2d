@@ -41,6 +41,7 @@ protected:
 	std::vector<RenderCommand> m_Commands;
 private:
 	// 快速小数转整数
+	// 已废弃
 	static inline long ftol_ieee_M(float x) 
 	{ 
 		static const float magic_f = (3<<21);
@@ -51,7 +52,7 @@ private:
 	// 坐标修复
 	void inline coordFix(float& x)
 	{
-		x = ((float)ftol_ieee_M(x)) - 0.5f;
+		x = x - 0.5f;
 	}
 	// 执行所有绘图指令
 	void flush(bool Discard=false);

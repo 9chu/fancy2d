@@ -58,7 +58,7 @@ f2dInputSysImpl::~f2dInputSysImpl()
 #endif
 			m_pEngine->ThrowException(fcyException("f2dInputSysImpl::~f2dInputSysImpl", tTextBuffer));
 
-			i++;
+			++i;
 		}
 	}
 

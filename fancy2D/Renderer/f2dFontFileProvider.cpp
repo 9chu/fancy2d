@@ -242,7 +242,7 @@ bool f2dFontFileProvider::makeCache(fuInt Size)
 		if(FCYFAILED(m_CacheTex->Lock(NULL, true, &tPitch, &tData)))
 			return false;
 
-		for(fuInt i = 0;i<m_CacheTex->GetHeight(); i++)
+		for(fuInt i = 0;i<m_CacheTex->GetHeight(); ++i)
 		{
 			fcyColor* pColor = (fcyColor*)tData;
 			for(fuInt j = 0; j<m_CacheTex->GetWidth(); j++)
@@ -263,7 +263,7 @@ bool f2dFontFileProvider::makeCache(fuInt Size)
 	// 初始化信息
 	int tCurIndex = 0;
 	for(fuInt j = 0; j<m_CacheYCount; j++)
-		for(fuInt i = 0; i<m_CacheXCount; i++)
+		for(fuInt i = 0; i<m_CacheXCount; ++i)
 		{
 			m_Cache[ tCurIndex ].CacheSize = fcyRect(
 					i * m_PerGlyphSize.x, j * m_PerGlyphSize.y, 
@@ -280,7 +280,7 @@ bool f2dFontFileProvider::makeCache(fuInt Size)
 	m_Cache[0].pNext = &m_Cache[1];
 	m_Cache[tCount - 1].pNext = NULL;
 	m_Cache[tCount - 1].pPrev = &m_Cache[ tCount - 2 ];
-	for(fuInt i = 1; i<tCount - 1; i++)
+	for(fuInt i = 1; i<tCount - 1; ++i)
 	{
 		m_Cache[i].pPrev = &m_Cache[i - 1];
 		m_Cache[i].pNext = &m_Cache[i + 1];
@@ -386,7 +386,7 @@ fResult f2dFontFileProvider::CacheString(fcStrW String)
 {
 	fuInt tLen = wcslen(String);
 
-	for(fuInt i = 0; i<tLen; i++)
+	for(fuInt i = 0; i<tLen; ++i)
 	{
 		if(iswprint(String[i]))
 			getChar(String[i]);

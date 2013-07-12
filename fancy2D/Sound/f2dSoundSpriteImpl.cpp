@@ -59,7 +59,7 @@ f2dSoundSpriteImpl::~f2dSoundSpriteImpl()
 	{
 		IDirectSoundBuffer* pBuffer = *i;
 		FCYSAFEKILL(pBuffer);
-		i++;
+		++i;
 	}
 
 	FCYSAFEKILL(m_pBuffer);
@@ -76,7 +76,7 @@ void f2dSoundSpriteImpl::Play()
 		pBuffer->GetCurrentPosition(&tPos, NULL);
 		if(tPos != 0)
 			pBuffer->Play(0,0,0);
-		i++;
+		++i;
 	}
 }
 
@@ -88,7 +88,7 @@ void f2dSoundSpriteImpl::Stop()
 		IDirectSoundBuffer* pBuffer = *i;
 		pBuffer->Stop();
 		pBuffer->SetCurrentPosition(0);
-		i++;
+		++i;
 	}
 }
 
@@ -99,7 +99,7 @@ void f2dSoundSpriteImpl::Pause()
 	{
 		IDirectSoundBuffer* pBuffer = *i;
 		pBuffer->Stop();
-		i++;
+		++i;
 	}
 }
 
@@ -125,7 +125,7 @@ fResult f2dSoundSpriteImpl::PlayNewSound(fFloat Volume, fFloat Pan)
 			pBuffer = tBuffer;
 			break;
 		}
-		i++;
+		++i;
 	}
 
 	if(!pBuffer)

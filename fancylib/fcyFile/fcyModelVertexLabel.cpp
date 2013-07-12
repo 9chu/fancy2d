@@ -10,7 +10,7 @@ fuInt fcyModelVertexLabel::CalcuVertexSize()const
 {
 	fuInt tVertSize = 0;
 
-	for(fuInt i = 0; i<m_VertElementList.size(); i++)
+	for(fuInt i = 0; i<m_VertElementList.size(); ++i)
 	{
 		switch(m_VertElementList[i].Type)
 		{
@@ -72,7 +72,7 @@ void fcyModelVertexLabel::ReadData(fcyStream* pStream)
 	
 	// 加载顶点声明
 	m_VertElementList.resize(tVertexElementCount);
-	for(fuInt i = 0; i<tVertexElementCount; i++)
+	for(fuInt i = 0; i<tVertexElementCount; ++i)
 	{
 		m_VertElementList[i].Type = (ELEMENTTYPE)tReader.ReadUInt32();
 		m_VertElementList[i].Usage = tReader.ReadUInt64();
@@ -104,7 +104,7 @@ void fcyModelVertexLabel::WriteData(fcyStream* pStream)
 	tWritter.Write((fByte)0);  // 流标记
 
 	// 写出顶点声明
-	for(fuInt i = 0; i<m_VertElementList.size(); i++)
+	for(fuInt i = 0; i<m_VertElementList.size(); ++i)
 	{
 		tWritter.Write((fuInt)m_VertElementList[i].Type);
 		tWritter.Write((fuLong)m_VertElementList[i].Usage);

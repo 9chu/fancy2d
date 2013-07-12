@@ -49,7 +49,7 @@ void fuiDelegate::Exec(fuiControl* pControl, fuiEventArgs* pArgs)
 {
 	for(vector<EventCallBack>::iterator i = m_FunctorList.begin();
 		i != m_FunctorList.end();
-		i++)
+		++i)
 	{
 		(*i)(pControl, pArgs);
 	}

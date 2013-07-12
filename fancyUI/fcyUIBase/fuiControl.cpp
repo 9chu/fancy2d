@@ -183,7 +183,7 @@ void fuiControl::removeSubControl(fuiControl* pControl)
 			return;
 		}
 		else
-			i++;
+			++i;
 	}
 }
 
@@ -192,7 +192,7 @@ fuInt fuiControl::getSubControlLayer(const fuiControl* pControl)
 	if(!pControl)
 		throw fcyException("fuiControl::attachSubControl", "Param 'pControl' is null.");
 
-	for(fuInt i = 0; i<m_SubControlList.size(); i++)
+	for(fuInt i = 0; i<m_SubControlList.size(); ++i)
 	{
 		if(*m_SubControlList[i] == pControl)
 			return i;
@@ -385,7 +385,7 @@ void fuiControl::SetLayerPriority(fFloat Value)
 
 void fuiControl::Update(fDouble ElapsedTime)
 {
-	for(fuInt i = 0; i<m_SubControlList.size(); i++)
+	for(fuInt i = 0; i<m_SubControlList.size(); ++i)
 	{
 		m_SubControlList[i]->Update(ElapsedTime);
 	}
@@ -393,7 +393,7 @@ void fuiControl::Update(fDouble ElapsedTime)
 
 void fuiControl::Render(fuiGraphics* pGraph)
 {
-	for(fuInt i = 0; i<m_SubControlList.size(); i++)
+	for(fuInt i = 0; i<m_SubControlList.size(); ++i)
 	{
 		fuiControl* p = m_SubControlList[i];
 

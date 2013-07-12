@@ -132,7 +132,7 @@ void HttpHeader::ToString(string& Data)
 	Data.clear();
 
 	unordered_map<string, string>::iterator i = m_Header.begin();
-	for(; i!=m_Header.end(); i++)
+	for(; i!=m_Header.end(); ++i)
 	{
 		Data += i->first;
 		Data += ": ";

@@ -67,6 +67,10 @@ struct f2dSprite :
 	/// @param[in] Index 顶点索引[0~3]，按照顺时针方向定位
 	virtual fcyColor GetColor(fuInt Index)const=0;
 
+	/// @brief     返回顶点的颜色
+	/// @param[in] pOut 大小为4的数组
+	virtual void GetColor(fcyColor* pOut)const=0;
+
 	/// @brief     设置所有顶点的颜色
 	/// @param[in] Color 混合颜色
 	virtual fResult SetColor(fcyColor Color)=0;
@@ -75,6 +79,10 @@ struct f2dSprite :
 	/// @param[in] Index 顶点索引[0~3]，按照顺时针方向定位
 	/// @param[in] Color 混合颜色
 	virtual fResult SetColor(fuInt Index, fcyColor Color)=0;
+
+	/// @brief     设置所有顶点的颜色
+	/// @param[in] pArr 大小为4的数组
+	virtual fResult SetColor(fcyColor* pArr)=0;
 
 	/// @brief 绘制精灵
 	/// @param[in] pGraph 绘图对象指针
@@ -331,6 +339,182 @@ struct f2dFontRenderer :
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @brief fancy2D精灵动画实例
+////////////////////////////////////////////////////////////////////////////////
+struct f2dSpriteAnimationInstance
+{
+	fuInt KeyFrameIndex;
+	fuInt KeyFrameElapsedTime;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief fancy2D精灵动画
+////////////////////////////////////////////////////////////////////////////////
+struct f2dSpriteAnimation : 
+	public f2dInterface
+{
+	/// @brief 返回帧对应的精灵
+	virtual f2dSprite* GetSprite(fuInt Index)=0;
+	/// @brief 返回帧对应的时间
+	virtual fInt GetFrameTime(fuInt Index)=0;
+	/// @brief 设置帧对应的精灵
+	virtual fResult SetSprite(fuInt Index, f2dSprite* pSprite)=0;
+	/// @brief 设置帧对应的时间
+	virtual fResult SetFrameTime(fuInt Index, fuInt Time)=0;
+
+	/// @brief 计算总帧数
+	virtual fuInt GetFrameCount()=0;
+	/// @brief 返回关键帧个数
+	virtual fuInt GetKeyFrameCount()=0;
+
+	/// @brief 追加关键帧
+	virtual fuInt Append(fuInt FrameTime, f2dTexture2D* FrameTex)=0;
+	/// @brief 追加关键帧
+	virtual fuInt Append(fuInt FrameTime, f2dTexture2D* FrameTex, const fcyRect& TexRect)=0;
+	/// @brief 追加关键帧
+	virtual fuInt Append(fuInt FrameTime, f2dTexture2D* FrameTex, const fcyRect& TexRect, const fcyVec2& HotPos)=0;
+	/// @brief 分割并加入
+	virtual void SplitAndAppend(fuInt FrameTime, f2dTexture2D* FrameTex, const fcyRect& TexRect, fuInt SplitCount)=0;
+	/// @brief 分割并加入
+	virtual void SplitAndAppend(fuInt* FrameTimeArr, f2dTexture2D* FrameTex, const fcyRect& TexRect, fuInt SplitCount)=0;
+	/// @brief 清空
+	virtual void Clear()=0;
+
+	/// @brief 返回循环起点
+	virtual fInt GetLoopStart()const=0;
+	/// @brief 设置循环起点
+	virtual void SetLoopStart(fInt Index)=0;
+	/// @brief 返回循环终点
+	virtual fInt GetLoopEnd()const=0;
+	/// @brief 设置循环终点
+	virtual void SetLoopEnd(fInt Index)=0;
+	/// @brief 是否循环
+	virtual fBool IsLoop()const=0;
+	/// @brief 设置循环
+	virtual void SetLoop(fBool bLoop)=0;
+
+	/// @brief  初始化实例
+	virtual void InitInstance(f2dSpriteAnimationInstance& Instance)const=0;
+	/// @brief  单步实例
+	/// @return 若动画结束返回false
+	virtual fBool StepInstance(f2dSpriteAnimationInstance& Instance)const=0;
+	/// @brief  跳到帧
+	virtual fResult JumpTo(f2dSpriteAnimationInstance& Instance, fuInt FrameIndex)const=0;
+	/// @brief  跳到关键帧
+	virtual fResult JumpToKeyFrame(f2dSpriteAnimationInstance& Instance, fuInt FrameIndex)const=0;
+
+	/// @brief 绘制精灵动画
+	/// @param[in] Instance 动画实例
+	/// @param[in] pGraph   绘图对象指针
+	/// @param[in] Dest     目标矩形
+	virtual fResult DrawInstance(const f2dSpriteAnimationInstance& Instance, f2dGraphics2D* pGraph, const fcyRect& Dest)=0;
+	/// @brief     绘制精灵动画
+	/// @param[in] Instance 动画实例
+	/// @param[in] pGraph   绘图对象指针
+	/// @param[in] Dest     目标矩形
+	/// @param[in] SubTex   子纹理区域[0~1, 0~1]
+	virtual fResult DrawInstance(const f2dSpriteAnimationInstance& Instance, f2dGraphics2D* pGraph, const fcyRect& Dest, const fcyRect& SubTex)=0;
+	/// @brief     绘制精灵动画
+	/// @param[in] Instance 动画实例
+	/// @param[in] pGraph   绘图对象指针
+	/// @param[in] Center   精灵显示中心
+	virtual fResult DrawInstance(const f2dSpriteAnimationInstance& Instance, f2dGraphics2D* pGraph, const fcyVec2& Center)=0;
+	/// @brief     绘制精灵动画
+	/// @param[in] Instance 动画实例
+	/// @param[in] pGraph   绘图对象指针
+	/// @param[in] Center   精灵显示中心
+	/// @param[in] Scale    缩放
+	virtual fResult DrawInstance(const f2dSpriteAnimationInstance& Instance, f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale)=0;
+	/// @brief     绘制精灵动画
+	/// @param[in] Instance 动画实例
+	/// @param[in] pGraph   绘图对象指针
+	/// @param[in] Center   精灵显示中心
+	/// @param[in] Scale    缩放
+	/// @param[in] SubTex   子纹理区域[0~1, 0~1]
+	virtual fResult DrawInstance(const f2dSpriteAnimationInstance& Instance, f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, const fcyRect& SubTex)=0;
+	/// @brief     绘制精灵
+	/// @param[in] Instance 动画实例
+	/// @param[in] pGraph   绘图对象指针
+	/// @param[in] Center   精灵显示中心
+	/// @param[in] Scale    缩放
+	/// @param[in] Rotation 顺时针旋转角度，弧度制。
+	virtual fResult DrawInstance(const f2dSpriteAnimationInstance& Instance, f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation)=0;
+	/// @brief     绘制精灵
+	/// @param[in] Instance 动画实例
+	/// @param[in] pGraph   绘图对象指针
+	/// @param[in] Center   精灵显示中心
+	/// @param[in] Scale    缩放
+	/// @param[in] Rotation 顺时针旋转角度，弧度制。
+	/// @param[in] SubTex   子纹理区域[0~1, 0~1]
+	virtual fResult DrawInstance(const f2dSpriteAnimationInstance& Instance, f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation, const fcyRect& SubTex)=0;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief fancy2D 2D粒子池 粒子参数
+////////////////////////////////////////////////////////////////////////////////
+struct f2dParticleCreationDesc
+{
+	fcyRect PosRange;      ///< @brief 创建范围偏移
+	fcyVec2 VRange;        ///< @brief 初速度范围
+	fcyVec2 ARRange;       ///< @brief 初法向加速度范围
+	fcyVec2 ATRange;       ///< @brief 初切向加速度范围
+	fcyVec2 SpinRange;     ///< @brief 自旋速度范围
+	fcyVec2 LifeTimeRange; ///< @brief 生存时间范围
+
+	fcyColor StartColor;      ///< @brief 初始颜色
+	fcyVec2  StartColorRange; ///< @brief 初始颜色抖动范围
+	                          ///< @note  StartColor+=random(StartColorRange.x, StartColorRange.y)
+	fcyColor EndColor;        ///< @brief 终止颜色
+
+	fcyVec2 StartScale;       ///< @brief 初始缩放
+	fcyVec2 StartScaleRange;  ///< @brief 初始缩放抖动范围
+	                          ///< note   计算同上
+	fcyVec2 EndScale;         ///< @brief 终止缩放
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief fancy2D 2D粒子池 力场
+////////////////////////////////////////////////////////////////////////////////
+struct f2dParticleForce
+{
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief fancy2D 2D粒子池
+////////////////////////////////////////////////////////////////////////////////
+struct f2dParticlePool : 
+	public f2dInterface
+{
+	/// @brief 返回随机数种子
+	virtual fuInt GetRandomSeed()=0;
+	/// @brief     设置随机数种子
+	/// @param[in] Seed 种子
+	virtual void SetRandomSeed(fuInt Seed)=0;
+	/// @brief 制造随机数
+	virtual fFloat RandFloat(fFloat Min, fFloat Max)=0;
+
+	/// @brief 返回粒子数量
+	virtual fuInt GetCount()=0;
+
+	/// @brief 清空粒子
+	virtual void Clear()=0;
+
+	/// @brief     发射一组粒子
+	/// @param[in] pSprite           发射的精灵
+	/// @param[in] Center            发射中心
+	/// @param[in] EmittedCountRange 发射数量范围
+	/// @param[in] Desc              粒子详细描述
+	virtual fResult Emitted(f2dSprite* pSprite, const fcyVec2& Center, const fcyVec2& EmittedCountRange, const f2dParticleCreationDesc& Desc)=0;
+
+	/// @brief     更新粒子状态
+	/// @param[in] ElapsedTime 流逝时间
+	virtual void Update(fFloat ElapsedTime)=0;
+	/// @brief     渲染粒子
+	/// @param[in] pGraph 绘图接口
+	virtual void Render(f2dGraphics2D* pGraph)=0;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 /// @brief fancy2D渲染器
 ////////////////////////////////////////////////////////////////////////////////
 struct f2dRenderer
@@ -383,6 +567,14 @@ struct f2dRenderer
 	/// @param[in]  pTex        纹理
 	/// @param[out] pOut        返回的字体对象
 	virtual fResult CreateFontFromTex(fcStrW pDefineText, f2dTexture2D* pTex, f2dFontProvider** pOut)=0;
+
+	/// @brief      创建精灵动画
+	/// @param[out] pOut        返回的对象
+	virtual fResult CreateSpriteAnimation(f2dSpriteAnimation** pOut)=0;
+
+	/// @brief      创建粒子池
+	/// @param[out] pOut        返回的对象
+	virtual fResult CreateParticlePool(f2dParticlePool** pOut)=0;
 };
 
 /// @}

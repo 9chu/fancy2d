@@ -323,7 +323,7 @@ fuiPage::~fuiPage()
 			sprintf_s(tTextBuffer, "Unrelease UI control object at %x", i->second);
 			fcyDebug::Trace("[ @ fuiPage::~fuiPage ] %s\n", tTextBuffer);
 
-			i++;
+			++i;
 		}
 #endif
 	}
@@ -331,7 +331,7 @@ fuiPage::~fuiPage()
 
 void fuiPage::loadLayoutNode(fcyXmlNode* pNode, fuiControl* pParent)
 {
-	for(fuInt i = 0; i<pNode->GetNodeCount(); i++)
+	for(fuInt i = 0; i<pNode->GetNodeCount(); ++i)
 	{
 		fcyXmlNode* pSubNode = pNode->GetNode(i);
 
@@ -385,7 +385,7 @@ void fuiPage::debugDraw(fuiGraphics* pGraph, fuiControl* pControl)
 {
 	pGraph->PushOffset(pControl->m_Rect.a);
 
-	for(fuInt i = 0; i<pControl->m_SubControlList.size(); i++)
+	for(fuInt i = 0; i<pControl->m_SubControlList.size(); ++i)
 	{
 		fuiControl* p = pControl->m_SubControlList[i];
 
@@ -446,7 +446,7 @@ fuiControl* fuiPage::getControlAtPos(fuiControl* pControl, const fcyVec2& Pos, f
 			if(pRet)
 				return pRet;
 			else
-				i++;
+				++i;
 		}
 
 		PosOut = tPos;
@@ -459,7 +459,7 @@ fuiControl* fuiPage::getControlAtPos(fuiControl* pControl, const fcyVec2& Pos, f
 void fuiPage::execStyleChanged(fuiControl* p)
 {
 	// 触发所有控件的OnStyleChanged事件
-	for(fuInt i = 0; i<p->m_SubControlList.size(); i++)
+	for(fuInt i = 0; i<p->m_SubControlList.size(); ++i)
 	{
 		p->ExecEvent(L"OnStyleChanged");
 

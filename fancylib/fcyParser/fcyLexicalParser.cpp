@@ -126,7 +126,7 @@ fuInt fcyLexicalReader::GetLine()
 	fuInt tLine = 0;
 
 	fCharW tLast = L'\0';
-	for(fuInt i = 0; i < m_Pos; i++)
+	for(fuInt i = 0; i < m_Pos; ++i)
 	{
 		if(tLast == L'\n')
 			tLine++;
@@ -142,7 +142,7 @@ fuInt fcyLexicalReader::GetRow()
 	fuInt tRow = 0;
 
 	fCharW tLast = L'\0';
-	for(fuInt i = 0; i < m_Pos; i++)
+	for(fuInt i = 0; i < m_Pos; ++i)
 	{
 		if(tLast == L'\n')
 			tRow = 0;
@@ -206,7 +206,7 @@ void fcyLexicalReader::Match(fcStrW Str, fBool bIgnoreSpace)
 
 	fuInt tLen = wcslen(Str);
 
-	for(fuInt i = 0; i<tLen; i++)
+	for(fuInt i = 0; i<tLen; ++i)
 	{
 		fCharW tChar = ReadChar();
 		if(tChar != Str[i])
@@ -268,7 +268,7 @@ fBool fcyLexicalReader::TryMatch(fcStrW Str, fBool bIgnoreSpace, fBool bMatch)
 		return false;
 	}
 
-	for(fuInt i = 0; i<tLen; i++)
+	for(fuInt i = 0; i<tLen; ++i)
 	{
 		if(m_Str[m_Pos+i] != Str[i])
 		{

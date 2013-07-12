@@ -18,7 +18,7 @@ fcyXmlNode::fcyXmlNode(const fcyXmlNode& Org)
 	m_Atti = Org.m_Atti;
 
 	m_Nodes.reserve(Org.m_Nodes.size());
-	for(fuInt i = 0; i<Org.m_Nodes.size(); i++)
+	for(fuInt i = 0; i<Org.m_Nodes.size(); ++i)
 	{
 		AppendNode(Org.m_Nodes[i]);
 	}
@@ -32,7 +32,7 @@ fcyXmlNode::~fcyXmlNode()
 void fcyXmlNode::writeToStr(wstring& pOut, fuInt Indentation)
 {
 	// Ëõ½ø
-	for(fuInt i = 0; i<Indentation; i++)
+	for(fuInt i = 0; i<Indentation; ++i)
 	{
 		pOut += L"\t";
 	}
@@ -77,7 +77,7 @@ void fcyXmlNode::writeToStr(wstring& pOut, fuInt Indentation)
 			}
 
 			pOut += L"\" ";
-			i++;
+			++i;
 		}
 	}
 
@@ -108,13 +108,13 @@ void fcyXmlNode::writeToStr(wstring& pOut, fuInt Indentation)
 				(*j)->writeToStr(pOut, Indentation + 1);
 				j++;
 			}
-			i++;
+			++i;
 		}
 	}
 	else if(m_Content.size())
 	{
 		// Ð´³öContent
-		for(fuInt i = 0; i<m_Content.size(); i++)
+		for(fuInt i = 0; i<m_Content.size(); ++i)
 		{
 			switch(m_Content[i])
 			{
@@ -153,7 +153,7 @@ fcyXmlNode& fcyXmlNode::operator=(const fcyXmlNode& Org)
 	m_Atti = Org.m_Atti;
 
 	m_Nodes.reserve(Org.m_Nodes.size());
-	for(fuInt i = 0; i<Org.m_Nodes.size(); i++)
+	for(fuInt i = 0; i<Org.m_Nodes.size(); ++i)
 	{
 		AppendNode(Org.m_Nodes[i]);
 	}

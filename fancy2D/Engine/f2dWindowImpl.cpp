@@ -662,7 +662,7 @@ void f2dWindowImpl::HandleIMECandidate()
 	// 获得候选词列表
 	m_IMECandidateList.clear();
 	m_IMECandidateList.reserve(pList->dwCount);
-	for (fuInt i = 0; i<pList->dwCount; i++)
+	for (fuInt i = 0; i<pList->dwCount; ++i)
 	{
 		fcStrW pStr = (fcStrW)((size_t)pList + (size_t)pList->dwOffset[i]);
 
@@ -671,7 +671,7 @@ void f2dWindowImpl::HandleIMECandidate()
 
 #ifdef _IME_DEBUG
 	wstring tDebugStr;
-	for (fuInt i = 0; i<pList->dwCount; i++)
+	for (fuInt i = 0; i<pList->dwCount; ++i)
 	{
 		tDebugStr += L"\t" + m_IMECandidateList[i] + L"\n";
 	}

@@ -50,7 +50,7 @@ void fuiStyle::LoadResFromFile(f2dStream* pStream, fuiResProvider* pProvider)
 
 	fcyXml tXml(pStream);
 	fcyXmlNode* pRootNode = tXml.GetRoot();
-	for(fuInt i = 0; i<pRootNode->GetNodeCount(); i++)
+	for(fuInt i = 0; i<pRootNode->GetNodeCount(); ++i)
 	{
 		fcyXmlNode* pSubNode = pRootNode->GetNode(i);
 
