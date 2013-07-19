@@ -85,7 +85,7 @@ fuiDelegate& fuiEventSet::GetEvent(const std::wstring& EventName)
 {
 	unordered_map<std::wstring, fuiDelegate>::iterator i = m_EventList.find(EventName);
 	if(i == m_EventList.end())
-		throw fcyException("fuiEventSet::GetEvent", "Event is not exsit.");
+		throw fcyException("fuiEventSet::GetEvent", "Event is not exist.");
 	else
 		return i->second;
 }
