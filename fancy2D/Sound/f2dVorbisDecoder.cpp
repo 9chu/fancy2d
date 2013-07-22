@@ -133,7 +133,7 @@ fuShort f2dVorbisDecoder::GetBitsPerSample()
 
 fLen f2dVorbisDecoder::GetPosition()
 {
-	return ov_pcm_tell(&m_OggFile);
+	return (fLen)(ov_time_tell(&m_OggFile) * GetSamplesPerSec()) * GetBlockAlign();
 }
 
 fResult f2dVorbisDecoder::SetPosition(F2DSEEKORIGIN Origin, fInt Offset)
