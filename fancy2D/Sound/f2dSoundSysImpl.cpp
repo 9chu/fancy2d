@@ -101,7 +101,7 @@ fResult f2dSoundSysImpl::CreateDynamicBuffer(f2dSoundDecoder* pDecoder, fBool bG
 	return FCYERR_OK;
 }
 
-fResult f2dSoundSysImpl::CreateSoundSprite(f2dSoundDecoder* pDecoder, fBool bGlobalFocus, f2dSoundSprite** pOut)
+fResult f2dSoundSysImpl::CreateSoundSprite(f2dSoundDecoder* pDecoder, fBool bGlobalFocus, fuInt iMaxCount, f2dSoundSprite** pOut)
 {
 	if(!pDecoder || !pOut)
 		return FCYERR_INVAILDPARAM;
@@ -111,7 +111,7 @@ fResult f2dSoundSysImpl::CreateSoundSprite(f2dSoundDecoder* pDecoder, fBool bGlo
 
 	try
 	{
-		pBuffer = new f2dSoundSpriteImpl(m_pDSound8, pDecoder, bGlobalFocus);
+		pBuffer = new f2dSoundSpriteImpl(m_pDSound8, pDecoder, bGlobalFocus, iMaxCount);
 	}
 	catch(const fcyException& e)
 	{

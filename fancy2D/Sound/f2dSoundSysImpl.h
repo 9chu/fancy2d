@@ -28,7 +28,7 @@ public:
 	fResult CreateStaticBuffer(f2dSoundDecoder* pDecoder, fBool bGlobalFocus, f2dSoundBuffer** pOut);
 	fResult CreateSharedStaticBuffer(f2dSoundBuffer* pOrg, f2dSoundBuffer** pOut);
 	fResult CreateDynamicBuffer(f2dSoundDecoder* pDecoder, fBool bGlobalFocus, f2dSoundBuffer** pOut);
-	fResult CreateSoundSprite(f2dSoundDecoder* pDecoder, fBool bGlobalFocus, f2dSoundSprite** pOut);
+	fResult CreateSoundSprite(f2dSoundDecoder* pDecoder, fBool bGlobalFocus, fuInt iMaxCount, f2dSoundSprite** pOut);
 
 	fResult CreateWaveDecoder(f2dStream* pStream, f2dSoundDecoder** pOut);
 	fResult CreateOGGVorbisDecoder(f2dStream* pStream, f2dSoundDecoder** pOut);

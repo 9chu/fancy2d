@@ -4,8 +4,8 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-f2dSoundSpriteImpl::f2dSoundSpriteImpl(IDirectSound8* pSound, f2dSoundDecoder* pDecoder, fBool bGlobalFocus)
-	: m_pParent(pSound), m_pBuffer(NULL), m_BufferSize(0), m_psSize(0)
+f2dSoundSpriteImpl::f2dSoundSpriteImpl(IDirectSound8* pSound, f2dSoundDecoder* pDecoder, fBool bGlobalFocus, fuInt MaxCount)
+	: m_pParent(pSound), m_pBuffer(NULL), m_BufferSize(0), m_psSize(0), m_MaxCount(MaxCount)
 {
 	m_pParent->AddRef();
 
@@ -110,6 +110,9 @@ fDouble f2dSoundSpriteImpl::GetTotalTime()
 
 fResult f2dSoundSpriteImpl::PlayNewSound(fFloat Volume, fFloat Pan)
 {
+	IDirectSoundBuffer* pTimeMax = NULL;
+	DWORD tMaxPos = 0;
+
 	IDirectSoundBuffer* pBuffer = NULL;
 
 	deque<IDirectSoundBuffer*>::iterator i = m_BufferList.begin();
@@ -120,6 +123,15 @@ fResult f2dSoundSpriteImpl::PlayNewSound(fFloat Volume, fFloat Pan)
 		DWORD tPos = 0;
 		tBuffer->GetStatus(&tFlag);
 		tBuffer->GetCurrentPosition(&tPos, NULL);
+
+		// 记录一个播放最久的缓冲区作为备选
+		if(tPos > tMaxPos || !tMaxPos)
+		{
+			tMaxPos = tPos;
+			pTimeMax = tBuffer;
+		}
+
+		// 记录一个播放停止的缓冲区作为最佳选择
 		if(!(tFlag & DSBSTATUS_PLAYING) && tPos==0)
 		{
 			pBuffer = tBuffer;
@@ -129,12 +141,24 @@ fResult f2dSoundSpriteImpl::PlayNewSound(fFloat Volume, fFloat Pan)
 	}
 
 	if(!pBuffer)
-	{	
-		HRESULT tHR = m_pParent->DuplicateSoundBuffer(m_pBuffer, &pBuffer);
-		if(FAILED(tHR))
-			return FCYERR_INTERNALERR;
+	{
+		// 考察是否超出缓冲上限
+		if(m_BufferList.size() > m_MaxCount)
+		{
+			if(!pTimeMax)
+				return FCYERR_INTERNALERR;
 
-		m_BufferList.push_back(pBuffer);
+			// 寻找一个播放时间最长的
+			pBuffer = pTimeMax;
+		}
+		else
+		{
+			HRESULT tHR = m_pParent->DuplicateSoundBuffer(m_pBuffer, &pBuffer);
+			if(FAILED(tHR))
+				return FCYERR_INTERNALERR;
+
+			m_BufferList.push_back(pBuffer);
+		}
 	}
 
 	// 修饰值

@@ -47,6 +47,8 @@ protected:
 	fcyRandomWELL512 m_Randomizer;
 
 	std::vector<Particle> m_ParticlePool;
+
+	fuInt m_ParticleCount;
 public: // 接口实现
 	fuInt GetRandomSeed()
 	{
@@ -62,6 +64,11 @@ public: // 接口实现
 	}
 	
 	fuInt GetCount()
+	{
+		return m_ParticleCount;
+	}
+
+	fuInt GetCapacity()
 	{
 		return m_ParticlePool.size();
 	}
@@ -85,5 +92,7 @@ public: // 接口实现
 	void Update(fFloat ElapsedTime);
 	void Render(f2dGraphics2D* pGraph);
 public:
+	f2dParticlePoolImpl()
+		: m_ParticleCount(0) {}
 	~f2dParticlePoolImpl();
 };

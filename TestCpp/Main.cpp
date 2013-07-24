@@ -126,6 +126,7 @@ protected: // 引擎消息
 			{
 				fcyRect(fcyVec2(-0.1f, -2.f), fcyVec2(0.1f, -1.0f)),
 				fcyVec2(100.f, 200.f),  // V
+				fcyVec2(-3.14f / 2, -3.14f / 2),  // VAngle
 				fcyVec2(100.f, 150.f),   // AR
 				fcyVec2(-10.f, 10.f),   // AT
 				fcyVec2(),
@@ -141,12 +142,13 @@ protected: // 引擎消息
 			f2dParticleCreationDesc tDesc2 = 
 			{
 				fcyRect(fcyVec2(-1.0f, -1.0f), fcyVec2(1.0f, 1.0f)),
-				fcyVec2(0.f, 0.f),  // V
+				fcyVec2(100.f, 200.f),  // V
+				fcyVec2(0.f, 2*3.14f),  // VAngle
 				fcyVec2(-100.f, -50.f),      // AR
 				fcyVec2(50.f, 100.f),   // AT
 				fcyVec2(),
 				fcyVec2(3.f, 5.f),
-				fcyColor(255,255,255,200),
+				fcyColor(255,255,255,255),
 				fcyVec2(0, 0),
 				fcyColor(0,50,50,250),
 				fcyVec2(1.3f,1.3f),

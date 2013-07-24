@@ -33,13 +33,9 @@ fResult f2dParticlePoolImpl::Emitted(f2dSprite* pSprite, const fcyVec2& Center, 
 		tParticle.Pos.x += m_Randomizer.GetRandFloat(Desc.PosRange.a.x, Desc.PosRange.b.x);
 		tParticle.Pos.y += m_Randomizer.GetRandFloat(Desc.PosRange.a.y, Desc.PosRange.b.y);
 		
-		// 计算法线
-		tParticle.CreatePos = Center;
-		fcyVec2 tNormal = tParticle.Pos - tParticle.CreatePos;
-		if(tNormal.Length2() != 0.f)
-			tNormal.Normalize();
-
-		tParticle.V = tNormal * m_Randomizer.GetRandFloat(Desc.VRange.x, Desc.VRange.y);
+		float tVSize = m_Randomizer.GetRandFloat(Desc.VRange.x, Desc.VRange.y);
+		float tVAngle = m_Randomizer.GetRandFloat(Desc.VAngleRange.x, Desc.VAngleRange.y);
+		tParticle.V = fcyVec2(cos(tVAngle), sin(tVAngle)) * tVSize;
 		tParticle.RA = m_Randomizer.GetRandFloat(Desc.ARRange.x, Desc.ARRange.y);
 		tParticle.TA = m_Randomizer.GetRandFloat(Desc.ATRange.x, Desc.ATRange.y);
 		tParticle.Spin = m_Randomizer.GetRandFloat(Desc.SpinRange.x, Desc.SpinRange.y);
@@ -93,11 +89,15 @@ fResult f2dParticlePoolImpl::Emitted(f2dSprite* pSprite, const fcyVec2& Center, 
 
 void f2dParticlePoolImpl::Update(fFloat ElapsedTime)
 {
+	m_ParticleCount = 0;
+
 	// 处理所有粒子
 	vector<Particle>::iterator i = m_ParticlePool.begin();
 
 	while(i != m_ParticlePool.end())
 	{
+		++m_ParticleCount;
+
 		// 处理生存时间
 		i->CurTime += ElapsedTime;
 		if(i->LifeTime < i->CurTime)
@@ -116,7 +116,7 @@ void f2dParticlePoolImpl::Update(fFloat ElapsedTime)
 			fcyVec2 tRA, tTA;  // 法向加速度，切向加速度
 
 			// 计算法线
-			fcyVec2 tNormal = i->Pos - i->CreatePos;
+			fcyVec2 tNormal = i->V;
 			if(tNormal.Length2() != 0.f)
 			{
 				tNormal.Normalize();
@@ -174,10 +174,7 @@ void f2dParticlePoolImpl::Render(f2dGraphics2D* pGraph)
 
 			i->pSprite->SetColor(i->CurColor);
 			
-			if(i->Angle != 0.f)
-				i->pSprite->Draw(pGraph, i->Pos, i->CurScale, i->Angle);
-			else
-				i->pSprite->Draw(pGraph, i->Pos, i->CurScale);
+			i->pSprite->Draw(pGraph, i->Pos, i->CurScale, i->Angle + i->V.CalcuAngle() - 3.1415926f/2.f);
 			
 			i->pSprite->SetColor(t);
 		}

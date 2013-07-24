@@ -25,6 +25,8 @@ private:
 	std::deque<IDirectSoundBuffer*> m_BufferList;  ///< @brief 使用中缓冲
 	fuInt m_BufferSize;
 	fuInt m_psSize;
+
+	fuInt m_MaxCount;
 public: // 接口实现
 	void Play();
 	void Stop();
@@ -33,6 +35,6 @@ public: // 接口实现
 
 	fResult PlayNewSound(fFloat Volume, fFloat Pan);
 protected: // 禁止直接new/delete
-	f2dSoundSpriteImpl(IDirectSound8* pSound, f2dSoundDecoder* pDecoder, fBool bGlobalFocus);
+	f2dSoundSpriteImpl(IDirectSound8* pSound, f2dSoundDecoder* pDecoder, fBool bGlobalFocus, fuInt MaxCount = 10);
 	~f2dSoundSpriteImpl();
 };

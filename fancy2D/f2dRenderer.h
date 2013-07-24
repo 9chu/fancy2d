@@ -456,6 +456,7 @@ struct f2dParticleCreationDesc
 {
 	fcyRect PosRange;      ///< @brief 创建范围偏移
 	fcyVec2 VRange;        ///< @brief 初速度范围
+	fcyVec2 VAngleRange;   ///< @brief 初速度方向范围
 	fcyVec2 ARRange;       ///< @brief 初法向加速度范围
 	fcyVec2 ATRange;       ///< @brief 初切向加速度范围
 	fcyVec2 SpinRange;     ///< @brief 自旋速度范围
@@ -495,6 +496,9 @@ struct f2dParticlePool :
 
 	/// @brief 返回粒子数量
 	virtual fuInt GetCount()=0;
+
+	/// @brief 返回粒子容量
+	virtual fuInt GetCapacity()=0;
 
 	/// @brief 清空粒子
 	virtual void Clear()=0;

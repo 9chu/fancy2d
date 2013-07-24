@@ -121,8 +121,9 @@ struct f2dSoundSys
 	/// @note       提供音效播放功能，会把PCM数据读取到内存中
 	/// @param[in]  pDecoder     音频解码器，静态缓冲区不会保存解码器指针，仅在初始化时解码所有PCM数据
 	/// @param[in]  bGlobalFocus 全局响应，设为true则当应用程序不被激活时仍然可以发出声音
+	/// @param[in]  iMaxCount    指定同时播放的最大音效数量, 默认可取10
 	/// @param[out] pOut         输出的音频缓冲区指针
-	virtual fResult CreateSoundSprite(f2dSoundDecoder* pDecoder, fBool bGlobalFocus, f2dSoundSprite** pOut)=0;
+	virtual fResult CreateSoundSprite(f2dSoundDecoder* pDecoder, fBool bGlobalFocus, fuInt iMaxCount, f2dSoundSprite** pOut)=0;
 
 	/// @brief      创建Wave解码器
 	/// @note       解码器会对流的存取行为加锁，以保证流在多线程环境下被复用时不产生错误。
