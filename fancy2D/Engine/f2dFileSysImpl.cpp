@@ -196,6 +196,14 @@ f2dFileFolderNodeForPackage::f2dFileFolderNodeForPackage(fcyResPackage* pPackage
 	: m_pPackage(pPackage), m_pNode(pNode)
 {
 	pPackage->AddRef();
+
+	m_FloderName = pNode->GetName();
+}
+
+f2dFileFolderNodeForPackage::f2dFileFolderNodeForPackage(fcyResPackage* pPackage, fcyResPackageFloderNode* pNode, const std::wstring& NameOverride)
+	: m_pPackage(pPackage), m_pNode(pNode), m_FloderName(NameOverride)
+{
+	pPackage->AddRef();
 }
 
 f2dFileFolderNodeForPackage::~f2dFileFolderNodeForPackage()
@@ -223,7 +231,7 @@ f2dFileStreamNode* f2dFileFolderNodeForPackage::ToStream()
 
 fcStrW f2dFileFolderNodeForPackage::GetName()
 {
-	return m_pNode->GetName();
+	return m_FloderName.c_str();
 }
 	
 fResult f2dFileFolderNodeForPackage::Clear()
@@ -857,7 +865,7 @@ fResult f2dFileSysImpl::LoadResPackage(fcStrW Path, fcyStream* PakStream)
 	}
 	else
 	{
-		f2dFileFolderNodeForPackage* pNewNode = new f2dFileFolderNodeForPackage(tPackage, tPackage->GetRoot());
+		f2dFileFolderNodeForPackage* pNewNode = new f2dFileFolderNodeForPackage(tPackage, tPackage->GetRoot(), tNodeName);
 		
 		if(FCYFAILED(pParent->Add(pNewNode)))
 		{

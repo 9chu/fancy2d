@@ -79,6 +79,8 @@ class f2dFileFolderNodeForPackage :
 {
 	friend class f2dFileSysImpl;
 private:
+	std::wstring m_FloderName;         ///< @brief 保存文件夹节点名字
+
 	fcyResPackage* m_pPackage;         ///< @brief 保持Package
 	fcyResPackageFloderNode* m_pNode;  ///< @brief 本文件夹的节点
 
@@ -98,6 +100,7 @@ public: // 接口实现
 	fuInt GetNodeCount();
 protected:
 	f2dFileFolderNodeForPackage(fcyResPackage* pPackage, fcyResPackageFloderNode* pNode);
+	f2dFileFolderNodeForPackage(fcyResPackage* pPackage, fcyResPackageFloderNode* pNode, const std::wstring& NameOverride);
 	~f2dFileFolderNodeForPackage();
 };
 
