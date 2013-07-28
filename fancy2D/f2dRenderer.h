@@ -239,7 +239,7 @@ struct f2dFontProvider :
 enum F2DFONTFLAG
 {
 	F2DFONTFLAG_NONE,    ///< @brief 无选项
-	F2DFONTFLAG_OUTLINE  ///< @brief 返回描边
+	F2DFONTFLAG_OUTLINE  ///< @brief [尚未实现] 返回描边
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -345,6 +345,8 @@ struct f2dSpriteAnimationInstance
 {
 	fuInt KeyFrameIndex;
 	fuInt KeyFrameElapsedTime;
+	F2DSPRITEFLIP FlipType;
+	fcyColor BlendColor;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -377,6 +379,10 @@ struct f2dSpriteAnimation :
 	virtual void SplitAndAppend(fuInt FrameTime, f2dTexture2D* FrameTex, const fcyRect& TexRect, fuInt SplitCount)=0;
 	/// @brief 分割并加入
 	virtual void SplitAndAppend(fuInt* FrameTimeArr, f2dTexture2D* FrameTex, const fcyRect& TexRect, fuInt SplitCount)=0;
+	/// @brief 逆序分割并加入
+	virtual void ReverseSplitAndAppend(fuInt FrameTime, f2dTexture2D* FrameTex, const fcyRect& TexRect, fuInt SplitCount)=0;
+	/// @brief 逆序分割并加入
+	virtual void ReverseSplitAndAppend(fuInt* FrameTimeArr, f2dTexture2D* FrameTex, const fcyRect& TexRect, fuInt SplitCount)=0;
 	/// @brief 清空
 	virtual void Clear()=0;
 
@@ -556,9 +562,18 @@ struct f2dRenderer
 	/// @brief      从字体文件加载字体
 	/// @param[in]  pStream   字体文件，读取整个文件
 	/// @param[in]  FaceIndex 若有多个Face，可以指定索引。0总是有效值。
+	/// @param[in]  FontSize  字体大小
 	/// @param[in]  Flag      额外选项
 	/// @param[out] pOut      返回的字体对象
 	virtual fResult CreateFontFromFile(f2dStream* pStream, fuInt FaceIndex, const fcyVec2& FontSize, F2DFONTFLAG Flag, f2dFontProvider** pOut)=0;
+
+	/// @brief      从系统加载字体
+	/// @param[in]  FaceName  字体在注册表中的名称
+	/// @param[in]  FaceIndex 若有多个Face，可以指定索引。0总是有效值。
+	/// @param[in]  FontSize  字体大小
+	/// @param[in]  Flag      额外选项
+	/// @param[out] pOut      返回的字体对象
+	virtual fResult CreateSystemFont(fcStrW FaceName, fuInt FaceIndex, const fcyVec2& FontSize, F2DFONTFLAG Flag, f2dFontProvider** pOut)=0;
 
 	/// @brief      从纹理加载字体
 	/// @param[in]  pDefineFile 字体定义文件

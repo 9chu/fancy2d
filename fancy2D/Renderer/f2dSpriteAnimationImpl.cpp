@@ -77,10 +77,40 @@ void f2dSpriteAnimationImpl::SplitAndAppend(fuInt* FrameTimeArr, f2dTexture2D* F
 	}
 }
 
+void f2dSpriteAnimationImpl::ReverseSplitAndAppend(fuInt FrameTime, f2dTexture2D* FrameTex, const fcyRect& TexRect, fuInt SplitCount)
+{
+	float tPerSpriteWidth = TexRect.GetWidth() / (float)SplitCount;
+
+	fcyRect tSplitRect(TexRect.b.x, TexRect.a.y, TexRect.b.x + tPerSpriteWidth, TexRect.b.y);
+	for(fuInt i = 0; i<SplitCount; i++)
+	{
+		tSplitRect.a.x -= tPerSpriteWidth;
+		tSplitRect.b.x -= tPerSpriteWidth;
+
+		Append(FrameTime, FrameTex, tSplitRect);
+	}
+}
+
+void f2dSpriteAnimationImpl::ReverseSplitAndAppend(fuInt* FrameTimeArr, f2dTexture2D* FrameTex, const fcyRect& TexRect, fuInt SplitCount)
+{
+	float tPerSpriteWidth = TexRect.GetWidth() / (float)SplitCount;
+
+	fcyRect tSplitRect(TexRect.b.x, TexRect.a.y, TexRect.b.x + tPerSpriteWidth, TexRect.b.y);
+	for(fuInt i = 0; i<SplitCount; i++)
+	{
+		tSplitRect.a.x -= tPerSpriteWidth;
+		tSplitRect.b.x -= tPerSpriteWidth;
+
+		Append(FrameTimeArr[i], FrameTex, tSplitRect);
+	}
+}
+
 void f2dSpriteAnimationImpl::InitInstance(f2dSpriteAnimationInstance& Instance)const
 {
 	Instance.KeyFrameIndex = 0;
 	Instance.KeyFrameElapsedTime = 0;
+	Instance.FlipType = F2DSPRITEFLIP_NONE;
+	Instance.BlendColor = 0xFF000000;
 }
 
 fBool f2dSpriteAnimationImpl::StepInstance(f2dSpriteAnimationInstance& Instance)const
@@ -165,6 +195,8 @@ fResult f2dSpriteAnimationImpl::DrawInstance(const f2dSpriteAnimationInstance& I
 		return FCYERR_OUTOFRANGE;
 
 	const Frame& tFrame = m_AnimationList[Instance.KeyFrameIndex];
+	tFrame.FrameSprite->SetFlipType(Instance.FlipType);
+	tFrame.FrameSprite->SetColor(Instance.BlendColor);
 	return tFrame.FrameSprite->Draw(pGraph, Dest);
 }
 
@@ -174,6 +206,8 @@ fResult f2dSpriteAnimationImpl::DrawInstance(const f2dSpriteAnimationInstance& I
 		return FCYERR_OUTOFRANGE;
 
 	const Frame& tFrame = m_AnimationList[Instance.KeyFrameIndex];
+	tFrame.FrameSprite->SetFlipType(Instance.FlipType);
+	tFrame.FrameSprite->SetColor(Instance.BlendColor);
 	return tFrame.FrameSprite->Draw(pGraph, Dest, SubTex);
 }
 
@@ -183,6 +217,8 @@ fResult f2dSpriteAnimationImpl::DrawInstance(const f2dSpriteAnimationInstance& I
 		return FCYERR_OUTOFRANGE;
 
 	const Frame& tFrame = m_AnimationList[Instance.KeyFrameIndex];
+	tFrame.FrameSprite->SetFlipType(Instance.FlipType);
+	tFrame.FrameSprite->SetColor(Instance.BlendColor);
 	return tFrame.FrameSprite->Draw(pGraph, Center);
 }
 
@@ -192,6 +228,8 @@ fResult f2dSpriteAnimationImpl::DrawInstance(const f2dSpriteAnimationInstance& I
 		return FCYERR_OUTOFRANGE;
 
 	const Frame& tFrame = m_AnimationList[Instance.KeyFrameIndex];
+	tFrame.FrameSprite->SetFlipType(Instance.FlipType);
+	tFrame.FrameSprite->SetColor(Instance.BlendColor);
 	return tFrame.FrameSprite->Draw(pGraph, Center, Scale);
 }
 
@@ -201,6 +239,8 @@ fResult f2dSpriteAnimationImpl::DrawInstance(const f2dSpriteAnimationInstance& I
 		return FCYERR_OUTOFRANGE;
 
 	const Frame& tFrame = m_AnimationList[Instance.KeyFrameIndex];
+	tFrame.FrameSprite->SetFlipType(Instance.FlipType);
+	tFrame.FrameSprite->SetColor(Instance.BlendColor);
 	return tFrame.FrameSprite->Draw(pGraph, Center, Scale, SubTex);
 }
 
@@ -210,6 +250,8 @@ fResult f2dSpriteAnimationImpl::DrawInstance(const f2dSpriteAnimationInstance& I
 		return FCYERR_OUTOFRANGE;
 
 	const Frame& tFrame = m_AnimationList[Instance.KeyFrameIndex];
+	tFrame.FrameSprite->SetFlipType(Instance.FlipType);
+	tFrame.FrameSprite->SetColor(Instance.BlendColor);
 	return tFrame.FrameSprite->Draw(pGraph, Center, Scale, Rotation);
 }
 
@@ -219,5 +261,7 @@ fResult f2dSpriteAnimationImpl::DrawInstance(const f2dSpriteAnimationInstance& I
 		return FCYERR_OUTOFRANGE;
 
 	const Frame& tFrame = m_AnimationList[Instance.KeyFrameIndex];
+	tFrame.FrameSprite->SetFlipType(Instance.FlipType);
+	tFrame.FrameSprite->SetColor(Instance.BlendColor);
 	return tFrame.FrameSprite->Draw(pGraph, Center, Scale, Rotation, SubTex);
 }
