@@ -38,9 +38,9 @@ private:
 		fuLong tPoolSize = m_FreeMemPool.size() + BlockCount;
 		// 如果不够进行预留
 		if(m_FreeMemPool.capacity() < tPoolSize)
-			m_FreeMemPool.reserve( tPoolSize );
+			m_FreeMemPool.reserve( (size_t)tPoolSize );
 		// 分配空间
-		fByte* tPtr = (fByte*)malloc( tAllocSize );
+		fByte* tPtr = (fByte*)malloc( (size_t)tAllocSize );
 		// 记录分配的空间
 		m_AllocMemPtr.push_back(tPtr);
 		// 记录所有内存块
@@ -54,7 +54,7 @@ private:
 	/// @brief 分配内存池
 	void allocPool()
 	{
-		appendMem(m_PerPoolLen);
+		appendMem((fuInt)m_PerPoolLen);
 
 		// 扩大下次分配值
 		m_PerPoolLen = m_PerPoolLen * 2;
