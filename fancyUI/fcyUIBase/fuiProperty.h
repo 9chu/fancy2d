@@ -22,7 +22,7 @@ struct fuiProperty
 	}
 	virtual void Set(const std::wstring& Str)
 	{
-		throw fcyException("fuiProperty::Get", "Property is not writable.");
+		throw fcyException("fuiProperty::Set", "Property is not writable.");
 	}
 };
 
@@ -173,6 +173,66 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 class fuiPropertySet
 {
+	typedef std::unordered_map<std::wstring, fuiProperty*>::iterator IterType;
+public:
+	// 属性迭代器
+	class Iterator
+	{
+		friend class fuiPropertySet;
+	protected:
+		IterType m_Iter;
+	public:
+		const std::wstring& GetPropName()const
+		{
+			return m_Iter->first;
+		}
+		fuiProperty* GetPropInterface()
+		{
+			return m_Iter->second;
+		}
+	public:
+		Iterator& operator=(const Iterator& Right)
+		{
+			m_Iter = Right.m_Iter;
+			return *this;
+		}
+		bool operator==(const Iterator& Right)const
+		{
+			return m_Iter == Right.m_Iter;
+		}
+		bool operator!=(const Iterator& Right)const
+		{
+			return m_Iter != Right.m_Iter;
+		}
+		Iterator& operator++()
+		{
+			++m_Iter;
+			return *this;
+		}
+		Iterator operator++(int)
+		{
+			Iterator it(m_Iter++);
+			return it;
+		}
+		Iterator& operator--()
+		{
+			--m_Iter;
+			return *this;
+		}
+		Iterator operator--(int)
+		{
+			Iterator it(m_Iter--);
+			return it;
+		}
+	protected:
+		Iterator(IterType Iter)
+			: m_Iter(Iter) {}
+	public:
+		Iterator() {}
+		Iterator(const Iterator& Org)
+			: m_Iter(Org.m_Iter) {}
+		~Iterator() {}
+	};
 protected:
 	/// @brief 属性列表
 	std::unordered_map<std::wstring, fuiProperty*> m_PropList;
@@ -180,6 +240,16 @@ protected:
 	/// @brief 注册属性
 	void RegisterProperty(const std::wstring& Str, fuiProperty* pProp);
 public: // 属性操作
+	/// @brief 返回开始迭代器
+	Iterator GetPropertyBegin()
+	{
+		return m_PropList.begin();
+	}
+	/// @brief 返回结尾迭代器
+	Iterator GetPropertyEnd()
+	{
+		return m_PropList.end();
+	}
 	/// @brief     返回属性接口
 	/// @param[in] Prop 属性名
 	fuiProperty* QueryPropertyInterface(const std::wstring& Prop);

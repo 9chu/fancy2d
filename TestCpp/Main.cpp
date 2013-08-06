@@ -8,6 +8,7 @@
 // UI库
 #include <fcyUIBase/fuiPage.h>
 #include <fcyUIBase/fuiFactory.h>
+#include <fcyUIBase/fuiPropBlock.h>
 
 // f2d头文件
 #include <f2d.h>
@@ -39,6 +40,8 @@ private:
 	fcyRefPointer<f2dInputKeyboard> m_KeyBoard;
 
 	// 测试用
+	fuiPropBlock* m_TestBlock;
+
 	fuiResProviderImpl tProvider;
 	fcyRefPointer<fuiPage> m_pRootUIPage;
 
@@ -113,6 +116,12 @@ protected: // 引擎消息
 					tMouse.y = (float)tMsg.Param2;
 				}
 			default:
+				if(tMsg.Type == F2DMSG_WINDOW_ONKEYUP)
+				{
+					if(tMsg.Param1 == 'P')
+						m_TestBlock->Set();
+				}
+
 				m_pRootUIPage->DealF2DMsg(tMsg);
 				break;
 			}
@@ -278,6 +287,9 @@ public:
 			m_pRenderer->CreateSprite2D(pTex, &m_Sprite);
 			
 			m_pRenderer->CreateParticlePool(&m_ParticlePool);
+
+			// 测试状态
+			m_TestBlock = new fuiPropBlock(m_pRootUIPage);
 		}
 
 		// 显示窗口
@@ -292,6 +304,7 @@ public:
 	}
 	~MyApp()
 	{
+		delete m_TestBlock;
 	}
 };
 

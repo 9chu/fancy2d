@@ -100,7 +100,7 @@ public:
 	fuInt GetNodeCount()const;
 
 	/// @brief 获得同名子节点个数
-	fuInt GetNodeCount(fcStrW NodeName);
+	fuInt GetNodeCount(fcStrW NodeName)const;
 	
 	/// @brief     获得子节点
 	/// @param[in] Index 子节点索引
@@ -108,10 +108,21 @@ public:
 	fcyXmlNode* GetNode(fuInt Index);
 
 	/// @brief     获得子节点
+	/// @param[in] Index 子节点索引
+	/// @return    如果索引越界，则返回NULL
+	const fcyXmlNode* GetNode(fuInt Index)const;
+
+	/// @brief     获得子节点
 	/// @param[in] Name  节点键名
 	/// @param[in] Index 相同键名列表中的索引
 	/// @return    如果索引越界或者不存在键名，则返回NULL
 	fcyXmlNode* GetNodeByName(fcStrW Name, fuInt Index);
+
+	/// @brief     获得子节点
+	/// @param[in] Name  节点键名
+	/// @param[in] Index 相同键名列表中的索引
+	/// @return    如果索引越界或者不存在键名，则返回NULL
+	const fcyXmlNode* GetNodeByName(fcStrW Name, fuInt Index)const;
 
 	/// @brief     追加子节点
 	/// @note      将自动管理追加的子节点

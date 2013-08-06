@@ -15,6 +15,7 @@
     <ClInclude Include="fcyUIBase\fuiEvent.h" />
     <ClInclude Include="fcyUIBase\fuiFactory.h" />
     <ClInclude Include="fcyUIBase\fuiPage.h" />
+    <ClInclude Include="fcyUIBase\fuiPropBlock.h" />
     <ClInclude Include="fcyUIBase\fuiProperty.h" />
     <ClInclude Include="fcyUIBase\fuiRes.h" />
     <ClInclude Include="fcyUIBase\fuiStyle.h" />
@@ -32,6 +33,7 @@
     <ClCompile Include="fcyUIBase\fuiFactory.cpp" />
     <ClCompile Include="fcyUIBase\fuiGraphics.cpp" />
     <ClCompile Include="fcyUIBase\fuiPage.cpp" />
+    <ClCompile Include="fcyUIBase\fuiPropBlock.cpp" />
     <ClCompile Include="fcyUIBase\fuiProperty.cpp" />
     <ClCompile Include="fcyUIBase\fuiRes.cpp" />
     <ClCompile Include="fcyUIBase\fuiStyle.cpp" />

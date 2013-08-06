@@ -27,9 +27,10 @@ public:
 	fcStr GetDesc()const;    ///< @brief 获得异常信息
 public:
 	/// @brief     构造函数
-	/// @param[in] Src  异常源
-	/// @param[in] Desc 异常描述
-	fcyException(fcStr Src, fcStr Desc);
+	/// @warning   描述不得超过512字符
+	/// @param[in] Src     异常源
+	/// @param[in] DescFmt 异常格式
+	fcyException(fcStr Src, fcStr DescFmt, ...);
 	fcyException(const fcyException& Org);
 	~fcyException();
 };

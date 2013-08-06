@@ -186,9 +186,9 @@ fuInt fcyXmlNode::GetNodeCount()const
 	return m_Nodes.size();
 }
 
-fuInt fcyXmlNode::GetNodeCount(fcStrW NodeName)
+fuInt fcyXmlNode::GetNodeCount(fcStrW NodeName)const
 {
-	unordered_map<wstring, vector<fcyXmlNode*>>::iterator i = m_Dict.find(NodeName);
+	unordered_map<wstring, vector<fcyXmlNode*>>::const_iterator i = m_Dict.find(NodeName);
 	if(i == m_Dict.end())
 		return 0;
 
@@ -196,6 +196,14 @@ fuInt fcyXmlNode::GetNodeCount(fcStrW NodeName)
 }
 
 fcyXmlNode* fcyXmlNode::GetNode(fuInt Index)
+{
+	if(Index>=GetNodeCount())
+		return NULL;
+
+	return &(m_Nodes[Index]);
+}
+
+const fcyXmlNode* fcyXmlNode::GetNode(fuInt Index)const
 {
 	if(Index>=GetNodeCount())
 		return NULL;
@@ -212,7 +220,19 @@ fcyXmlNode* fcyXmlNode::GetNodeByName(fcStrW Name, fuInt Index)
 	if(Index >= i->second.size())
 		return NULL;
 	else
-		return m_Dict[Name][Index];
+		return i->second[Index];
+}
+
+const fcyXmlNode* fcyXmlNode::GetNodeByName(fcStrW Name, fuInt Index)const
+{
+	unordered_map<wstring, vector<fcyXmlNode*>>::const_iterator i = m_Dict.find(Name);
+	if(i == m_Dict.end())
+		return NULL;
+
+	if(Index >= i->second.size())
+		return NULL;
+	else
+		return i->second[Index];
 }
 
 void fcyXmlNode::AppendNode(const fcyXmlNode& pNode)

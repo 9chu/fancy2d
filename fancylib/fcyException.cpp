@@ -6,11 +6,17 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-fcyException::fcyException(fcStr Src, fcStr Desc)
+fcyException::fcyException(fcStr Src, fcStr Desc, ...)
 {
+	char szText[512];
+	va_list marker;
+	va_start(marker, Desc);
+	vsprintf_s(szText, Desc, marker);
+	va_end(marker);
+
 	m_Time = GetTickCount();
 	m_ExcpSrc = Src;
-	m_ExcpDesc = Desc;
+	m_ExcpDesc = szText;
 }
 
 fcyException::fcyException(const fcyException& Org)
