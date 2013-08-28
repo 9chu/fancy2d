@@ -19,6 +19,28 @@
 
 using namespace std;
 
+class MyForce :
+	public f2dParticleForce
+{
+protected:
+	f2dParticlePool* m_pPool;
+	
+public:
+	void SetPool(f2dParticlePool* pPool)
+	{
+		m_pPool = pPool;
+	}
+public:
+	void OnUpdate(fFloat ElapsedTime, fcyVec2& Pos, fcyVec2& V, float& Angle)
+	{
+		V += fcyVec2(0.f, 60.f) * ElapsedTime;
+	}
+public:
+	MyForce()
+		: m_pPool(NULL)
+	{}
+};
+
 class MyApp :
 	public f2dEngineEventListener
 {
@@ -40,7 +62,7 @@ private:
 	fcyRefPointer<f2dInputKeyboard> m_KeyBoard;
 
 	// 测试用
-	fuiPropBlock* m_TestBlock;
+	MyForce m_Force;
 
 	fuiResProviderImpl tProvider;
 	fcyRefPointer<fuiPage> m_pRootUIPage;
@@ -118,8 +140,7 @@ protected: // 引擎消息
 			default:
 				if(tMsg.Type == F2DMSG_WINDOW_ONKEYUP)
 				{
-					if(tMsg.Param1 == 'P')
-						m_TestBlock->Set();
+					// Do something
 				}
 
 				m_pRootUIPage->DealF2DMsg(tMsg);
@@ -131,53 +152,33 @@ protected: // 引擎消息
 		m_pRootUIPage->Update(ElapsedTime);
 
 		{
-			f2dParticleCreationDesc tDesc = 
+			f2dParticleCreationDesc tParticleDesc = 
 			{
-				fcyRect(fcyVec2(-0.1f, -2.f), fcyVec2(0.1f, -1.0f)),
-				fcyVec2(100.f, 200.f),  // V
-				fcyVec2(-3.14f / 2, -3.14f / 2),  // VAngle
-				fcyVec2(100.f, 150.f),   // AR
-				fcyVec2(-10.f, 10.f),   // AT
-				fcyVec2(),
-				fcyVec2(0.3f, 0.5f),
-				fcyColor(255,255,255,200),
+				fcyRect(fcyVec2(-640.f / 2, -10.f), fcyVec2(640.f / 2, 10.f)),
+				fcyVec2(0.f, 0.f),  // V
+				fcyVec2(0.f, 0.f),  // VAngle
+				fcyVec2(0.f, 0.f),   // AR
+				fcyVec2(0.f, 0.f),   // AT
+				fcyVec2(0.f, 3.14f * 2), // IA
+				fcyVec2(0.3f, 0.8f), // Spin
+				fcyVec2(5.f, 7.f),
+				fcyColor(255,0,0,0),
 				fcyVec2(0, 0),
-				fcyColor(0,255,242,0),
+				fcyColor(128,0,0,0),
 				fcyVec2(1.3f,1.3f),
 				fcyVec2(-0.5f,0.3f),
-				fcyVec2(0.f,0.f)
-			};
-
-			f2dParticleCreationDesc tDesc2 = 
-			{
-				fcyRect(fcyVec2(-1.0f, -1.0f), fcyVec2(1.0f, 1.0f)),
-				fcyVec2(100.f, 200.f),  // V
-				fcyVec2(0.f, 2*3.14f),  // VAngle
-				fcyVec2(-100.f, -50.f),      // AR
-				fcyVec2(50.f, 100.f),   // AT
-				fcyVec2(),
-				fcyVec2(3.f, 5.f),
-				fcyColor(255,255,255,255),
-				fcyVec2(0, 0),
-				fcyColor(0,50,50,250),
-				fcyVec2(1.3f,1.3f),
-				fcyVec2(-0.5f,0.3f),
-				fcyVec2(0.f,0.f)
+				fcyVec2(0.8f,0.8f)
 			};
 
 			static float s_Timer = 0;
-			s_Timer += ElapsedTime;
-			if(s_Timer > 0.01f)
+			s_Timer += (float)ElapsedTime;
+			if(s_Timer > 0.1f)
 			{
 				s_Timer = 0.f;
-				m_ParticlePool->Emitted(m_Sprite, tMouse, fcyVec2(10.f, 20.f), tDesc);
-
-				m_ParticlePool->Emitted(m_Sprite, fcyVec2(400.f, 300.f), fcyVec2(10.f, 20.f), tDesc);
-
-				m_ParticlePool->Emitted(m_Sprite, fcyVec2(200.f, 200.f), fcyVec2(3.f, 5.f), tDesc2);
+				m_ParticlePool->Emitted(m_Sprite, fcyVec2(640.f / 2, -50.f), fcyVec2(2.f, 5.f), tParticleDesc);
 			}
 
-			m_ParticlePool->Update(ElapsedTime);
+			m_ParticlePool->Update((float)ElapsedTime);
 		}
 
 		fCharW tBuffer[256];
@@ -287,9 +288,8 @@ public:
 			m_pRenderer->CreateSprite2D(pTex, &m_Sprite);
 			
 			m_pRenderer->CreateParticlePool(&m_ParticlePool);
-
-			// 测试状态
-			m_TestBlock = new fuiPropBlock(m_pRootUIPage);
+			m_ParticlePool->AppendForce(&m_Force);
+			m_Force.SetPool(m_ParticlePool);
 		}
 
 		// 显示窗口
@@ -304,7 +304,6 @@ public:
 	}
 	~MyApp()
 	{
-		delete m_TestBlock;
 	}
 };
 
@@ -320,3 +319,4 @@ int main()
 	// system("pause");
 	return 0;
 }
+

@@ -48,6 +48,8 @@ protected:
 
 	std::vector<Particle> m_ParticlePool;
 
+	std::vector<f2dParticleForce*> m_ForcePool;
+
 	fuInt m_ParticleCount;
 public: // 接口实现
 	fuInt GetRandomSeed()
@@ -88,6 +90,9 @@ public: // 接口实现
 		m_ParticlePool.clear();
 	}
 
+	fResult AppendForce(f2dParticleForce* pForce);
+	bool RemoveForce(f2dParticleForce* pForce);
+	void ClearForce();
 	fResult Emitted(f2dSprite* pSprite, const fcyVec2& Center, const fcyVec2& EmittedCountRange, const f2dParticleCreationDesc& Desc);
 	void Update(fFloat ElapsedTime);
 	void Render(f2dGraphics2D* pGraph);

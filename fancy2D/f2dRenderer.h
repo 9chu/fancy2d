@@ -404,6 +404,9 @@ struct f2dSpriteAnimation :
 	/// @brief  单步实例
 	/// @return 若动画结束返回false
 	virtual fBool StepInstance(f2dSpriteAnimationInstance& Instance)const=0;
+	/// @brief  后退一步
+	/// @return 若动画结束返回true
+	virtual fBool StepbackInstance(f2dSpriteAnimationInstance& Instance)const=0;
 	/// @brief  跳到帧
 	virtual fResult JumpTo(f2dSpriteAnimationInstance& Instance, fuInt FrameIndex)const=0;
 	/// @brief  跳到关键帧
@@ -465,6 +468,7 @@ struct f2dParticleCreationDesc
 	fcyVec2 VAngleRange;   ///< @brief 初速度方向范围
 	fcyVec2 ARRange;       ///< @brief 初法向加速度范围
 	fcyVec2 ATRange;       ///< @brief 初切向加速度范围
+	fcyVec2 InitialAngle;  ///< @brief 初始化偏转角度范围
 	fcyVec2 SpinRange;     ///< @brief 自旋速度范围
 	fcyVec2 LifeTimeRange; ///< @brief 生存时间范围
 
@@ -484,6 +488,7 @@ struct f2dParticleCreationDesc
 ////////////////////////////////////////////////////////////////////////////////
 struct f2dParticleForce
 {
+	virtual void OnUpdate(fFloat ElapsedTime, fcyVec2& Pos, fcyVec2& V, float& Angle)=0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -508,6 +513,16 @@ struct f2dParticlePool :
 
 	/// @brief 清空粒子
 	virtual void Clear()=0;
+
+	/// @brief     追加一个力
+	virtual fResult AppendForce(f2dParticleForce* pForce)=0;
+	
+	/// @brief     移除一个力
+	/// @note      若有多个相同的对象将移除第一个对象
+	virtual bool RemoveForce(f2dParticleForce* pForce)=0;
+
+	/// @brief     清空力场
+	virtual void ClearForce()=0;
 
 	/// @brief     发射一组粒子
 	/// @param[in] pSprite           发射的精灵

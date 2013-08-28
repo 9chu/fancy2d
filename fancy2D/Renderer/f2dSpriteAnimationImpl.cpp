@@ -155,6 +155,48 @@ fBool f2dSpriteAnimationImpl::StepInstance(f2dSpriteAnimationInstance& Instance)
 	return true;
 }
 
+fBool f2dSpriteAnimationImpl::StepbackInstance(f2dSpriteAnimationInstance& Instance)const
+{
+	if(Instance.KeyFrameIndex >= m_AnimationList.size())
+		return false;
+
+	const Frame& tFrame = m_AnimationList[Instance.KeyFrameIndex];
+	if(Instance.KeyFrameElapsedTime == 0)
+	{
+		// 后退一帧
+		// 检查是否循环并到循环尾
+		if(m_bLoop)
+		{
+			fuInt tAbsoluteLoopStart = m_LoopStart;
+			fuInt tAbsoluteLoopEnd = m_AnimationList.size() + m_LoopEnd;
+			if(m_LoopStart < 0)
+				tAbsoluteLoopStart += m_AnimationList.size();
+
+			if(Instance.KeyFrameIndex == 0)
+			{
+				// 跳到循环尾
+				Instance.KeyFrameIndex = tAbsoluteLoopEnd;
+				Instance.KeyFrameElapsedTime = tFrame.FrameTime;
+
+				return true;
+			}
+		}
+
+		// 否则继续上一帧
+		if(Instance.KeyFrameIndex > 0)
+		{
+			Instance.KeyFrameIndex--;
+			Instance.KeyFrameElapsedTime = tFrame.FrameTime;
+		}
+		else
+			return false;
+	}
+	else
+		Instance.KeyFrameElapsedTime--;
+
+	return true;
+}
+
 fResult f2dSpriteAnimationImpl::JumpTo(f2dSpriteAnimationInstance& Instance, fuInt FrameIndex)const
 {
 	fuInt tFrameCounter = 0;

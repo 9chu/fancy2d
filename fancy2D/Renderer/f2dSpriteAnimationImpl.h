@@ -111,6 +111,7 @@ public:
 
 	void InitInstance(f2dSpriteAnimationInstance& Instance)const;
 	fBool StepInstance(f2dSpriteAnimationInstance& Instance)const;
+	fBool StepbackInstance(f2dSpriteAnimationInstance& Instance)const;
 	fResult JumpTo(f2dSpriteAnimationInstance& Instance, fuInt FrameIndex)const;
 	fResult JumpToKeyFrame(f2dSpriteAnimationInstance& Instance, fuInt FrameIndex)const;
 

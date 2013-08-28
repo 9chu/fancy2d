@@ -11,6 +11,36 @@ f2dParticlePoolImpl::~f2dParticlePoolImpl()
 	Clear();
 }
 
+fResult f2dParticlePoolImpl::AppendForce(f2dParticleForce* pForce)
+{
+	if(!pForce)
+		return FCYERR_INVAILDPARAM;
+
+	m_ForcePool.push_back(pForce);
+
+	return FCYERR_OK;
+}
+
+bool f2dParticlePoolImpl::RemoveForce(f2dParticleForce* pForce)
+{
+	for(vector<f2dParticleForce*>::iterator i = m_ForcePool.begin();
+		i != m_ForcePool.end() ; ++i)
+	{
+		if(*i == pForce)
+		{
+			m_ForcePool.erase(i);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void f2dParticlePoolImpl::ClearForce()
+{
+	m_ForcePool.clear();
+}
+
 fResult f2dParticlePoolImpl::Emitted(f2dSprite* pSprite, const fcyVec2& Center, const fcyVec2& EmittedCountRange, const f2dParticleCreationDesc& Desc)
 {
 	if(!pSprite)
@@ -27,7 +57,7 @@ fResult f2dParticlePoolImpl::Emitted(f2dSprite* pSprite, const fcyVec2& Center, 
 		Particle tParticle;
 
 		tParticle.CurTime = 0;
-		tParticle.Angle = 0;
+		tParticle.Angle = m_Randomizer.GetRandFloat(Desc.InitialAngle.x, Desc.InitialAngle.y);
 
 		tParticle.Pos = Center;
 		tParticle.Pos.x += m_Randomizer.GetRandFloat(Desc.PosRange.a.x, Desc.PosRange.b.x);
@@ -154,6 +184,13 @@ void f2dParticlePoolImpl::Update(fFloat ElapsedTime)
 					(i->EndScale.x - i->StartScale.x) * k + i->StartScale.x,
 					(i->EndScale.y - i->StartScale.y) * k + i->StartScale.y
 				);
+
+			// Õ‚≤ø”∞œÏ
+			for(vector<f2dParticleForce*>::iterator j = m_ForcePool.begin();
+				j != m_ForcePool.end() ; ++j)
+			{
+				(*j)->OnUpdate(ElapsedTime, i->Pos, i->V, i->Angle);
+			}
 
 			++i;
 		}
