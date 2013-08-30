@@ -55,7 +55,7 @@ f2dRenderDeviceImpl::f2dRenderDeviceImpl(f2dEngineImpl* pEngine, fuInt BackBuffe
 
 	// --- 创建设备 ---
 	// 填充属性
-	m_D3Dpp.BackBufferCount = 1;                      // 后台缓冲页面个数
+	m_D3Dpp.BackBufferCount = 2;                      // 后台缓冲页面个数
 	m_D3Dpp.BackBufferWidth = BackBufferWidth;        // 缓冲页面宽度
 	m_D3Dpp.BackBufferHeight = BackBufferHeight;      // 缓冲页面高度
 	m_D3Dpp.BackBufferFormat = D3DFMT_A8R8G8B8;       // 页面格式

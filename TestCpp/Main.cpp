@@ -33,7 +33,7 @@ public:
 public:
 	void OnUpdate(fFloat ElapsedTime, fcyVec2& Pos, fcyVec2& V, float& Angle)
 	{
-		V += fcyVec2(0.f, 60.f) * ElapsedTime;
+		V += fcyVec2(0.f, 20.f) * ElapsedTime;
 	}
 public:
 	MyForce()
@@ -155,27 +155,46 @@ protected: // 引擎消息
 			f2dParticleCreationDesc tParticleDesc = 
 			{
 				fcyRect(fcyVec2(-640.f / 2, -10.f), fcyVec2(640.f / 2, 10.f)),
-				fcyVec2(0.f, 0.f),  // V
-				fcyVec2(0.f, 0.f),  // VAngle
+				fcyVec2(30.f, 40.f),  // V
+				fcyVec2(3.14f / 4.f, 3.14f / 4.f * 3),  // VAngle
 				fcyVec2(0.f, 0.f),   // AR
 				fcyVec2(0.f, 0.f),   // AT
 				fcyVec2(0.f, 3.14f * 2), // IA
 				fcyVec2(0.3f, 0.8f), // Spin
-				fcyVec2(5.f, 7.f),
-				fcyColor(255,0,0,0),
+				fcyVec2(10.f, 15.f),
+				fcyColor(200,200,0,0),
 				fcyVec2(0, 0),
-				fcyColor(128,0,0,0),
-				fcyVec2(1.3f,1.3f),
-				fcyVec2(-0.5f,0.3f),
-				fcyVec2(0.8f,0.8f)
+				fcyColor(80,50,0,0),
+				fcyVec2(0.8f,0.8f),
+				fcyVec2(-0.3f,0.3f),
+				fcyVec2(0.5f,0.5f)
+			};
+
+			f2dParticleCreationDesc tParticleDesc2 = 
+			{
+				fcyRect(fcyVec2(-640.f / 2, -10.f), fcyVec2(640.f / 2, 10.f)),
+				fcyVec2(30.f, 40.f),  // V
+				fcyVec2(3.14f / 4.f, 3.14f / 4.f * 3),  // VAngle
+				fcyVec2(0.f, 0.f),   // AR
+				fcyVec2(0.f, 0.f),   // AT
+				fcyVec2(0.f, 3.14f * 2), // IA
+				fcyVec2(0.3f, 0.8f), // Spin
+				fcyVec2(10.f, 15.f),
+				fcyColor(200,0,0,100),
+				fcyVec2(0, 0),
+				fcyColor(80,0,0,80),
+				fcyVec2(0.8f,0.8f),
+				fcyVec2(-0.3f,0.3f),
+				fcyVec2(0.5f,0.5f)
 			};
 
 			static float s_Timer = 0;
 			s_Timer += (float)ElapsedTime;
-			if(s_Timer > 0.1f)
+			if(s_Timer > 0.2f)
 			{
 				s_Timer = 0.f;
-				m_ParticlePool->Emitted(m_Sprite, fcyVec2(640.f / 2, -50.f), fcyVec2(2.f, 5.f), tParticleDesc);
+				m_ParticlePool->Emitted(m_Sprite, fcyVec2(640.f / 2, -50.f), fcyVec2(2.f, 3.f), tParticleDesc);
+				m_ParticlePool->Emitted(m_Sprite, fcyVec2(640.f / 2, -50.f), fcyVec2(2.f, 3.f), tParticleDesc2);
 			}
 
 			m_ParticlePool->Update((float)ElapsedTime);
@@ -192,15 +211,15 @@ protected: // 引擎消息
 		// 作图
 		m_pDev->Clear(0xFF000000);
 
-		// 绘制UI
-		m_pRootUIPage->Render();
-
 		m_pGraph2D->Begin();
 
 		// 在这里作图...
 		m_ParticlePool->Render(m_pGraph2D);
 
 		m_pGraph2D->End();
+		
+		// 绘制UI
+		m_pRootUIPage->Render();
 
 		return true; 
 	}
@@ -270,6 +289,7 @@ public:
 					{
 						m_pRootUIPage->FindControl(L"TestLabel")->RawSetProperty(L"Text", p->RawGetProperty(L"Text"));
 					};
+				m_pRootUIPage->FindControl(L"TestImage")->SetVisiable(false);
 			}
 			catch(const fcyException& e)
 			{
