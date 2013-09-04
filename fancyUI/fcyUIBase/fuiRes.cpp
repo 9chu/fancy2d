@@ -142,10 +142,18 @@ fuiRes::fuiRes(RESTYPE Type, const std::wstring& Name)
 ////////////////////////////////////////////////////////////////////////////////
 
 fuiSprite::fuiSprite(const std::wstring& Name)
-	: fuiRes(RESTYPE_SPRITE, Name), m_bSetHotPos(false)
+	: fuiRes(RESTYPE_SPRITE, Name), m_bSetHotPos(false), m_bSetRect(false)
 {
 	m_TexPath_Accessor = fuiPropertyAccessor<std::wstring>(&m_TexPath);
-	m_Rect_Accessor = fuiPropertyAccessor<fcyRect>(&m_Rect);
+	m_Rect_Accessor = fuiPropertyAccessor<fcyRect>(
+		&m_Rect,
+		fuiPropertyAccessorHelper<fcyRect>::DefaultGetter,
+		[&](const std::wstring& Prop, fcyRect* Value)
+		{
+			fuiPropertyAccessorHelper<fcyRect>::DefaultSetter(Prop, Value);
+			m_bSetRect = true;
+		}
+	);
 	m_HotPos_Accessor = fuiPropertyAccessor<fcyVec2>(
 		&m_HotPos,
 		fuiPropertyAccessorHelper<fcyVec2>::DefaultGetter,
@@ -171,16 +179,13 @@ void fuiSprite::ConstructRes(fuiResProvider* pProvider)
 
 	// 构造资源
 	f2dTexture2D* pTex = pProvider->QueryTexture(m_TexPath);
-	if(m_bSetHotPos)
-	{
-		if(FCYFAILED(pRenderer->CreateSprite2D(pTex, m_Rect, m_HotPos, &m_pSprite)))
-			throw fcyException("fuiSprite::ConstructRes", "f2dRenderer::CreateSprite2D failed.");
-	}
-	else
-	{
-		if(FCYFAILED(pRenderer->CreateSprite2D(pTex, m_Rect, &m_pSprite)))
-			throw fcyException("fuiSprite::ConstructRes", "f2dRenderer::CreateSprite2D failed.");
-	}
+	if(!m_bSetRect)
+		m_Rect = fcyRect(0.f, 0.f, (float)pTex->GetWidth(), (float)pTex->GetHeight());
+	if(!m_bSetHotPos)
+		m_HotPos = m_Rect.GetCenter();
+
+	if(FCYFAILED(pRenderer->CreateSprite2D(pTex, m_Rect, m_HotPos, &m_pSprite)))
+		throw fcyException("fuiSprite::ConstructRes", "f2dRenderer::CreateSprite2D failed.");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

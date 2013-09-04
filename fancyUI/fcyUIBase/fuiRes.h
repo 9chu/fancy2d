@@ -127,6 +127,7 @@ protected:
 	std::wstring m_TexPath;
 	fcyRect m_Rect;
 	fcyVec2 m_HotPos;
+	fBool m_bSetRect;
 	fBool m_bSetHotPos;
 
 	fuiPropertyAccessor<std::wstring> m_TexPath_Accessor;
