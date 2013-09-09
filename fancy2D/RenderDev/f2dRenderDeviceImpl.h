@@ -72,6 +72,7 @@ private:
 	f2dBlendState m_CurBlendState; // 当前混合状态
 
 	IDirect3DVertexDeclaration9* m_pCurVertDecl; // 当前的顶点声明
+	D3DTEXTUREOP m_CurTexBlendOP_Color;          // 当前的纹理混合运算符
 
 	// Window
 	HWND m_hWnd;
@@ -97,7 +98,8 @@ public: // 内部函数
 	fResult SubmitProjMat(const fcyMatrix4& Mat);                 // 立即提交投影矩阵
 	fResult SubmitBlendState(const f2dBlendState& State);         // 立即提交混合状态
 
-	fResult SubmitVD(IDirect3DVertexDeclaration9* pVD);  // 立即递交顶点声明
+	fResult SubmitVD(IDirect3DVertexDeclaration9* pVD);        // 立即递交顶点声明
+	fResult SubmitTextureBlendOP_Color(D3DTEXTUREOP ColorOP);  // 立即递交纹理混合声明
 
 	// 注册顶点声明
 	IDirect3DVertexDeclaration9* RegisterVertexDeclare(f2dVertexElement* pElement, fuInt ElementCount, fuInt& ElementSize);

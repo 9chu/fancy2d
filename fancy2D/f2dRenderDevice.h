@@ -334,6 +334,24 @@ struct f2dGraphics :
 // 2D渲染器：
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @brief 2D渲染器混合选项
+////////////////////////////////////////////////////////////////////////////////
+enum F2DGRAPH2DBLENDTYPE
+{
+	F2DGRAPH2DBLENDTYPE_DISABLE,          ///< @brief 禁用
+	F2DGRAPH2DBLENDTYPE_SELECTCOLOR,      ///< @brief 选择颜色(final=color)
+	F2DGRAPH2DBLENDTYPE_SELECTTEXTURE,    ///< @brief 选择纹理(final=texture)
+	F2DGRAPH2DBLENDTYPE_ADD,              ///< @brief 颜色相加(final=color+texture)
+	F2DGRAPH2DBLENDTYPE_SUBTRACT,         ///< @brief 颜色相减(final=color-texture)
+	F2DGRAPH2DBLENDTYPE_MODULATE,         ///< @brief 颜色相乘(final=color*texture)
+	F2DGRAPH2DBLENDTYPE_MODULATE2X,       ///< @brief 颜色相乘x2(final=color*texture*2)
+	F2DGRAPH2DBLENDTYPE_MODULATE4X,       ///< @brief 颜色相乘x4(final=color*texture*4)
+	F2DGRAPH2DBLENDTYPE_ADDSIGNED,        ///< @brief 颜色相加并偏移(final=color+texture-0.5)
+	F2DGRAPH2DBLENDTYPE_ADDSIGNED2X,      ///< @brief 颜色相加并偏移x2(final=(color+texture-0.5)x2)
+	F2DGRAPH2DBLENDTYPE_ADDSMOOTH         ///< @brief 平滑相加(final=color+texture-color*texture)
+};
+
+////////////////////////////////////////////////////////////////////////////////
 /// @brief 二维渲染器顶点
 ////////////////////////////////////////////////////////////////////////////////
 struct f2dGraphics2DVertex
@@ -352,6 +370,13 @@ struct f2dGraphics2DVertex
 struct f2dGraphics2D :
 	public f2dGraphics
 {
+	// === 混合选项 ===
+	/// @brief 返回颜色混合状态
+	virtual F2DGRAPH2DBLENDTYPE GetColorBlendType()=0;
+
+	/// @brief 设置颜色混合状态
+	virtual fResult SetColorBlendType(F2DGRAPH2DBLENDTYPE Type)=0;
+
 	// === 2D绘制函数 ===
 	/// @brief 绘制矩形
 	virtual fResult DrawQuad(

@@ -69,6 +69,9 @@ private:
 
 	fcyRefPointer<f2dSprite> m_Sprite;
 	fcyRefPointer<f2dParticlePool> m_ParticlePool;
+
+	fcyRefPointer<f2dTexture2D> m_RT;
+	fcyRefPointer<f2dSprite> m_RTSprite;
 private:  // 功能函数
 	void showSelfInfo()
 	{
@@ -193,8 +196,8 @@ protected: // 引擎消息
 			if(s_Timer > 0.2f)
 			{
 				s_Timer = 0.f;
-				m_ParticlePool->Emitted(m_Sprite, fcyVec2(640.f / 2, -50.f), fcyVec2(2.f, 3.f), tParticleDesc);
-				m_ParticlePool->Emitted(m_Sprite, fcyVec2(640.f / 2, -50.f), fcyVec2(2.f, 3.f), tParticleDesc2);
+				m_ParticlePool->Emitted(m_Sprite, fcyVec2(640.f / 2, -50.f), fcyVec2(5.f, 8.f), tParticleDesc);
+				m_ParticlePool->Emitted(m_Sprite, fcyVec2(640.f / 2, -50.f), fcyVec2(5.f, 8.f), tParticleDesc2);
 			}
 
 			m_ParticlePool->Update((float)ElapsedTime);
@@ -208,16 +211,54 @@ protected: // 引擎消息
 	}
 	fBool OnRender(fDouble ElapsedTime, f2dFPSController* pFPSController)
 	{
+		// 画枫叶
+		{
+			m_pDev->SetRenderTarget(m_RT);
+			m_pDev->Clear(0x00FFFFFF);
+
+			f2dBlendState tState;
+			tState.AlphaSrcBlend = F2DBLENDFACTOR_SRCALPHA;
+			tState.AlphaDestBlend = F2DBLENDFACTOR_INVSRCALPHA;
+			tState.AlphaBlendOp = F2DBLENDOPERATOR_ADD;
+			tState.SrcBlend = F2DBLENDFACTOR_SRCALPHA;
+			tState.DestBlend = F2DBLENDFACTOR_INVSRCALPHA;
+			tState.BlendOp = F2DBLENDOPERATOR_ADD;
+			m_pGraph2D->SetBlendState(tState);
+
+			m_pGraph2D->Begin();
+			m_ParticlePool->Render(m_pGraph2D);
+			m_pGraph2D->End();
+
+			m_pDev->SetRenderTarget(NULL);
+		}
+
 		// 作图
-		m_pDev->Clear(0xFF000000);
+		f2dBlendState tState;
+		tState.AlphaSrcBlend = F2DBLENDFACTOR_SRCALPHA;
+		tState.AlphaDestBlend = F2DBLENDFACTOR_INVSRCALPHA;
+		tState.AlphaBlendOp = F2DBLENDOPERATOR_ADD;
+		tState.SrcBlend = F2DBLENDFACTOR_ONE;
+		tState.DestBlend = F2DBLENDFACTOR_ONE;
+		tState.BlendOp = F2DBLENDOPERATOR_REVSUBTRACT;
+		m_pGraph2D->SetBlendState(tState);
+
+		m_pDev->Clear(0xFFFFFFFF);
 
 		m_pGraph2D->Begin();
 
 		// 在这里作图...
-		m_ParticlePool->Render(m_pGraph2D);
+		m_RTSprite->Draw(m_pGraph2D, fcyVec2(m_RT->GetWidth() / 2.f, m_RT->GetHeight() / 2.f));
 
 		m_pGraph2D->End();
 		
+		tState.AlphaSrcBlend = F2DBLENDFACTOR_SRCALPHA;
+		tState.AlphaDestBlend = F2DBLENDFACTOR_INVSRCALPHA;
+		tState.AlphaBlendOp = F2DBLENDOPERATOR_ADD;
+		tState.SrcBlend = F2DBLENDFACTOR_SRCALPHA;
+		tState.DestBlend = F2DBLENDFACTOR_INVSRCALPHA;
+		tState.BlendOp = F2DBLENDOPERATOR_ADD;
+		m_pGraph2D->SetBlendState(tState);
+
 		// 绘制UI
 		m_pRootUIPage->Render();
 
@@ -271,6 +312,10 @@ public:
 			m_pGraph3D->SetWorldTransform(fcyMatrix4::GetScaleMatrix(0.8f));
 			m_pGraph3D->SetProjTransform(fcyMatrix4::GetPespctiveLH(4.f/3.f, 3.14f/4.f, 0.1f, 1000.f));
 			m_pGraph3D->SetViewTransform(fcyMatrix4::GetLookAtLH(fcyVec3(0.f,0.f,100.f), fcyVec3(), fcyVec3(0.f,1.f,0.f)));
+
+			// 创建RT
+			m_pDev->CreateRenderTarget(0, 0, true, &m_RT);
+			m_pRenderer->CreateSprite2D(m_RT, &m_RTSprite);
 
 			// 创建键盘
 			m_pInputSys->CreateKeyboard(-1, false, &m_KeyBoard);

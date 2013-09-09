@@ -11,7 +11,8 @@ f2dGraphics2DImpl::f2dGraphics2DImpl(f2dRenderDeviceImpl* pParent, fuInt VertexB
 	m_pVB(NULL), m_pIB(NULL),
 	m_VBMaxCount(VertexBufferCount), m_IBMaxCount(IndexBufferCount),
 	m_VBUsedCount(0), m_IBUsedCount(0), m_VBAlloced(0), m_IBAlloced(0),
-	m_pVBData(NULL), m_pIBData(NULL)
+	m_pVBData(NULL), m_pIBData(NULL),
+	m_ColorBlendType(F2DGRAPH2DBLENDTYPE_ADD)
 {
 	// 设置默认的投影矩阵
 	SetProjTransform(fcyMatrix4::GetOrthoOffCenterLH(
@@ -182,6 +183,54 @@ void f2dGraphics2DImpl::pushCommand(f2dTexture2D* pTex, fuInt VertCount, fuInt I
 	m_Commands.push_back(tCmd);
 }
 
+fResult f2dGraphics2DImpl::setColorBlendType(F2DGRAPH2DBLENDTYPE Type)
+{
+	D3DTEXTUREOP tColorOP;
+	switch(Type)
+	{
+	case F2DGRAPH2DBLENDTYPE_DISABLE:
+		tColorOP = D3DTOP_DISABLE;
+		break;
+	case F2DGRAPH2DBLENDTYPE_SELECTCOLOR:
+		tColorOP = D3DTOP_SELECTARG1;
+		break;
+	case F2DGRAPH2DBLENDTYPE_SELECTTEXTURE:
+		tColorOP = D3DTOP_SELECTARG2;
+		break;
+	case F2DGRAPH2DBLENDTYPE_ADD:
+		tColorOP = D3DTOP_ADD;
+		break;
+	case F2DGRAPH2DBLENDTYPE_SUBTRACT:
+		tColorOP = D3DTOP_SUBTRACT;
+		break;
+	case F2DGRAPH2DBLENDTYPE_MODULATE:
+		tColorOP = D3DTOP_MODULATE;
+		break;
+	case F2DGRAPH2DBLENDTYPE_MODULATE2X:
+		tColorOP = D3DTOP_MODULATE2X;
+		break;
+	case F2DGRAPH2DBLENDTYPE_MODULATE4X:
+		tColorOP = D3DTOP_MODULATE4X;
+		break;
+	case F2DGRAPH2DBLENDTYPE_ADDSIGNED:
+		tColorOP = D3DTOP_ADDSIGNED;
+		break;
+	case F2DGRAPH2DBLENDTYPE_ADDSIGNED2X:
+		tColorOP = D3DTOP_ADDSIGNED2X;
+		break;
+	case F2DGRAPH2DBLENDTYPE_ADDSMOOTH:
+		tColorOP = D3DTOP_ADDSMOOTH;
+		break;
+	default:
+		return FCYERR_INVAILDPARAM;
+	}
+
+	if(FCYOK(m_pParent->SubmitTextureBlendOP_Color(tColorOP)))
+		return FCYERR_OK;
+	else
+		return FCYERR_INTERNALERR;
+}
+
 void f2dGraphics2DImpl::OnRenderDeviceLost()
 {
 	FCYSAFEKILL(m_pVB);
@@ -218,6 +267,7 @@ fResult f2dGraphics2DImpl::Begin()
 		return FCYERR_INTERNALERR;
 
 	m_pParent->SubmitVD(NULL);
+	setColorBlendType(m_ColorBlendType);
 
 	IDirect3DDevice9* pDev = (IDirect3DDevice9*)m_pParent->GetHandle();
 	pDev->SetFVF(FVF);
@@ -269,6 +319,27 @@ fResult f2dGraphics2DImpl::End()
 		return FCYERR_INTERNALERR;
 	else
 		return FCYERR_OK;
+}
+
+F2DGRAPH2DBLENDTYPE f2dGraphics2DImpl::GetColorBlendType()
+{
+	return m_ColorBlendType;
+}
+
+fResult f2dGraphics2DImpl::SetColorBlendType(F2DGRAPH2DBLENDTYPE Type)
+{
+	if(IsInRender())
+		Flush();
+	if(Type == m_ColorBlendType)
+		return FCYERR_OK;
+
+	fResult tRet = setColorBlendType(Type);
+	if(FCYOK(tRet))
+	{
+		m_ColorBlendType = Type;
+	}
+
+	return tRet;
 }
 
 fResult f2dGraphics2DImpl::DrawQuad(

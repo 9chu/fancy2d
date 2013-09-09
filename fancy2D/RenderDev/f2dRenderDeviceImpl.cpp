@@ -124,6 +124,8 @@ f2dRenderDeviceImpl::f2dRenderDeviceImpl(f2dEngineImpl* pEngine, fuInt BackBuffe
 	m_CurBlendState.AlphaSrcBlend = F2DBLENDFACTOR_SRCALPHA;
 	m_CurBlendState.AlphaDestBlend = F2DBLENDFACTOR_INVSRCALPHA;
 
+	m_CurTexBlendOP_Color = D3DTOP_ADD;
+
 	m_CurWorldMat = fcyMatrix4::GetIdentity();
 	m_CurLookatMat = fcyMatrix4::GetIdentity();
 	m_CurProjMat = fcyMatrix4::GetIdentity();
@@ -248,7 +250,6 @@ void f2dRenderDeviceImpl::initState()
 	m_pDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);   // 设置反面剔除
 	m_pDev->SetRenderState(D3DRS_LIGHTING, FALSE);         // 关闭光照
 	m_pDev->SetRenderState(D3DRS_ZENABLE, TRUE);           // 启动Z缓冲
-	m_pDev->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);  // 启动Alpha混合
 	m_pDev->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE); // 打开矩形裁剪功能
 
 	// --- 设置ZBUFFER ---
@@ -257,6 +258,7 @@ void f2dRenderDeviceImpl::initState()
 	m_pDev->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
 	// --- 设置默认混合状态 ---
+	m_pDev->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);  // 启动Alpha混合
 	m_pDev->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE);
 
 	m_pDev->SetRenderState(D3DRS_BLENDOP, m_CurBlendState.BlendOp);
@@ -267,7 +269,7 @@ void f2dRenderDeviceImpl::initState()
 	m_pDev->SetRenderState(D3DRS_DESTBLENDALPHA, m_CurBlendState.AlphaDestBlend);
 
 	// --- 纹理混合参数默认值 ---
-	m_pDev->SetTextureStageState(0, D3DTSS_COLOROP,  D3DTOP_ADD);    
+	m_pDev->SetTextureStageState(0, D3DTSS_COLOROP,  m_CurTexBlendOP_Color);    
 	m_pDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
 	m_pDev->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
 	m_pDev->SetTextureStageState(0, D3DTSS_ALPHAOP,  D3DTOP_MODULATE);
@@ -460,17 +462,17 @@ fResult f2dRenderDeviceImpl::SubmitBlendState(const f2dBlendState& State)
 {
 	// 对比状态并设置
 	if(m_CurBlendState.AlphaBlendOp != State.AlphaBlendOp)
-		m_pDev->SetRenderState(D3DRS_BLENDOPALPHA, m_CurBlendState.AlphaBlendOp);
+		m_pDev->SetRenderState(D3DRS_BLENDOPALPHA, State.AlphaBlendOp);
 	if(m_CurBlendState.AlphaDestBlend != State.AlphaDestBlend)
-		m_pDev->SetRenderState(D3DRS_DESTBLENDALPHA, m_CurBlendState.AlphaDestBlend);
+		m_pDev->SetRenderState(D3DRS_DESTBLENDALPHA, State.AlphaDestBlend);
 	if(m_CurBlendState.AlphaSrcBlend != State.AlphaSrcBlend)
-		m_pDev->SetRenderState(D3DRS_SRCBLENDALPHA, m_CurBlendState.AlphaSrcBlend);
+		m_pDev->SetRenderState(D3DRS_SRCBLENDALPHA, State.AlphaSrcBlend);
 	if(m_CurBlendState.BlendOp != State.BlendOp)
-		m_pDev->SetRenderState(D3DRS_BLENDOP, m_CurBlendState.BlendOp);
+		m_pDev->SetRenderState(D3DRS_BLENDOP, State.BlendOp);
 	if(m_CurBlendState.DestBlend != State.DestBlend)
-		m_pDev->SetRenderState(D3DRS_DESTBLEND, m_CurBlendState.DestBlend);
+		m_pDev->SetRenderState(D3DRS_DESTBLEND, State.DestBlend);
 	if(m_CurBlendState.SrcBlend != State.SrcBlend)
-		m_pDev->SetRenderState(D3DRS_SRCBLEND, m_CurBlendState.SrcBlend);
+		m_pDev->SetRenderState(D3DRS_SRCBLEND, State.SrcBlend);
 
 	m_CurBlendState = State;
 
@@ -488,6 +490,22 @@ fResult f2dRenderDeviceImpl::SubmitVD(IDirect3DVertexDeclaration9* pVD)
 			return FCYERR_INTERNALERR;
 		else
 			return FCYERR_OK;
+	}
+}
+
+fResult f2dRenderDeviceImpl::SubmitTextureBlendOP_Color(D3DTEXTUREOP ColorOP)
+{
+	if(m_CurTexBlendOP_Color == ColorOP)
+		return FCYERR_OK;
+	else
+	{
+		if(FAILED(m_pDev->SetTextureStageState(0, D3DTSS_COLOROP, ColorOP)))
+			return FCYERR_INTERNALERR;
+		else
+		{
+			m_CurTexBlendOP_Color = ColorOP;
+			return FCYERR_OK;
+		}
 	}
 }
 

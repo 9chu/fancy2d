@@ -39,6 +39,9 @@ protected:
 
 	// 指令列表
 	std::vector<RenderCommand> m_Commands;
+
+	// 当前混合模式
+	F2DGRAPH2DBLENDTYPE m_ColorBlendType;
 private:
 	// 快速小数转整数
 	// 已废弃
@@ -60,6 +63,9 @@ private:
 	bool alloc(fuInt VertCountToAlloc, fuInt IndexCountToAlloc, f2dGraphics2DVertex** pVertexOut, fuShort** pIndexOut);
 	// 追加命令并进行合并
 	void pushCommand(f2dTexture2D* pTex, fuInt VertCount, fuInt IndexCount);
+	
+	// 翻译并设置混合模式
+	fResult setColorBlendType(F2DGRAPH2DBLENDTYPE Type);
 protected: // 设备丢失处理
 	void OnRenderDeviceLost();
 	void OnRenderDeviceReset();
@@ -69,6 +75,9 @@ public: // 接口实现
 	fResult Begin();
 	fResult Flush();
 	fResult End();
+
+	F2DGRAPH2DBLENDTYPE GetColorBlendType();
+	fResult SetColorBlendType(F2DGRAPH2DBLENDTYPE Type);
 
 	fResult DrawQuad(
 		f2dTexture2D* pTex,
