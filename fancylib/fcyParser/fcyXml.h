@@ -5,210 +5,258 @@
 //////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "fcyLexicalParser.h"
+#include "../fcyOS/fcyMemPool.h"
 
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <vector>
 
 /// @addtogroup fancy库解析辅助
 /// @{
 
-//////////////////////////////////////////////////////////////////////////
-/// @brief XML节点
-//////////////////////////////////////////////////////////////////////////
-class fcyXmlNode
+class fcyXmlDocument;
+class fcyXmlElement;
+
+/// @brief XML异常
+class fcyXmlException :
+	public fcyException
 {
-	friend class fcyXml;
-public:
-	class AttributeIterator
-	{
-		friend class fcyXmlNode;
-	private:
-		std::unordered_map<std::wstring, std::wstring>::iterator i;
-	public:
-		fcStrW GetName()const
-		{
-			return i->first.c_str();
-		}
-		fcStrW GetContent()const
-		{
-			return i->second.c_str();
-		}
-		void SetContent(fcStrW Content)
-		{
-			i->second = Content;
-		}
-	public:
-		AttributeIterator& operator=(const AttributeIterator& Right)
-		{
-			i = Right.i;
-		}
-		fBool operator==(const AttributeIterator& Right)const
-		{
-			return (i == Right.i);
-		}
-		fBool operator!=(const AttributeIterator& Right)const
-		{
-			return (i != Right.i);
-		}
-		AttributeIterator& operator--()
-		{
-			--i;
-			return *this;
-		}
-		AttributeIterator& operator++()
-		{
-			++i;
-			return *this;
-		}
-	protected:
-		AttributeIterator(const std::unordered_map<std::wstring, std::wstring>::iterator& _i)
-			: i(_i) {}
-	public:
-		AttributeIterator() {}
-		AttributeIterator(const AttributeIterator& Org)
-			: i(Org.i) {}
-	};
-private:
-	std::wstring m_Name;                                               ///< @brief 名字
-	std::wstring m_Content;                                            ///< @brief 节点数据
-	std::vector<fcyXmlNode> m_Nodes;                                   ///< @brief 节点列表
-	std::unordered_map<std::wstring, std::wstring> m_Atti;             ///< @brief 属性列表
-	std::unordered_map<std::wstring, std::vector<fcyXmlNode*>> m_Dict; ///< @brief 节点缓存
 protected:
-	/// @brief      写到字符串
-	/// @param[out] pOut        输出的字符串
-	/// @param[in]  Indentation 缩进
-	void writeToStr(std::wstring& pOut, fuInt Indentation);
+	fcyXmlDocument* m_pOwner;
 public:
-	/// @brief 拷贝
-	fcyXmlNode& operator=(const fcyXmlNode& Org);
+	fcyXmlDocument* GetOwner() { return m_pOwner; }
 public:
-	/// @brief 获得节点键名
-	fcStrW GetName()const;
-
-	/// @brief 设置节点键名
-	void SetName(fcStrW Name);
-
-	/// @brief 获得节点文本
-	fcStrW GetContent()const;
-
-	/// @brief 设置节点文本
-	void SetContent(fcStrW Context);
-
-	/// @brief 获得子节点个数
-	fuInt GetNodeCount()const;
-
-	/// @brief 获得同名子节点个数
-	fuInt GetNodeCount(fcStrW NodeName)const;
-	
-	/// @brief     获得子节点
-	/// @param[in] Index 子节点索引
-	/// @return    如果索引越界，则返回NULL
-	fcyXmlNode* GetNode(fuInt Index);
-
-	/// @brief     获得子节点
-	/// @param[in] Index 子节点索引
-	/// @return    如果索引越界，则返回NULL
-	const fcyXmlNode* GetNode(fuInt Index)const;
-
-	/// @brief     获得子节点
-	/// @param[in] Name  节点键名
-	/// @param[in] Index 相同键名列表中的索引
-	/// @return    如果索引越界或者不存在键名，则返回NULL
-	fcyXmlNode* GetNodeByName(fcStrW Name, fuInt Index);
-
-	/// @brief     获得子节点
-	/// @param[in] Name  节点键名
-	/// @param[in] Index 相同键名列表中的索引
-	/// @return    如果索引越界或者不存在键名，则返回NULL
-	const fcyXmlNode* GetNodeByName(fcStrW Name, fuInt Index)const;
-
-	/// @brief     追加子节点
-	/// @note      将自动管理追加的子节点
-	/// @param[in] pNode 新节点的指针
-	void AppendNode(const fcyXmlNode& pNode);
-
-	/// @brief     移除子节点
-	/// @param[in] Index 子节点的索引
-	/// @return    返回操作是否成功
-	fResult RemoveNode(fuInt Index);
-
-	/// @brief 清空子节点并释放内存
-	void ClearNode();
-
-	/// @brief     获得属性
-	/// @param[in] Name 属性名
-	/// @return    属性值
-	fcStrW GetAttribute(fcStrW Name)const;
-
-	/// @brief     获得属性
-	/// @param[in] Name  属性名
-	/// @param[in] Value 属性值
-	void SetAttribute(fcStrW Name, fcStrW Value);
-
-	/// @brief     是否有属性
-	/// @param[in] Name 属性名
-	/// @return    返回属性是否存在
-	fBool HasAttribute(fcStrW Name)const;
-
-	/// @brief 返回第一个属性
-	AttributeIterator GetFirstAttribute();
-
-	/// @brief 返回最后一个属性
-	AttributeIterator GetLastAttribute();
-
-	/// @brief 移除属性
-	fBool RemoveAttribute(fcStrW Name);
-	
-	/// @brief 移除属性
-	AttributeIterator RemoveAttribute(AttributeIterator Iter);
-public:
-	/// @brief 构造函数
-	fcyXmlNode();
-	/// @brief 拷贝构造函数
-	fcyXmlNode(const fcyXmlNode& Org);
-	~fcyXmlNode();
+	fcyXmlException(fcStr Src, fcyXmlDocument* pOwner, fcStr Desc, ...);
+	fcyXmlException(const fcyXmlException& e)
+		: fcyException(e), m_pOwner(e.m_pOwner) {}
 };
 
-//////////////////////////////////////////////////////////////////////////
-/// @brief XML解析类
-/// @note  本解析类只会解析第一个子节点，不会对XML合法性进行检查。
-//////////////////////////////////////////////////////////////////////////
-class fcyXml
+/// @brief XML异常 - 属性未找到
+class fcyXmlAttributeNotFount :
+	public fcyXmlException
+{
+public:
+	fcyXmlAttributeNotFount(fcStr Src, fcyXmlDocument* pOwner, fcStrW Name);
+};
+
+/// @brief XML异常 - 节点未找到
+class fcyXmlNodeNotFount :
+	public fcyXmlException
+{
+public:
+	fcyXmlNodeNotFount(fcStr Src, fcyXmlDocument* pOwner, fcStrW Name);
+};
+
+/// @brief XML异常 - 索引超出范围
+class fcyXmlIndexOutOfRange :
+	public fcyXmlException
+{
+public:
+	fcyXmlIndexOutOfRange(fcStr Src, fcyXmlDocument* pOwner, fuInt Index);
+};
+
+/// @brief XML异常 - 节点之间有不同的所属文档
+class fcyXmlNodeHasDifferentOwner :
+	public fcyXmlException
+{
+public:
+	fcyXmlNodeHasDifferentOwner(fcStr Src, fcyXmlDocument* pOwner, fcStrW NodeA, fcStrW NodeB);
+};
+
+/// @brief XML异常 - 节点已有父节点
+class fcyXmlNodeHasParent :
+	public fcyXmlException
+{
+public:
+	fcyXmlNodeHasParent(fcStr Src, fcyXmlDocument* pOwner, fcStrW Name);
+};
+
+/// @brief XML异常 - 节点正在使用
+class fcyXmlNodeIsInUse :
+	public fcyXmlException
+{
+public:
+	fcyXmlNodeIsInUse(fcStr Src, fcyXmlDocument* pOwner, fcStrW Name);
+};
+
+// 属性迭代器
+class fcyXmlAttributeIterator
+{
+	friend class fcyXmlElement;
+	friend class fcyXmlAttributeConstIterator;
+private:
+	std::map<std::wstring, std::wstring>::iterator i;
+public:
+	fcyXmlAttributeIterator& operator=(const fcyXmlAttributeIterator& Right) { i = Right.i; }
+	fBool operator==(const fcyXmlAttributeIterator& Right)const { return (i == Right.i); }
+	fBool operator!=(const fcyXmlAttributeIterator& Right)const { return (i != Right.i); }
+	fcyXmlAttributeIterator& operator--() { --i; return *this; }
+	fcyXmlAttributeIterator& operator++() { ++i; return *this; }
+	const std::wstring& operator*()const { return i->second; }
+	std::wstring& operator*() { return i->second; }
+public:
+	const std::wstring& GetName()const { return i->first; }
+	const std::wstring& GetContent()const { return i->second; }
+	void SetContent(const std::wstring& Content) { i->second = Content; }
+protected:
+	fcyXmlAttributeIterator(const std::map<std::wstring, std::wstring>::iterator& _i)
+		: i(_i) {}
+public:
+	fcyXmlAttributeIterator() {}
+	fcyXmlAttributeIterator(const fcyXmlAttributeIterator& Org)
+		: i(Org.i) {}
+};
+
+// 只读属性迭代器
+class fcyXmlAttributeConstIterator
+{
+	friend class fcyXmlElement;
+private:
+	std::map<std::wstring, std::wstring>::const_iterator i;
+public:
+	fcyXmlAttributeConstIterator& operator=(const fcyXmlAttributeConstIterator& Right) { i = Right.i; }
+	fBool operator==(const fcyXmlAttributeConstIterator& Right)const { return (i == Right.i); }
+	fBool operator!=(const fcyXmlAttributeConstIterator& Right)const { return (i != Right.i); }
+	fcyXmlAttributeConstIterator& operator--() { --i; return *this; }
+	fcyXmlAttributeConstIterator& operator++() { ++i; return *this; }
+	const std::wstring& operator*()const { return i->second; }
+public:
+	const std::wstring& GetName()const { return i->first; }
+	const std::wstring& GetContent()const { return i->second; }
+protected:
+	fcyXmlAttributeConstIterator(const std::map<std::wstring, std::wstring>::const_iterator& _i)
+		: i(_i) {}
+public:
+	fcyXmlAttributeConstIterator() {}
+	fcyXmlAttributeConstIterator(const fcyXmlAttributeIterator& Org)
+		: i(Org.i) {}
+	fcyXmlAttributeConstIterator(const fcyXmlAttributeConstIterator& Org)
+		: i(Org.i) {}
+};
+
+// 元素列表
+class fcyXmlElementList
 {
 private:
-	fcyXmlNode m_pRoot;    ///< @brief 根节点
+	std::vector<fcyXmlElement*> m_List;
+public:
+	fcyXmlElement* operator[](fuInt Index);
+	fcyXmlElementList& operator=(const fcyXmlElementList& Right);
+public:
+	fuInt GetCount() { return m_List.size(); }
+	void Append(fcyXmlElement* pObj);
+	void Remove(fuInt Index);
+	void Clear();
+public:
+	fcyXmlElementList();
+	fcyXmlElementList(const fcyXmlElementList& Org);
+	fcyXmlElementList(fcyXmlElementList&& Org);
+};
+
+// XML元素
+class fcyXmlElement
+{
+	friend class fcyXmlDocument;
+	friend class fcyXmlElement;
+private:
+	// 保存父对象指针
+	fcyXmlDocument* m_pParent;
+	// 保存父节点
+	fcyXmlElement* m_pParentNode;
+
+	// 保存节点名称
+	std::wstring m_Name;
+	// 保存节点内容
+	std::wstring m_Content;
+	// 保存节点属性值
+	std::map<std::wstring, std::wstring> m_Attribute;
+	// 保存子节点
+	std::vector<fcyXmlElement*> m_Subnodes;
+
+	typedef std::vector<fcyXmlElement*>::iterator SubnodeIter;
+	typedef std::vector<fcyXmlElement*>::const_iterator SubnodeConstIter;
+	typedef std::map<std::wstring, std::wstring>::iterator AttrIter;
+	typedef std::map<std::wstring, std::wstring>::const_iterator AttrConstIter;
+public:
+	fcyXmlDocument* GetDocument()const { return m_pParent; }
+	fcyXmlElement* GetParent()const { return m_pParentNode; }
+
+	const std::wstring& GetName()const { return m_Name; }
+	const std::wstring& GetContent()const { return m_Content; }
+	void SetContent(const std::wstring& Content) { m_Content = Content; }
+	void SetContent(std::wstring&& Content) { m_Content = Content; }
+
+	fuInt GetNodeCount()const { return m_Subnodes.size(); }
+	fcyXmlElement* GetNode(fuInt Index)const;
+	fcyXmlElement* GetFirstNode(const std::wstring& Name)const;  // 若未找到返回NULL
+	fcyXmlElementList GetNodeByName(const std::wstring& Name)const;
+	void AppendNode(fcyXmlElement* pNode);
+	void RemoveNode(fcyXmlElement* pNode);
+	void RemoveNodeAt(fuInt Index);
+	void ClearNodes();
+
+	fuInt GetAttributeCount()const { return m_Attribute.size(); }
+	const std::wstring& GetAttribute(const std::wstring& Name)const;
+	void SetAttribute(const std::wstring& Name, const std::wstring& Value);
+	void SetAttribute(std::wstring&& Name, std::wstring&& Value);
+	fBool HasAttribute(const std::wstring& Name)const;
+	fcyXmlAttributeIterator GetAttributeIter(const std::wstring& Name);
+	const fcyXmlAttributeConstIterator GetAttributeIter(const std::wstring& Name)const;
+	fcyXmlAttributeIterator GetFirstAttributeIter();
+	const fcyXmlAttributeConstIterator GetFirstAttributeIter()const;
+	fcyXmlAttributeIterator GetLastAttributeIter();
+	const fcyXmlAttributeConstIterator GetLastAttributeIter()const;
+	void RemoveAttribute(const std::wstring& Name);
+	fcyXmlAttributeIterator RemoveAttribute(const fcyXmlAttributeIterator& Iter);
+
+	void Save(std::wstring& pOut, fuInt Indentation)const;
+
+	fcyXmlElement* Clone(fcyXmlDocument* pDoc)const;
+protected:
+	fcyXmlElement(fcyXmlDocument* pParent, const std::wstring& Name);
+	~fcyXmlElement();
+};
+
+// XML文档
+class fcyXmlDocument
+{
+private:
+	fcyMemPool<sizeof(fcyXmlElement)> m_ElementMem;
+	std::vector<fcyXmlElement*> m_ElementPool;
+
+	fcyXmlElement* m_pRootElement;
 private: // 预处理
 	fBool checkUTF8(fcyStream* pStream);
 	fBool checkUTF16LE(fcyStream* pStream);
-	std::wstring preprocessXml(fcyStream* pStream);                    ///< @brief 预处理并输出宽字符数据
+	std::wstring preprocessXml(fcyStream* pStream);                      ///< @brief 预处理并输出宽字符数据
 private: // 解析
-	fBool ignoreComment(fcyLexicalReader& tReader);                    ///< @brief 忽略注释
-	fBool ignorePreprocess(fcyLexicalReader& tReader);                 ///< @brief 忽略预处理指令
-	fBool tryReadCDATA(fcyLexicalReader& tReader, std::wstring& tOut); ///< @brief 试图读取CDATA
-	fCharW praseEscape(fcyLexicalReader& tReader);                     ///< @brief 解析转义符
-	std::wstring readName(fcyLexicalReader& tReader);                  ///< @brief 读取键名
-	std::wstring readString(fcyLexicalReader& tReader);                ///< @brief 读取字符串
-	void readAttribute(fcyLexicalReader& tReader, fcyXmlNode* pNode);  ///< @brief 读取属性
-	void readNodes(fcyLexicalReader& tReader, fcyXmlNode* pNode);      ///< @brief 读取节点
-	fcyXmlNode parserNode(fcyLexicalReader& tReader);                 ///< @brief 解析节点
-protected:
-	/// @brief 禁止拷贝构造
-	fcyXml(const fcyXml& Org) {}
-	/// @brief 禁止拷贝构造
-	fcyXml& operator=(const fcyXml& Org) {}
+	fBool ignoreComment(fcyLexicalReader& tReader);                      ///< @brief 忽略注释
+	fBool ignorePreprocess(fcyLexicalReader& tReader);                   ///< @brief 忽略预处理指令
+	fBool tryReadCDATA(fcyLexicalReader& tReader, std::wstring& tOut);   ///< @brief 试图读取CDATA
+	fCharW praseEscape(fcyLexicalReader& tReader);                       ///< @brief 解析转义符
+	std::wstring readName(fcyLexicalReader& tReader);                    ///< @brief 读取键名
+	std::wstring readString(fcyLexicalReader& tReader);                  ///< @brief 读取字符串
+	void readAttribute(fcyLexicalReader& tReader, fcyXmlElement* pNode); ///< @brief 读取属性
+	void readNodes(fcyLexicalReader& tReader, fcyXmlElement* pNode);     ///< @brief 读取节点
+	fcyXmlElement* parserNode(fcyLexicalReader& tReader);                ///< @brief 解析节点
 public:
-	fcyXmlNode* GetRoot();                 ///< @brief 获得根节点
-	void SetRoot(const fcyXmlNode& pNode); ///< @brief 设置根节点
+	fcyXmlElement* GetRootElement()const { return m_pRootElement; }
+	void SetRootElement(fcyXmlElement* pRoot);
 
-	void WriteToStr(std::wstring& pOut); ///< @brief 写到字符串
-	void WriteToStream(fcyStream* pOut); ///< @brief 写到流
+	fcyXmlElement* CreateElement(const std::wstring& Name);
+	void DeleteElement(fcyXmlElement* pObj);
+
+	void Save(std::wstring& Out)const;
+	void Save(fcyStream* pOut)const;     // 从流指针处开始写入
+protected:
+	fcyXmlDocument& operator=(const fcyXmlDocument& Org);
+	fcyXmlDocument(const fcyXmlDocument& Org);
 public:
-	fcyXml();                            ///< @brief 构造空的XML
-	fcyXml(const std::wstring& Str);     ///< @brief 从字符串构造XML
-	fcyXml(fcyStream* pStream);          ///< @brief 从流构造Xml
-	~fcyXml();
+	fcyXmlDocument();
+	fcyXmlDocument(const std::wstring& Str);
+	fcyXmlDocument(fcyStream* pStream);      // 从流指针处开始读取
+	fcyXmlDocument(fcyXmlDocument&& Org);
+	~fcyXmlDocument();
 };
 
 /// @}

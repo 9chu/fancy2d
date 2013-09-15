@@ -7,29 +7,258 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-fcyXmlNode::fcyXmlNode()
+fcyXmlException::fcyXmlException(fcStr Src, fcyXmlDocument* pOwner, fcStr Desc, ...)
+	: fcyException(Src, "fancyXmlException : ")
 {
+	char szText[512];
+	va_list marker;
+	va_start(marker, Desc);
+	vsprintf_s(szText, Desc, marker);
+	va_end(marker);
+
+	m_ExcpDesc += szText;
 }
 
-fcyXmlNode::fcyXmlNode(const fcyXmlNode& Org)
-{
-	m_Name = Org.m_Name;
-	m_Content = Org.m_Content;
-	m_Atti = Org.m_Atti;
+fcyXmlAttributeNotFount::fcyXmlAttributeNotFount(fcStr Src, fcyXmlDocument* pOwner, fcStrW Name)
+	: fcyXmlException(Src, pOwner, "Element attribute '%s' not found.", fcyStringHelper::WideCharToMultiByte(Name).c_str())
+{}
 
-	m_Nodes.reserve(Org.m_Nodes.size());
-	for(fuInt i = 0; i<Org.m_Nodes.size(); ++i)
+fcyXmlNodeNotFount::fcyXmlNodeNotFount(fcStr Src, fcyXmlDocument* pOwner, fcStrW Name)
+	: fcyXmlException(Src, pOwner, "Element node '%s' not found.", fcyStringHelper::WideCharToMultiByte(Name).c_str())
+{}
+
+fcyXmlIndexOutOfRange::fcyXmlIndexOutOfRange(fcStr Src, fcyXmlDocument* pOwner, fuInt Index)
+	: fcyXmlException(Src, pOwner, "Index %d out of range.", Index)
+{}
+
+fcyXmlNodeHasDifferentOwner::fcyXmlNodeHasDifferentOwner(fcStr Src, fcyXmlDocument* pOwner, fcStrW NodeA, fcStrW NodeB)
+	: fcyXmlException(Src, pOwner, "Owner between '%s' and '%s' is different.", 
+		fcyStringHelper::WideCharToMultiByte(NodeA).c_str(),
+		fcyStringHelper::WideCharToMultiByte(NodeA).c_str())
+{}
+
+fcyXmlNodeHasParent::fcyXmlNodeHasParent(fcStr Src, fcyXmlDocument* pOwner, fcStrW Name)
+	: fcyXmlException(Src, pOwner, "Node '%s' already has parent.", fcyStringHelper::WideCharToMultiByte(Name).c_str())
+{}
+
+fcyXmlNodeIsInUse::fcyXmlNodeIsInUse(fcStr Src, fcyXmlDocument* pOwner, fcStrW Name)
+	: fcyXmlException(Src, pOwner, "Node '%s' is in use.", fcyStringHelper::WideCharToMultiByte(Name).c_str())
+{}
+
+////////////////////////////////////////////////////////////////////////////////
+
+fcyXmlElementList::fcyXmlElementList()
+{}
+
+fcyXmlElementList::fcyXmlElementList(const fcyXmlElementList& Org)
+	: m_List(Org.m_List) 
+{}
+
+fcyXmlElementList::fcyXmlElementList(fcyXmlElementList&& Org)
+	: m_List(std::move(Org.m_List))
+{}
+
+fcyXmlElement* fcyXmlElementList::operator[](fuInt Index)
+{
+	if(Index >= m_List.size())
+		throw fcyXmlIndexOutOfRange("fcyXmlElementList::operator[]", NULL, Index);
+
+	return m_List[Index];
+}
+
+fcyXmlElementList& fcyXmlElementList::operator=(const fcyXmlElementList& Right)
+{
+	m_List = Right.m_List;
+	return *this;
+}
+
+void fcyXmlElementList::Append(fcyXmlElement* pObj)
+{
+	m_List.push_back(pObj);
+}
+
+void fcyXmlElementList::Remove(fuInt Index)
+{
+	if(Index >= m_List.size())
+		throw fcyXmlIndexOutOfRange("fcyXmlElementList::operator[]", NULL, Index);
+
+	vector<fcyXmlElement*>::iterator i = m_List.begin() + Index;
+	m_List.erase(i);
+}
+
+void fcyXmlElementList::Clear()
+{
+	m_List.clear();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+fcyXmlElement::fcyXmlElement(fcyXmlDocument* pParent, const std::wstring& Name)
+	: m_Name(Name), m_pParent(pParent), m_pParentNode(NULL)
+{}
+
+fcyXmlElement::~fcyXmlElement()
+{}
+
+fcyXmlElement* fcyXmlElement::GetNode(fuInt Index)const
+{
+	if(Index >= m_Subnodes.size())
+		throw fcyXmlIndexOutOfRange("fcyXmlElement::GetNode", m_pParent, Index);
+
+	return m_Subnodes[Index];
+}
+
+fcyXmlElement* fcyXmlElement::GetFirstNode(const std::wstring& Name)const
+{
+	SubnodeConstIter i = m_Subnodes.begin();
+	while(i != m_Subnodes.end())
 	{
-		AppendNode(Org.m_Nodes[i]);
+		if((*i)->GetName() == Name)
+			return (*i);
+		else
+			++i;
+	}
+
+	return NULL;
+}
+
+fcyXmlElementList fcyXmlElement::GetNodeByName(const std::wstring& Name)const
+{
+	fcyXmlElementList tRet;
+
+	SubnodeConstIter i = m_Subnodes.begin();
+	while(i != m_Subnodes.end())
+	{
+		if((*i)->GetName() == Name)
+			tRet.Append(*i);
+		
+		++i;
+	}
+
+	return std::move(tRet);
+}
+
+void fcyXmlElement::AppendNode(fcyXmlElement* pNode)
+{
+	if(pNode->GetDocument() != m_pParent)
+		throw fcyXmlNodeHasDifferentOwner("fcyXmlElement::AppendNode", m_pParent, this->GetName().c_str(), pNode->GetName().c_str());
+	if(pNode->GetParent() != NULL || m_pParent->GetRootElement() == pNode)
+		throw fcyXmlNodeHasParent("fcyXmlElement::AppendNode", m_pParent, pNode->GetName().c_str());
+	
+	m_Subnodes.push_back(pNode);
+	pNode->m_pParentNode = this;
+}
+
+void fcyXmlElement::RemoveNode(fcyXmlElement* pNode)
+{
+	SubnodeIter i = m_Subnodes.begin();
+	while(i != m_Subnodes.end())
+	{
+		if((*i) == pNode)
+		{
+			(*i)->m_pParent = NULL;
+			m_Subnodes.erase(i);
+			return;
+		}
+		
+		++i;
+	}
+
+	throw fcyXmlNodeNotFount("fcyXmlElement::RemoveNode", m_pParent, pNode->GetName().c_str());
+}
+
+void fcyXmlElement::RemoveNodeAt(fuInt Index)
+{
+	if(Index >= m_Subnodes.size())
+		throw fcyXmlIndexOutOfRange("fcyXmlElement::RemoveNodeAt", m_pParent, Index);
+
+	SubnodeIter i = m_Subnodes.begin() + Index;
+	(*i)->m_pParent = NULL;
+	m_Subnodes.erase(i);
+}
+
+void fcyXmlElement::ClearNodes()
+{
+	SubnodeIter i = m_Subnodes.begin();
+	while(i != m_Subnodes.end())
+	{
+		(*i)->m_pParent = NULL;
+		m_Subnodes.erase(i);
+		
+		++i;
 	}
 }
 
-fcyXmlNode::~fcyXmlNode()
+const std::wstring& fcyXmlElement::GetAttribute(const std::wstring& Name)const
 {
-	ClearNode();
+	AttrConstIter i = m_Attribute.find(Name);
+	if(i == m_Attribute.end())
+		throw fcyXmlAttributeNotFount("fcyXmlElement::GetAttribute", m_pParent, Name.c_str());
+
+	return i->second;
 }
 
-void fcyXmlNode::writeToStr(wstring& pOut, fuInt Indentation)
+void fcyXmlElement::SetAttribute(const std::wstring& Name, const std::wstring& Value)
+{
+	m_Attribute[Name] = Value;
+}
+
+void fcyXmlElement::SetAttribute(std::wstring&& Name, std::wstring&& Value)
+{
+	m_Attribute.insert(move(pair<wstring, wstring>(Name, Value)));
+}
+
+fBool fcyXmlElement::HasAttribute(const std::wstring& Name)const
+{
+	AttrConstIter i = m_Attribute.find(Name);
+	return (i != m_Attribute.end());
+}
+
+fcyXmlAttributeIterator fcyXmlElement::GetAttributeIter(const std::wstring& Name)
+{
+	return m_Attribute.find(Name);
+}
+
+const fcyXmlAttributeConstIterator fcyXmlElement::GetAttributeIter(const std::wstring& Name)const
+{
+	return m_Attribute.find(Name);
+}
+
+fcyXmlAttributeIterator fcyXmlElement::GetFirstAttributeIter()
+{
+	return m_Attribute.begin();
+}
+
+const fcyXmlAttributeConstIterator fcyXmlElement::GetFirstAttributeIter()const
+{
+	return m_Attribute.begin();
+}
+
+fcyXmlAttributeIterator fcyXmlElement::GetLastAttributeIter()
+{
+	return m_Attribute.end();
+}
+
+const fcyXmlAttributeConstIterator fcyXmlElement::GetLastAttributeIter()const
+{
+	return m_Attribute.end();
+}
+
+void fcyXmlElement::RemoveAttribute(const std::wstring& Name)
+{
+	AttrIter i = m_Attribute.find(Name);
+	if(i == m_Attribute.end())
+		throw fcyXmlAttributeNotFount("fcyXmlElement::RemoveAttribute", m_pParent, Name.c_str());
+
+	m_Attribute.erase(i);
+}
+
+fcyXmlAttributeIterator fcyXmlElement::RemoveAttribute(const fcyXmlAttributeIterator& Iter)
+{
+	return m_Attribute.erase(Iter.i);
+}
+
+void fcyXmlElement::Save(std::wstring& pOut, fuInt Indentation)const
 {
 	// 缩进
 	for(fuInt i = 0; i<Indentation; ++i)
@@ -41,12 +270,12 @@ void fcyXmlNode::writeToStr(wstring& pOut, fuInt Indentation)
 	pOut += L"<" + m_Name;
 	
 	// 写属性
-	if(m_Atti.size())
+	if(m_Attribute.size())
 	{
 		pOut += L' ';
 
-		unordered_map<wstring, wstring>::iterator i = m_Atti.begin();
-		while(i != m_Atti.end())
+		map<wstring, wstring>::const_iterator i = m_Attribute.begin();
+		while(i != m_Attribute.end())
 		{
 			pOut += i->first + L"=\"";
 			
@@ -82,7 +311,7 @@ void fcyXmlNode::writeToStr(wstring& pOut, fuInt Indentation)
 	}
 
 	// 结尾？
-	if(m_Content.size()==0 && m_Nodes.size()==0)
+	if(m_Content.empty() && m_Subnodes.size()==0)
 	{
 		pOut += L"/>\n";
 		return;
@@ -93,21 +322,17 @@ void fcyXmlNode::writeToStr(wstring& pOut, fuInt Indentation)
 	}
 
 	// 写出子节点
-	if(m_Nodes.size())
+	if(m_Subnodes.size())
 	{
 		// 换行
 		pOut += L"\n";
 
-		unordered_map<wstring, vector<fcyXmlNode*>>::iterator i = m_Dict.begin();
+		vector<fcyXmlElement*>::const_iterator i = m_Subnodes.begin();
 
-		while(i != m_Dict.end())
+		while(i != m_Subnodes.end())
 		{
-			vector<fcyXmlNode*>::iterator j = i->second.begin();
-			while(j != i->second.end())
-			{
-				(*j)->writeToStr(pOut, Indentation + 1);
-				j++;
-			}
+			(*i)->Save(pOut, Indentation + 1);
+			
 			++i;
 		}
 	}
@@ -139,226 +364,37 @@ void fcyXmlNode::writeToStr(wstring& pOut, fuInt Indentation)
 			}
 		}
 	}
+	
+	// 缩进
+	for(fuInt i = 0; i<Indentation; ++i)
+	{
+		pOut += L"\t";
+	}
 
 	// 闭合标签
 	pOut += L"</" + m_Name + L">\n";
 }
 
-fcyXmlNode& fcyXmlNode::operator=(const fcyXmlNode& Org)
+fcyXmlElement* fcyXmlElement::Clone(fcyXmlDocument* pDoc)const
 {
-	ClearNode();
+	fcyXmlElement* pThis = pDoc->CreateElement(GetName());
+	pThis->SetContent(GetContent());
+	pThis->m_Attribute = m_Attribute;
 
-	m_Name = Org.m_Name;
-	m_Content = Org.m_Content;
-	m_Atti = Org.m_Atti;
-
-	m_Nodes.reserve(Org.m_Nodes.size());
-	for(fuInt i = 0; i<Org.m_Nodes.size(); ++i)
+	// 克隆子节点
+	for(SubnodeConstIter i = m_Subnodes.begin(); i != m_Subnodes.end(); ++i)
 	{
-		AppendNode(Org.m_Nodes[i]);
+		fcyXmlElement* tSub = (*i)->Clone(pDoc);
+
+		pThis->AppendNode(tSub);
 	}
 
-	return *this;
-}
-
-fcStrW fcyXmlNode::GetName()const
-{
-	return m_Name.c_str();
-}
-
-void fcyXmlNode::SetName(fcStrW Name)
-{
-	m_Name = Name;
-}
-
-fcStrW fcyXmlNode::GetContent()const
-{
-	return m_Content.c_str();
-}
-
-void fcyXmlNode::SetContent(fcStrW Context)
-{
-	m_Content = Context;
-}
-
-fuInt fcyXmlNode::GetNodeCount()const
-{
-	return m_Nodes.size();
-}
-
-fuInt fcyXmlNode::GetNodeCount(fcStrW NodeName)const
-{
-	unordered_map<wstring, vector<fcyXmlNode*>>::const_iterator i = m_Dict.find(NodeName);
-	if(i == m_Dict.end())
-		return 0;
-
-	return i->second.size();
-}
-
-fcyXmlNode* fcyXmlNode::GetNode(fuInt Index)
-{
-	if(Index>=GetNodeCount())
-		return NULL;
-
-	return &(m_Nodes[Index]);
-}
-
-const fcyXmlNode* fcyXmlNode::GetNode(fuInt Index)const
-{
-	if(Index>=GetNodeCount())
-		return NULL;
-
-	return &(m_Nodes[Index]);
-}
-
-fcyXmlNode* fcyXmlNode::GetNodeByName(fcStrW Name, fuInt Index)
-{
-	unordered_map<wstring, vector<fcyXmlNode*>>::iterator i = m_Dict.find(Name);
-	if(i == m_Dict.end())
-		return NULL;
-
-	if(Index >= i->second.size())
-		return NULL;
-	else
-		return i->second[Index];
-}
-
-const fcyXmlNode* fcyXmlNode::GetNodeByName(fcStrW Name, fuInt Index)const
-{
-	unordered_map<wstring, vector<fcyXmlNode*>>::const_iterator i = m_Dict.find(Name);
-	if(i == m_Dict.end())
-		return NULL;
-
-	if(Index >= i->second.size())
-		return NULL;
-	else
-		return i->second[Index];
-}
-
-void fcyXmlNode::AppendNode(const fcyXmlNode& pNode)
-{
-	m_Nodes.push_back(pNode);
-
-	m_Dict[pNode.GetName()].push_back(&m_Nodes.back());
-}
-
-fResult fcyXmlNode::RemoveNode(fuInt Index)
-{
-	if(Index>=GetNodeCount())
-		return FCYERR_INVAILDPARAM;
-
-	vector<fcyXmlNode>::iterator i = m_Nodes.begin()+Index;
-
-	unordered_map<wstring, std::vector<fcyXmlNode*>>::iterator j = 
-		m_Dict.find((*i).GetName());
-
-	if(j != m_Dict.end())
-	{
-		vector<fcyXmlNode*>::iterator k = j->second.begin();
-		while(k != j->second.end())
-		{
-			if(*k == &(*i))
-			{
-				j->second.erase(k);
-				break;
-			}
-			k++;
-		}
-		j++;
-	}
-
-	m_Nodes.erase(i);
-
-	return FCYERR_OK;
-}
-
-void fcyXmlNode::ClearNode()
-{
-	m_Nodes.clear();
-	m_Dict.clear();
-}
-
-fcStrW fcyXmlNode::GetAttribute(fcStrW Name)const
-{
-	unordered_map<std::wstring, std::wstring>::const_iterator i = m_Atti.find(Name);
-	if(i == m_Atti.end())
-		return NULL;
-	else
-		return i->second.c_str();
-}
-
-void fcyXmlNode::SetAttribute(fcStrW Name, fcStrW Value)
-{
-	m_Atti[Name] = Value;
-}
-
-fBool fcyXmlNode::HasAttribute(fcStrW Name)const
-{
-	return (m_Atti.find(Name) != m_Atti.end());
-}
-
-fcyXmlNode::AttributeIterator fcyXmlNode::GetFirstAttribute()
-{
-	return AttributeIterator(m_Atti.begin());
-}
-
-fcyXmlNode::AttributeIterator fcyXmlNode::GetLastAttribute()
-{
-	return AttributeIterator(m_Atti.end());
-}
-
-fBool fcyXmlNode::RemoveAttribute(fcStrW Name)
-{
-	unordered_map<std::wstring, std::wstring>::iterator i = m_Atti.find(Name);
-	if(i == m_Atti.end())
-		return false;
-	else
-	{
-		m_Atti.erase(i);
-		return true;
-	}
-}
-
-fcyXmlNode::AttributeIterator fcyXmlNode::RemoveAttribute(fcyXmlNode::AttributeIterator Iter)
-{
-	return m_Atti.erase(Iter.i);
+	return pThis;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-fcyXml::fcyXml()
-{
-}
-
-fcyXml::fcyXml(const wstring& Str)
-{
-	fcyLexicalReader tReader(Str);
-	
-	// 去预处理
-	while(ignorePreprocess(tReader));
-	// 去注释
-	while(ignoreComment(tReader));
-
-	m_pRoot = parserNode(tReader);
-}
-
-fcyXml::fcyXml(fcyStream* pStream)
-{
-	fcyLexicalReader tReader(preprocessXml(pStream));
-
-	// 去预处理
-	while(ignorePreprocess(tReader));
-	// 去注释
-	while(ignoreComment(tReader));
-
-	m_pRoot = parserNode(tReader);
-}
-
-fcyXml::~fcyXml(void)
-{
-}
-
-fBool fcyXml::checkUTF8(fcyStream* pStream)
+fBool fcyXmlDocument::checkUTF8(fcyStream* pStream)
 {
 	fLen tPos = pStream->GetPosition();
 
@@ -378,7 +414,7 @@ fBool fcyXml::checkUTF8(fcyStream* pStream)
 	return false;
 }
 
-fBool fcyXml::checkUTF16LE(fcyStream* pStream)
+fBool fcyXmlDocument::checkUTF16LE(fcyStream* pStream)
 {
 	fLen tPos = pStream->GetPosition();
 
@@ -398,7 +434,7 @@ fBool fcyXml::checkUTF16LE(fcyStream* pStream)
 	return false;
 }
 
-wstring fcyXml::preprocessXml(fcyStream* pStream)
+wstring fcyXmlDocument::preprocessXml(fcyStream* pStream)
 {
 	// 在有BOM头的时候忽略预处理指令
 	if(checkUTF16LE(pStream))
@@ -431,7 +467,7 @@ wstring fcyXml::preprocessXml(fcyStream* pStream)
 			tReader.ReadChars(tFlag, 5);
 			if(strcmp(tFlag, "<?xml")==0) // 匹配<?xml
 			{
-				unordered_map<string, string> tAttrib;
+				map<string, string> tAttrib;
 				string tKey;
 				string tValue;
 
@@ -447,12 +483,12 @@ wstring fcyXml::preprocessXml(fcyStream* pStream)
 						if(tChar == '>')
 							break;
 						else
-							throw fcyException("fcyXml::preprocessXml", "expect >");
+							throw fcyException("fcyXmlDocument::preprocessXml", "expect >");
 					}
 					else if(tChar == '=')
 					{
 						if(tKey.empty())
-							throw fcyException("fcyXml::preprocessXml", "expect name but found =");
+							throw fcyException("fcyXmlDocument::preprocessXml", "expect name but found =");
 						
 						// 读取value
 						fBool tMatch = false;
@@ -493,11 +529,11 @@ wstring fcyXml::preprocessXml(fcyStream* pStream)
 					else if(tAttrib["encoding"] == "gb2312")
 						tCodePage = 936;
 					else
-						throw fcyException("fcyXml::preprocessXml", "unknown encoding");
+						throw fcyException("fcyXmlDocument::preprocessXml", "unknown encoding");
 				}
 			}
 			else
-				throw fcyException("fcyXml::preprocessXml", "expect <?xml");
+				throw fcyException("fcyXmlDocument::preprocessXml", "expect <?xml");
 		}
 		catch(...)
 		{
@@ -513,7 +549,7 @@ wstring fcyXml::preprocessXml(fcyStream* pStream)
 	}
 }
 
-fBool fcyXml::ignoreComment(fcyLexicalReader& tReader)
+fBool fcyXmlDocument::ignoreComment(fcyLexicalReader& tReader)
 {
 	if(tReader.TryMatch(L"<!--", true, true))
 	{
@@ -531,11 +567,11 @@ fBool fcyXml::ignoreComment(fcyLexicalReader& tReader)
 	return false;
 }
 
-fBool fcyXml::ignorePreprocess(fcyLexicalReader& tReader)
+fBool fcyXmlDocument::ignorePreprocess(fcyLexicalReader& tReader)
 {
 	if(tReader.TryMatch(L"<?xml", true, true))
 	{
-		unordered_map<wstring, wstring> tAttrib;
+		map<wstring, wstring> tAttrib;
 		wstring tKey;
 		wstring tValue;
 
@@ -551,12 +587,12 @@ fBool fcyXml::ignorePreprocess(fcyLexicalReader& tReader)
 				if(tChar == L'>')
 					break;
 				else
-					throw fcyException("fcyXml::ignorePreprocess", "expect >");
+					throw fcyException("fcyXmlDocument::ignorePreprocess", "expect >");
 			}
 			else if(tChar == L'=')
 			{
 				if(tKey.empty())
-					throw fcyException("fcyXml::ignorePreprocess", "expect name but found =");
+					throw fcyException("fcyXmlDocument::ignorePreprocess", "expect name but found =");
 
 				// 读取value
 				fBool tMatch = false;
@@ -591,7 +627,7 @@ fBool fcyXml::ignorePreprocess(fcyLexicalReader& tReader)
 	return false;
 }
 
-fBool fcyXml::tryReadCDATA(fcyLexicalReader& tReader, std::wstring& tOut)
+fBool fcyXmlDocument::tryReadCDATA(fcyLexicalReader& tReader, std::wstring& tOut)
 {
 	tOut = L"";
 	if(tReader.TryMatch(L"<![CDATA[", false, true))
@@ -606,7 +642,7 @@ fBool fcyXml::tryReadCDATA(fcyLexicalReader& tReader, std::wstring& tOut)
 	return false;
 }
 
-fCharW fcyXml::praseEscape(fcyLexicalReader& tReader)
+fCharW fcyXmlDocument::praseEscape(fcyLexicalReader& tReader)
 {
 	if(tReader.TryMatch(L"&#", false, true))
 	{
@@ -628,22 +664,22 @@ fCharW fcyXml::praseEscape(fcyLexicalReader& tReader)
 		return L'\'';
 	if(tReader.TryMatch(L"&quot;", false, true))
 		return L'\"';
-	throw fcyLexicalException("fcyXml::praseEscape", "Invalid escape char.", tReader.GetLine(), tReader.GetRow());
+	throw fcyLexicalException("fcyXmlDocument::praseEscape", "Invalid escape char.", tReader.GetLine(), tReader.GetRow());
 }
 
-wstring fcyXml::readName(fcyLexicalReader& tReader)
+std::wstring fcyXmlDocument::readName(fcyLexicalReader& tReader)
 {
 	wstring tRet;
-
+	       
 	fCharW tChar = tReader.PeekChar();
 	if(tChar == L'/')  // 不能以'/'开头
-		throw fcyLexicalException("fcyXml::readName", "Name can't begin with '/'.", tReader.GetLine(), tReader.GetRow());
+		throw fcyLexicalException("fcyXmlDocument::readName", "Name can't begin with '/'.", tReader.GetLine(), tReader.GetRow());
 	if(tChar == L'_')  // 不能以下划线开头
-		throw fcyLexicalException("fcyXml::readName", "Name can't begin with '_'.", tReader.GetLine(), tReader.GetRow());
+		throw fcyLexicalException("fcyXmlDocument::readName", "Name can't begin with '_'.", tReader.GetLine(), tReader.GetRow());
 	if(iswspace(tChar)) // 不能以空白符开头
-		throw fcyLexicalException("fcyXml::readName", "Name can't begin with space.", tReader.GetLine(), tReader.GetRow());
+		throw fcyLexicalException("fcyXmlDocument::readName", "Name can't begin with space.", tReader.GetLine(), tReader.GetRow());
 	if(iswdigit(tChar)) // 不能以数字开头
-		throw fcyLexicalException("fcyXml::readName", "Name can't begin with digit.", tReader.GetLine(), tReader.GetRow());
+		throw fcyLexicalException("fcyXmlDocument::readName", "Name can't begin with digit.", tReader.GetLine(), tReader.GetRow());
 	
 	while(!(iswspace(tChar) || tChar==L'/' || tChar==L'<' || tChar==L'>' || tChar==L'"' || tChar==L'=' || tChar==L'&'))
 	{
@@ -652,10 +688,10 @@ wstring fcyXml::readName(fcyLexicalReader& tReader)
 		tChar = tReader.PeekChar();
 	}
 
-	return tRet;
+	return std::move(tRet);
 }
 
-std::wstring fcyXml::readString(fcyLexicalReader& tReader)
+std::wstring fcyXmlDocument::readString(fcyLexicalReader& tReader)
 {
 	wstring tRet;
 
@@ -681,10 +717,10 @@ std::wstring fcyXml::readString(fcyLexicalReader& tReader)
 		tChar = tReader.ReadChar();
 	}
 
-	return tRet;
+	return std::move(tRet);
 }
 
-void fcyXml::readAttribute(fcyLexicalReader& tReader, fcyXmlNode* pNode)
+void fcyXmlDocument::readAttribute(fcyLexicalReader& tReader, fcyXmlElement* pNode)
 {
 	while(!(tReader.TryMatch(L'>', true, false) || tReader.TryMatch(L"/>", true, false)))
 	{
@@ -700,11 +736,11 @@ void fcyXml::readAttribute(fcyLexicalReader& tReader, fcyXmlNode* pNode)
 		tReader.IgnoreSpace();
 
 		// 加入属性
-		pNode->SetAttribute(tName.c_str(), tStr.c_str());
+		pNode->SetAttribute(std::move(tName), std::move(tStr));
 	}
 }
 
-void fcyXml::readNodes(fcyLexicalReader& tReader, fcyXmlNode* pNode)
+void fcyXmlDocument::readNodes(fcyLexicalReader& tReader, fcyXmlElement* pNode)
 {
 	wstring tContent;
 
@@ -772,24 +808,25 @@ void fcyXml::readNodes(fcyLexicalReader& tReader, fcyXmlNode* pNode)
 			tChar = tReader.PeekChar();
 		}
 
-		pNode->SetContent(tContent.c_str());
+		pNode->SetContent(tContent);
 	}
 }
 
-fcyXmlNode fcyXml::parserNode(fcyLexicalReader& tReader)
+fcyXmlElement* fcyXmlDocument::parserNode(fcyLexicalReader& tReader)
 {
-	fcyXmlNode tNode;
-
 	// 读取'<'
 	tReader.Match(L'<', true);
 
 	// 读取名称
-	tNode.SetName(readName(tReader).c_str());
+	std::wstring tNodeName = readName(tReader);
+
+	// 创建节点
+	fcyXmlElement* pElement = CreateElement(tNodeName);
 
 	tReader.IgnoreSpace();
 
 	// 读取属性
-	readAttribute(tReader, &tNode);
+	readAttribute(tReader, pElement);
 
 	fCharW tChar = tReader.ReadChar();
 	if(tChar == L'/')
@@ -804,7 +841,7 @@ fcyXmlNode fcyXml::parserNode(fcyLexicalReader& tReader)
 		// 分支 <2> 解析子节点
 
 		// 读取子节点或文本
-		readNodes(tReader, &tNode);
+		readNodes(tReader, pElement);
 
 		// 读取'</'
 		tReader.Match(L"</", true);
@@ -812,11 +849,11 @@ fcyXmlNode fcyXml::parserNode(fcyLexicalReader& tReader)
 		// 读取名称
 		wstring tName = readName(tReader);
 
-		if(tName != tNode.GetName())
+		if(tName != tNodeName)
 		{
-			fCharW tText[1024];
-			swprintf_s(tText, L"Name <%s> not match <%s>.", tName.c_str(), tNode.GetName());
-			throw fcyLexicalException("fcyXml::parserNode", 
+			fCharW tText[512];
+			swprintf_s(tText, L"Name <%s> not match <%s>.", tName.c_str(), tNodeName.c_str());
+			throw fcyLexicalException("fcyXmlDocument::parserNode", 
 				fcyStringHelper::WideCharToMultiByte(tText).c_str(),
 				tReader.GetLine(), tReader.GetRow());
 		}
@@ -826,39 +863,129 @@ fcyXmlNode fcyXml::parserNode(fcyLexicalReader& tReader)
 	}
 	else
 	{
-		fCharW tText[1024];
+		fCharW tText[512];
 		swprintf_s(tText, L"Unexpected character '%c'.", tChar);
-		throw fcyLexicalException("fcyXml::parserNode", 
+		throw fcyLexicalException("fcyXmlDocument::parserNode", 
 			fcyStringHelper::WideCharToMultiByte(tText).c_str(),
 			tReader.GetLine(), tReader.GetRow());
 	}
 
-	return tNode;
+	return pElement;
 }
 
-fcyXmlNode* fcyXml::GetRoot()
+fcyXmlDocument::fcyXmlDocument()
+	: m_pRootElement(NULL)
+{}
+
+fcyXmlDocument::fcyXmlDocument(const std::wstring& Str)
+	: m_pRootElement(NULL)
 {
-	return &m_pRoot;
+	fcyLexicalReader tReader(Str);
+	
+	// 去预处理
+	while(ignorePreprocess(tReader));
+	// 去注释
+	while(ignoreComment(tReader));
+
+	SetRootElement(parserNode(tReader));
 }
 
-void fcyXml::SetRoot(const fcyXmlNode& pNode)
+fcyXmlDocument::fcyXmlDocument(fcyStream* pStream)
+	: m_pRootElement(NULL)
 {
-	m_pRoot = pNode;
+	fcyLexicalReader tReader(preprocessXml(pStream));
+
+	// 去预处理
+	while(ignorePreprocess(tReader));
+	// 去注释
+	while(ignoreComment(tReader));
+
+	SetRootElement(parserNode(tReader));
 }
 
-void fcyXml::WriteToStr(std::wstring& pOut)
+fcyXmlDocument::fcyXmlDocument(fcyXmlDocument&& Org)
+	: m_pRootElement(Org.m_pRootElement), m_ElementPool(std::move(Org.m_ElementPool))
+{}
+
+fcyXmlDocument::~fcyXmlDocument()
 {
-	m_pRoot.writeToStr(pOut, 0);
+	vector<fcyXmlElement*>::iterator i = m_ElementPool.begin();
+	while(i != m_ElementPool.end())
+	{
+		(*i)->~fcyXmlElement();
+		m_ElementMem.Free(*i);
+
+		++i;
+	}
+	m_ElementPool.clear();
 }
 
-void fcyXml::WriteToStream(fcyStream* pOut)
+void fcyXmlDocument::SetRootElement(fcyXmlElement* pRoot)
+{
+	if(!pRoot || m_pRootElement == pRoot)
+		return;
+	if(pRoot->GetDocument() != this)
+		throw fcyXmlNodeNotFount("fcyXmlDocument::SetRootElement", this, pRoot->GetName().c_str());
+	if(pRoot->GetParent() != NULL)
+		throw fcyXmlNodeHasParent("fcyXmlDocument::SetRootElement", this, pRoot->GetName().c_str());
+	
+	m_pRootElement = pRoot;
+}
+
+fcyXmlElement* fcyXmlDocument::CreateElement(const std::wstring& Name)
+{
+	fcyXmlElement* pElement = new(m_ElementMem.Alloc()) fcyXmlElement(this, Name);
+
+	m_ElementPool.push_back(pElement);
+
+	return pElement;
+}
+
+void fcyXmlDocument::DeleteElement(fcyXmlElement* pObj)
+{
+	if(!pObj)
+		return;
+	if(pObj->GetDocument() != this)
+		throw fcyXmlNodeNotFount("fcyXmlDocument::DeleteElement", this, pObj->GetName().c_str());
+	if(pObj->GetParent() != NULL)
+		throw fcyXmlNodeIsInUse("fcyXmlDocument::DeleteElement", this, pObj->GetName().c_str());
+
+	vector<fcyXmlElement*>::iterator i = m_ElementPool.begin();
+	while(i != m_ElementPool.end())
+	{
+		if((*i) == pObj)
+			break;
+
+		++i;
+	}
+	if(i == m_ElementPool.end())
+		throw fcyXmlNodeNotFount("fcyXmlDocument::DeleteElement", this, pObj->GetName().c_str());
+
+	m_ElementPool.erase(i);
+	pObj->~fcyXmlElement();
+	m_ElementMem.Free(pObj);
+}
+
+void fcyXmlDocument::Save(std::wstring& Out)const
+{
+	if(m_pRootElement)
+		m_pRootElement->Save(Out, 0);
+	else
+		throw fcyException("fcyXmlDocument::Save", "Root element is null.");
+}
+
+void fcyXmlDocument::Save(fcyStream* pOut)const
 {
 	wstring tOutStr;
 
-	m_pRoot.writeToStr(tOutStr, 0);
+	if(m_pRootElement)
+		m_pRootElement->Save(tOutStr, 0);
+	else
+		throw fcyException("fcyXmlDocument::Save", "Root element is null.");
 
 	// UTF 16 BOM
 	fByte tUTF16LE[2] = { 0xFF, 0xFE };
+	pOut->SetLength(0);
 	pOut->WriteBytes(tUTF16LE, 2, NULL);
 	pOut->WriteBytes((fData)&tOutStr[0], tOutStr.size() * 2, NULL);
 }

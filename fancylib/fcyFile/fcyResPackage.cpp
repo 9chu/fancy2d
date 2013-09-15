@@ -8,7 +8,7 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-fcyResPackageNode::fcyResPackageNode(fcyResPackageFloderNode* pParent, fcStrW Name)
+fcyResPackageNode::fcyResPackageNode(fcyResPackageFloderNode* pParent, const wstring& Name)
 	: m_pParent(pParent), m_Name(Name)
 {}
 
@@ -35,7 +35,7 @@ fResult fcyResPackageNode::SetName(fcStrW Name)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-fcyResPackageDataNode::fcyResPackageDataNode(fcyResPackageFloderNode* pParent, fcStrW Name)
+fcyResPackageDataNode::fcyResPackageDataNode(fcyResPackageFloderNode* pParent, const wstring& Name)
 	: fcyResPackageNode(pParent, Name),
 	m_pStream(NULL), m_DataOffset(0), m_DataRealSize(0), m_DataCompressedSize(0), m_bDataCompressed(false)
 {}
@@ -114,9 +114,9 @@ void fcyResPackageDataNode::SetAdditionStr(fcStrW Src)
 	m_AdditionStr = Src;
 }
 
-fResult fcyResPackageDataNode::Read(fcyStream* pStream, fcyXmlNode* pXmlNode)
+fResult fcyResPackageDataNode::Read(fcyStream* pStream, fcyXmlElement* pXmlNode)
 {
-	if(wcscmp(pXmlNode->GetName(), L"Node")!=0)
+	if(pXmlNode->GetName() != L"Node")
 		return FCYERR_INVAILDDATA;
 
 	FCYSAFEKILL(m_pStream);
@@ -124,22 +124,22 @@ fResult fcyResPackageDataNode::Read(fcyStream* pStream, fcyXmlNode* pXmlNode)
 	m_pStream->AddRef();
 
 	if(pXmlNode->HasAttribute(L"OrgSize"))
-		m_DataRealSize = _wtoi(pXmlNode->GetAttribute(L"OrgSize"));
+		m_DataRealSize = _wtoi(pXmlNode->GetAttribute(L"OrgSize").c_str());
 	else
 		return FCYERR_INVAILDDATA;
 
 	if(pXmlNode->HasAttribute(L"CompressedSize"))
-		m_DataCompressedSize = _wtoi(pXmlNode->GetAttribute(L"CompressedSize"));
+		m_DataCompressedSize = _wtoi(pXmlNode->GetAttribute(L"CompressedSize").c_str());
 	else
 		return FCYERR_INVAILDDATA;
 
 	if(pXmlNode->HasAttribute(L"Offset"))
-		m_DataOffset = _wtoi(pXmlNode->GetAttribute(L"Offset"));
+		m_DataOffset = _wtoi(pXmlNode->GetAttribute(L"Offset").c_str());
 	else
 		return FCYERR_INVAILDDATA;
 
 	if(pXmlNode->HasAttribute(L"IsCompressed"))
-		m_bDataCompressed = wcscmp(pXmlNode->GetAttribute(L"IsCompressed"), L"yes")==0 ? true : false;
+		m_bDataCompressed = pXmlNode->GetAttribute(L"IsCompressed") == L"yes" ? true : false;
 	else
 		return FCYERR_INVAILDDATA;
 
@@ -160,7 +160,7 @@ fcyResPackageFloderNode* fcyResPackageDataNode::ToFloderNode()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-fcyResPackageFloderNode::fcyResPackageFloderNode(fcyResPackageFloderNode* pParent, fcStrW Name)
+fcyResPackageFloderNode::fcyResPackageFloderNode(fcyResPackageFloderNode* pParent, const wstring& Name)
 	: fcyResPackageNode(pParent, Name)
 {}
 
@@ -242,18 +242,18 @@ void fcyResPackageFloderNode::Clear()
 	m_NodeList.clear();
 }
 
-fResult fcyResPackageFloderNode::Read(fcyStream* pStream, fcyXmlNode* pXmlNode)
+fResult fcyResPackageFloderNode::Read(fcyStream* pStream, fcyXmlElement* pXmlNode)
 {
 	Clear();
 
 	fuInt tCount = pXmlNode->GetNodeCount();
 	for(fuInt i = 0; i<tCount; ++i)
 	{
-		fcyXmlNode* pSubXmlNode = pXmlNode->GetNode(i);
+		fcyXmlElement* pSubXmlNode = pXmlNode->GetNode(i);
 		fcyResPackageNode* tNode = NULL;
-		fcStrW tNamePtr = pSubXmlNode->GetAttribute(L"Name");
+		const wstring& tNamePtr = pSubXmlNode->GetAttribute(L"Name");
 
-		if(wcscmp(pSubXmlNode->GetName(), L"Floder")==0)
+		if(pSubXmlNode->GetName() == L"Floder")
 		{
 			tNode = new fcyResPackageFloderNode(this, tNamePtr);
 			if(FCYFAILED(tNode->Read(pStream, pSubXmlNode)))
@@ -338,8 +338,8 @@ fResult fcyResPackage::loadFromStream(fcyStream* pStream)
 	pMemStream->ReadBytes((fData)&tXmlStr[0], tXmlStr.size(), NULL);
 	FCYSAFEKILL(pMemStream);
 
-	fcyXml tXml(tXmlStr.c_str());
-	if(FCYFAILED(m_Root.Read(pStream, tXml.GetRoot())))
+	fcyXmlDocument tXml(tXmlStr);
+	if(FCYFAILED(m_Root.Read(pStream, tXml.GetRootElement())))
 		return FCYERR_INTERNALERR;
 
 	return FCYERR_OK;

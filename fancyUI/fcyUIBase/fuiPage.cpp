@@ -329,11 +329,11 @@ fuiPage::~fuiPage()
 	}
 }
 
-void fuiPage::loadLayoutNode(fcyXmlNode* pNode, fuiControl* pParent)
+void fuiPage::loadLayoutNode(fcyXmlElement* pNode, fuiControl* pParent)
 {
 	for(fuInt i = 0; i<pNode->GetNodeCount(); ++i)
 	{
-		fcyXmlNode* pSubNode = pNode->GetNode(i);
+		fcyXmlElement* pSubNode = pNode->GetNode(i);
 
 		// 检查名称
 		if(!pSubNode->HasAttribute(L"Name"))
@@ -341,10 +341,10 @@ void fuiPage::loadLayoutNode(fcyXmlNode* pNode, fuiControl* pParent)
 
 		fcyRefPointer<fuiControl> pNew = NULL;
 
-		wstring tName = pSubNode->GetAttribute(L"Name");
+		const wstring& tName = pSubNode->GetAttribute(L"Name");
 
 		// 控件覆写
-		if(wcscmp(pSubNode->GetName(), L"override") == 0)
+		if(pSubNode->GetName() == L"override")
 		{	
 			pNew = FindControl(tName);
 			if(*pNew == NULL)
@@ -362,10 +362,10 @@ void fuiPage::loadLayoutNode(fcyXmlNode* pNode, fuiControl* pParent)
 		pNew->SetParent(pParent);
 
 		// 枚举所有属性并设置
-		fcyXmlNode::AttributeIterator tIter = pSubNode->GetFirstAttribute();
-		while(tIter != pSubNode->GetLastAttribute())
+		fcyXmlAttributeIterator tIter = pSubNode->GetFirstAttributeIter();
+		while(tIter != pSubNode->GetLastAttributeIter())
 		{
-			if(wcscmp(tIter.GetName(), L"Name") != 0)
+			if(tIter.GetName() != L"Name")
 			{
 				pNew->RawSetProperty(tIter.GetName(), tIter.GetContent());
 			}
@@ -661,8 +661,8 @@ void fuiPage::LoadLayoutFromFile(fcyStream* pStream)
 		throw fcyException("fuiPage::LoadLayoutFromFile", "Param 'pStream' is null.");
 	pStream->SetPosition(FCYSEEKORIGIN_BEG, 0);
 
-	fcyXml tXml(pStream);
-	fcyXmlNode* pXmlRoot = tXml.GetRoot();
+	fcyXmlDocument tXml(pStream);
+	fcyXmlElement* pXmlRoot = tXml.GetRootElement();
 
 	// 加载布局
 	loadLayoutNode(pXmlRoot, this);

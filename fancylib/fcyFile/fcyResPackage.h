@@ -33,7 +33,7 @@ protected:
 	/// @brief     从流读取和Xml数据中读取流
 	/// @param[in] pStream  流
 	/// @param[in] pXmlNode Xml节点
-	virtual fResult Read(fcyStream* pStream, fcyXmlNode* pXmlNode)=0;
+	virtual fResult Read(fcyStream* pStream, fcyXmlElement* pXmlNode)=0;
 public: // 接口转换
 	virtual fcyResPackageDataNode* ToDataNode()=0;    ///< @brief 转到数据节点
 	virtual fcyResPackageFloderNode* ToFloderNode()=0;///< @brief 转到文件夹节点
@@ -46,7 +46,7 @@ protected:
 	/// @brief     构造函数
 	/// @param[in] pParent 父节点
 	/// @param[in] Name    键名
-	fcyResPackageNode(fcyResPackageFloderNode* pParent, fcStrW Name);
+	fcyResPackageNode(fcyResPackageFloderNode* pParent, const std::wstring& Name);
 	virtual ~fcyResPackageNode();
 };
 
@@ -82,7 +82,7 @@ public:
 	fcStrW GetAdditonStr();          ///< @brief 返回额外字段
 	void SetAdditionStr(fcStrW Src); ///< @brief 设置额外字段
 protected:
-	fResult Read(fcyStream* pStream, fcyXmlNode* pXmlNode);
+	fResult Read(fcyStream* pStream, fcyXmlElement* pXmlNode);
 public:
 	fcyResPackageDataNode* ToDataNode();
 	fcyResPackageFloderNode* ToFloderNode();
@@ -90,7 +90,7 @@ protected:
 	/// @brief     构造函数
 	/// @param[in] pParent 父节点
 	/// @param[in] Name 键名
-	fcyResPackageDataNode(fcyResPackageFloderNode* pParent, fcStrW Name);
+	fcyResPackageDataNode(fcyResPackageFloderNode* pParent, const std::wstring& Name);
 	~fcyResPackageDataNode();
 };
 
@@ -112,7 +112,7 @@ protected: // 限制改操作
 	fBool Remove(fcStrW Name);                  ///< @brief 移除节点
 	void Clear();                               ///< @brief 清空并释放内存
 protected:
-	fResult Read(fcyStream* pStream, fcyXmlNode* pXmlNode);
+	fResult Read(fcyStream* pStream, fcyXmlElement* pXmlNode);
 public:
 	fcyResPackageDataNode* ToDataNode();
 	fcyResPackageFloderNode* ToFloderNode();
@@ -120,7 +120,7 @@ protected:
 	/// @brief     构造函数
 	/// @param[in] pParent 父节点
 	/// @param[in] Name    键名
-	fcyResPackageFloderNode(fcyResPackageFloderNode* pParent, fcStrW Name);
+	fcyResPackageFloderNode(fcyResPackageFloderNode* pParent, const std::wstring& Name);
 	~fcyResPackageFloderNode();
 };
 

@@ -220,9 +220,9 @@ std::wstring CFMMExporter::ExportProperty(IGameProperty* pProp)
 	return tRet;
 }
 
-void CFMMExporter::ExportFXProperty(fcyXmlNode& Node, IGameFXProperty* pProp)
+void CFMMExporter::ExportFXProperty(fcyXmlElement& Node, IGameFXProperty* pProp)
 {
-	Node.SetAttribute(L"Name", fcyStringHelper::MultiByteToWideChar(pProp->GetPropertyName()).c_str());
+	Node.SetAttribute(L"Name", fcyStringHelper::MultiByteToWideChar(pProp->GetPropertyName()));
 
 	// ... 如何导出参数？
 }
@@ -248,38 +248,36 @@ void CFMMExporter::ExportMaterial(OutputContext* pContext, IGameMaterial* pMat, 
 	else
 	{
 		// 创建材质XML数据
-		fcyXml tXmlData;
+		fcyXmlDocument tXmlData;
 
 		// 创建根
-		fcyXmlNode tRoot;
-		tRoot.SetName(L"fancyModelMaterial");
-
+		fcyXmlElement* tRoot = tXmlData.CreateElement(L"fancyModelMaterial");
+		
 		// 导出标准材质数据
 		{
-			fcyXmlNode tNode;
-			tNode.SetName(L"Diffuse");
-			tNode.SetContent(ExportProperty(pMat->GetDiffuseData()).c_str());
-			tRoot.AppendNode(tNode);
+			fcyXmlElement* tNode = tXmlData.CreateElement(L"Diffuse");
+			tNode->SetContent(ExportProperty(pMat->GetDiffuseData()));
+			tRoot->AppendNode(tNode);
 
-			tNode.SetName(L"Ambient");
-			tNode.SetContent(ExportProperty(pMat->GetAmbientData()).c_str());
-			tRoot.AppendNode(tNode);
+			tNode = tXmlData.CreateElement(L"Ambient");
+			tNode->SetContent(ExportProperty(pMat->GetAmbientData()));
+			tRoot->AppendNode(tNode);
 
-			tNode.SetName(L"Specular");
-			tNode.SetContent(ExportProperty(pMat->GetSpecularData()).c_str());
-			tRoot.AppendNode(tNode);
+			tNode = tXmlData.CreateElement(L"Specular");
+			tNode->SetContent(ExportProperty(pMat->GetSpecularData()));
+			tRoot->AppendNode(tNode);
 
-			tNode.SetName(L"Glossiness");
-			tNode.SetContent(ExportProperty(pMat->GetGlossinessData()).c_str());
-			tRoot.AppendNode(tNode);
+			tNode = tXmlData.CreateElement(L"Glossiness");
+			tNode->SetContent(ExportProperty(pMat->GetGlossinessData()));
+			tRoot->AppendNode(tNode);
 
-			tNode.SetName(L"Opacity");
-			tNode.SetContent(ExportProperty(pMat->GetOpacityData()).c_str());
-			tRoot.AppendNode(tNode);
+			tNode = tXmlData.CreateElement(L"Opacity");
+			tNode->SetContent(ExportProperty(pMat->GetOpacityData()));
+			tRoot->AppendNode(tNode);
 
-			tNode.SetName(L"SpecularLevel");
-			tNode.SetContent(ExportProperty(pMat->GetSpecularLevelData()).c_str());
-			tRoot.AppendNode(tNode);
+			tNode = tXmlData.CreateElement(L"SpecularLevel");
+			tNode->SetContent(ExportProperty(pMat->GetSpecularLevelData()));
+			tRoot->AppendNode(tNode);
 		}
 
 		// 导出纹理组
@@ -289,23 +287,22 @@ void CFMMExporter::ExportMaterial(OutputContext* pContext, IGameMaterial* pMat, 
 			{
 				IGameTextureMap* pTextureMap = pMat->GetIGameTextureMap(i);
 
-				fcyXmlNode tNode;
-				tNode.SetName(L"Texture");
-				tNode.SetAttribute(L"Name", fcyStringHelper::MultiByteToWideChar(pTextureMap->GetTextureName()).c_str());
-				tNode.SetAttribute(L"Slot", fcyStringHelper::ToWideStr(pTextureMap->GetStdMapSlot()).c_str());
+				fcyXmlElement* tNode = tXmlData.CreateElement(L"Texture");
+				tNode->SetAttribute(L"Name", fcyStringHelper::MultiByteToWideChar(pTextureMap->GetTextureName()));
+				tNode->SetAttribute(L"Slot", fcyStringHelper::ToWideStr(pTextureMap->GetStdMapSlot()));
 				
 				if(pTextureMap->IsEntitySupported())
 				{
 					// 位图
-					tNode.SetAttribute(L"ClipU", ExportProperty(pTextureMap->GetClipUData()).c_str());
-					tNode.SetAttribute(L"ClipV", ExportProperty(pTextureMap->GetClipVData()).c_str());
-					tNode.SetAttribute(L"ClipW", ExportProperty(pTextureMap->GetClipWData()).c_str());
-					tNode.SetAttribute(L"ClipH", ExportProperty(pTextureMap->GetClipHData()).c_str());
+					tNode->SetAttribute(L"ClipU", ExportProperty(pTextureMap->GetClipUData()));
+					tNode->SetAttribute(L"ClipV", ExportProperty(pTextureMap->GetClipVData()));
+					tNode->SetAttribute(L"ClipW", ExportProperty(pTextureMap->GetClipWData()));
+					tNode->SetAttribute(L"ClipH", ExportProperty(pTextureMap->GetClipHData()));
 
-					tNode.SetAttribute(L"Filename", fcyStringHelper::MultiByteToWideChar(pTextureMap->GetBitmapFileName()).c_str());
+					tNode->SetAttribute(L"Filename", fcyStringHelper::MultiByteToWideChar(pTextureMap->GetBitmapFileName()));
 				}
 
-				tRoot.AppendNode(tNode);
+				tRoot->AppendNode(tNode);
 			}
 		}
 
@@ -314,7 +311,7 @@ void CFMMExporter::ExportMaterial(OutputContext* pContext, IGameMaterial* pMat, 
 		IGameFX * pFXData = pMat->GetIGameFX();
 		if(pFXData)
 		{
-			fcyXmlNode tFXNode;
+			fcyXmlElement tFXNode;
 			tFXNode.SetName(L"FX");
 			tFXNode.SetAttribute(L"Filename", fcyStringHelper::MultiByteToWideChar((fcStr)pFXData->GetEffectFile().GetFileName()).c_str());
 
@@ -323,7 +320,7 @@ void CFMMExporter::ExportMaterial(OutputContext* pContext, IGameMaterial* pMat, 
 			{
 				IGameFXProperty* pFXProp = pFXData->GetIGameFXProperty(i);
 				
-				fcyXmlNode tPropNode;
+				fcyXmlElement tPropNode;
 				tPropNode.SetName(L"Param");
 				ExportFXProperty(tPropNode, pFXProp);
 
@@ -335,14 +332,14 @@ void CFMMExporter::ExportMaterial(OutputContext* pContext, IGameMaterial* pMat, 
 		*/
 
 		// 设置根
-		tXmlData.SetRoot(tRoot);
+		tXmlData.SetRootElement(tRoot);
 
 		// 创建材质信息
 		fcyRefPointer<fcyModelMaterialLabel> pMat = new fcyModelMaterialLabel();
 		pMat->Release();
 
 		wstring tXMLStr;
-		tXmlData.WriteToStr(tXMLStr);
+		tXmlData.Save(tXMLStr);
 
 		pMat->SetMaterialName(tName);
 		pMat->SetMaterialXMLData(tXMLStr);

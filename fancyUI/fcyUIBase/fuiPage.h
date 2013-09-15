@@ -64,7 +64,7 @@ protected:
 	fcyVec2 m_MouseLastPos;
 private:
 	/// @brief  加载布局节点
-	void loadLayoutNode(fcyXmlNode* pNode, fuiControl* pParent);
+	void loadLayoutNode(fcyXmlElement* pNode, fuiControl* pParent);
 	/// @brief  DEBUG绘图
 	void debugDraw(fuiGraphics* pGraph, fuiControl* pControl);
 	/// @brief     获得鼠标处的控件

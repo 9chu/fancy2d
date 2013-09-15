@@ -30,7 +30,7 @@ protected:
 	std::unordered_map<fCharW, f2dGlyphInfo> m_Cache;
 protected:
 	fcyVec2 readVec2Str(const std::wstring& Str);
-	void loadDefine(fcyXml& Xml);
+	void loadDefine(fcyXmlDocument& Xml);
 public:
 	fFloat GetLineHeight()
 	{

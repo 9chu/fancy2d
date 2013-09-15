@@ -88,7 +88,7 @@ protected:
 	void FillFaceVertex(IGameMesh* pMesh, FaceEx* pFace, Vertex Out[]);
 
 	std::wstring ExportProperty(IGameProperty* pProp);
-	void ExportFXProperty(fcyXmlNode& Node, IGameFXProperty* pProp);
+	void ExportFXProperty(fcyXmlElement& Node, IGameFXProperty* pProp);
 	void ExportMaterial(OutputContext* pContext, IGameMaterial* pMat, int ID = -1);
 	void ExportSubNode(OutputContext* pContext, IGameNode* pNode);
 	void ExportMesh(OutputContext* pContext, IGameNode* pParent, IGameMesh* pObj);

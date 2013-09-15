@@ -11,7 +11,7 @@ f2dFontTexProvider::f2dFontTexProvider(f2dStream* pDefineFile, f2dTexture2D* pTe
 {
 	if(!m_OrgTex)
 		throw fcyException("f2dFontTexProvider::f2dFontTexProvider", "Param 'pTex' is null.");
-	fcyXml tXml(pDefineFile);
+	fcyXmlDocument tXml(pDefineFile);
 
 	loadDefine(tXml);
 
@@ -23,7 +23,7 @@ f2dFontTexProvider::f2dFontTexProvider(fcStrW pDefineFile, f2dTexture2D* pTex)
 {
 	if(!m_OrgTex)
 		throw fcyException("f2dFontTexProvider::f2dFontTexProvider", "Param 'pTex' is null.");
-	fcyXml tXml(pDefineFile);
+	fcyXmlDocument tXml(pDefineFile);
 
 	loadDefine(tXml);
 
@@ -44,35 +44,36 @@ fcyVec2 f2dFontTexProvider::readVec2Str(const std::wstring& Str)
 	return fcyVec2((float)_wtof(tOut[0].c_str()), (float)_wtof(tOut[1].c_str()));
 }
 
-void f2dFontTexProvider::loadDefine(fcyXml& Xml)
+void f2dFontTexProvider::loadDefine(fcyXmlDocument& Xml)
 {
 	float tXScale = 1.f / m_OrgTex->GetWidth();
 	float tYScale = 1.f / m_OrgTex->GetHeight();
 
-	fcyXmlNode* pRoot = Xml.GetRoot();
+	fcyXmlElement* pRoot = Xml.GetRootElement();
 
-	if(wcscmp(pRoot->GetName(), L"f2dTexturedFont") != 0)
+	if(pRoot->GetName() != L"f2dTexturedFont")
 		throw fcyException("f2dFontTexProvider::loadDefine", "Invalid file, root node name not match.");
 	
-	fcyXmlNode* pMeasureNode = pRoot->GetNodeByName(L"Measure", 0);
+	fcyXmlElement* pMeasureNode = pRoot->GetFirstNode(L"Measure");
 	if(!pMeasureNode)
 		throw fcyException("f2dFontTexProvider::loadDefine", "Invalid file, node 'Measure' not found.");
 
-	fcyXmlNode* pCharList = pRoot->GetNodeByName(L"CharList", 0);
+	fcyXmlElement* pCharList = pRoot->GetFirstNode(L"CharList");
 
 	// 读取度量值
-	m_LineHeight = (float)_wtof(pMeasureNode->GetAttribute(L"LineHeight"));
-	m_Ascender = (float)_wtof(pMeasureNode->GetAttribute(L"Ascender"));
-	m_Descender = (float)_wtof(pMeasureNode->GetAttribute(L"Descender"));
+	m_LineHeight = (float)_wtof(pMeasureNode->GetAttribute(L"LineHeight").c_str());
+	m_Ascender = (float)_wtof(pMeasureNode->GetAttribute(L"Ascender").c_str());
+	m_Descender = (float)_wtof(pMeasureNode->GetAttribute(L"Descender").c_str());
 
 	// 读取字符表
-	fuInt tSubNodeCount = pCharList->GetNodeCount(L"Item");
+	fcyXmlElementList tNodeList = pCharList->GetNodeByName(L"Item");
+	fuInt tSubNodeCount = tNodeList.GetCount();
 	for(fuInt i = 0; i<tSubNodeCount; ++i)
 	{
-		fcyXmlNode* pSub = pCharList->GetNodeByName(L"Item", i);
+		fcyXmlElement* pSub = tNodeList[i];
 
-		fcStrW tChar = pSub->GetAttribute(L"Char");
-		if(wcslen(tChar) != 1)
+		const std::wstring& tChar = pSub->GetAttribute(L"Char");
+		if(tChar.length() != 1)
 			throw fcyException("f2dFontTexProvider::loadDefine", "Invalid file, invalid character in CharList.");
 		
 		f2dGlyphInfo tInfo;

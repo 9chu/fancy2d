@@ -48,23 +48,23 @@ void fuiStyle::LoadResFromFile(f2dStream* pStream, fuiResProvider* pProvider)
 
 	pStream->SetPosition(FCYSEEKORIGIN_BEG, 0);
 
-	fcyXml tXml(pStream);
-	fcyXmlNode* pRootNode = tXml.GetRoot();
+	fcyXmlDocument tXml(pStream);
+	fcyXmlElement* pRootNode = tXml.GetRootElement();
 	for(fuInt i = 0; i<pRootNode->GetNodeCount(); ++i)
 	{
-		fcyXmlNode* pSubNode = pRootNode->GetNode(i);
+		fcyXmlElement* pSubNode = pRootNode->GetNode(i);
 
 		if(!pSubNode->HasAttribute(L"Name"))
 			throw fcyException("fuiStyle::LoadResFromFile", "Property 'Name' not found.");
-		wstring tName = pSubNode->GetAttribute(L"Name");
+		const wstring& tName = pSubNode->GetAttribute(L"Name");
 
 		fcyRefPointer<fuiRes> tRes = fuiResFactory::GetInstace()->CreateRes(pSubNode->GetName(), tName);
 		
 		// ÉèÖÃÊôÐÔ
-		fcyXmlNode::AttributeIterator tIter = pSubNode->GetFirstAttribute();
-		while(tIter != pSubNode->GetLastAttribute())
+		fcyXmlAttributeIterator tIter = pSubNode->GetFirstAttributeIter();
+		while(tIter != pSubNode->GetLastAttributeIter())
 		{
-			if(wcscmp(tIter.GetName(), L"Name") != 0)
+			if(tIter.GetName() != L"Name")
 				tRes->RawSetProperty(tIter.GetName(), tIter.GetContent());
 
 			++tIter;
