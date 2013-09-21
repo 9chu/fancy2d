@@ -73,7 +73,9 @@ void fuiImageBox::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 }
 
 void fuiImageBox::Update(fDouble ElapsedTime)
-{}
+{
+	fuiControl::Update(ElapsedTime);
+}
 
 void fuiImageBox::Render(fuiGraphics* pGraph)
 {
@@ -103,4 +105,6 @@ void fuiImageBox::Render(fuiGraphics* pGraph)
 			break;
 		}
 	}
+
+	fuiControl::Render(pGraph);
 }
