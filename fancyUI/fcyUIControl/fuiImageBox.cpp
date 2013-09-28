@@ -87,7 +87,10 @@ void fuiImageBox::Render(fuiGraphics* pGraph)
 		switch(m_ImageFillMethod)
 		{
 		case IMAGEFILLMETHOD_LEFTTOP:
-			p->Draw(pGraph->GetGraphics(), fcyVec2());
+			{
+				const fcyRect& tRect = p->GetTexRect();
+				p->Draw(pGraph->GetGraphics(), fcyVec2(tRect.GetWidth() / 2.f, tRect.GetHeight() / 2.f));
+			}
 			break;
 		case IMAGEFILLMETHOD_FIT:
 			{
