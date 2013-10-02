@@ -27,7 +27,7 @@ protected:
 	fFloat m_Descender;
 
 	// ×Ö·û±í
-	std::unordered_map<fCharW, f2dGlyphInfo> m_Cache;
+	std::unordered_map<fCharW, f2dGlyphInfo*> m_Cache;
 protected:
 	fcyVec2 readVec2Str(const std::wstring& Str);
 	void loadDefine(fcyXmlDocument& Xml);

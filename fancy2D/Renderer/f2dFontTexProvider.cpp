@@ -32,16 +32,25 @@ f2dFontTexProvider::f2dFontTexProvider(fcStrW pDefineFile, f2dTexture2D* pTex)
 
 f2dFontTexProvider::~f2dFontTexProvider()
 {
+	// É¾³ý×ÖÌå¶¨Òå
+	unordered_map<fCharW, f2dGlyphInfo*>::iterator i = m_Cache.begin();
+	while(i != m_Cache.end())
+	{
+		FCYSAFEDEL(i->second);
+		++i;
+	}
+	m_Cache.clear();
+
 	FCYSAFEKILL(m_OrgTex);
 }
 
 fcyVec2 f2dFontTexProvider::readVec2Str(const std::wstring& Str)
 {
-	vector<wstring> tOut;
-	if(2 != fcyStringHelper::StringSplit(Str, L",", false, tOut))
+	fcyVec2 tRet;
+	if(2 != swscanf_s(Str.c_str(), L"%f,%f", &tRet.x, &tRet.y))
 		throw fcyException("f2dFontTexProvider::readVec2Str", "String format error.");
 
-	return fcyVec2((float)_wtof(tOut[0].c_str()), (float)_wtof(tOut[1].c_str()));
+	return tRet;
 }
 
 void f2dFontTexProvider::loadDefine(fcyXmlDocument& Xml)
@@ -76,17 +85,17 @@ void f2dFontTexProvider::loadDefine(fcyXmlDocument& Xml)
 		if(tChar.length() != 1)
 			throw fcyException("f2dFontTexProvider::loadDefine", "Invalid file, invalid character in CharList.");
 		
-		f2dGlyphInfo tInfo;
-		tInfo.Advance = readVec2Str(pSub->GetAttribute(L"Advance"));
-		tInfo.BrushPos = readVec2Str(pSub->GetAttribute(L"BrushPos"));
-		tInfo.GlyphSize = readVec2Str(pSub->GetAttribute(L"Size"));
-		tInfo.GlyphPos.a = readVec2Str(pSub->GetAttribute(L"Pos"));
-		tInfo.GlyphPos.b = tInfo.GlyphPos.a + readVec2Str(pSub->GetAttribute(L"Size"));
+		f2dGlyphInfo* tInfo = new f2dGlyphInfo();
+		tInfo->Advance = readVec2Str(pSub->GetAttribute(L"Advance"));
+		tInfo->BrushPos = readVec2Str(pSub->GetAttribute(L"BrushPos"));
+		tInfo->GlyphSize = readVec2Str(pSub->GetAttribute(L"Size"));
+		tInfo->GlyphPos.a = readVec2Str(pSub->GetAttribute(L"Pos"));
+		tInfo->GlyphPos.b = tInfo->GlyphPos.a + readVec2Str(pSub->GetAttribute(L"Size"));
 		
-		tInfo.GlyphPos.a.x *= tXScale;
-		tInfo.GlyphPos.a.y *= tYScale;
-		tInfo.GlyphPos.b.x *= tXScale;
-		tInfo.GlyphPos.b.y *= tYScale;
+		tInfo->GlyphPos.a.x *= tXScale;
+		tInfo->GlyphPos.a.y *= tYScale;
+		tInfo->GlyphPos.b.x *= tXScale;
+		tInfo->GlyphPos.b.y *= tYScale;
 
 		m_Cache[tChar[0]] = tInfo;
 	}
@@ -94,12 +103,12 @@ void f2dFontTexProvider::loadDefine(fcyXmlDocument& Xml)
 
 fResult f2dFontTexProvider::QueryGlyph(f2dGraphics* pGraph, fCharW Character, f2dGlyphInfo* InfoOut)
 {
-	unordered_map<fCharW, f2dGlyphInfo>::iterator i = m_Cache.find(Character);
+	unordered_map<fCharW, f2dGlyphInfo*>::iterator i = m_Cache.find(Character);
 
 	if(i == m_Cache.end())
 		return FCYERR_OBJNOTEXSIT;
 
-	*InfoOut = i->second;
+	*InfoOut = *i->second;
 
 	return FCYERR_OK;
 }

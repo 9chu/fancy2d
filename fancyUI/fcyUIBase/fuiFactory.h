@@ -56,7 +56,7 @@ public:
 class fuiResFactory
 {
 public:
-	static fuiResFactory* GetInstace()
+	static fuiResFactory* GetInstance()
 	{
 		static fuiResFactory s_pFactory;
 

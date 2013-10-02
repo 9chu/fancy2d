@@ -147,8 +147,11 @@ void fuiLabel::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 	if(m_Font && m_Font->GetResType() != fuiRes::RESTYPE_FONT)
 		throw fcyException("fuiLabel::OnStyleChanged", "Font res error.");
 
-	m_pFontProvider = ((fuiFont*)m_Font)->GetFontProvider();
-	m_pFontRenderer = ((fuiFont*)m_Font)->GetFontRenderer();
+	if(m_Font)
+	{
+		m_pFontProvider = ((fuiFont*)m_Font)->GetFontProvider();
+		m_pFontRenderer = ((fuiFont*)m_Font)->GetFontRenderer();
+	}
 
 	// 重新布局
 	OnTextChanged(pThis, pArgs);

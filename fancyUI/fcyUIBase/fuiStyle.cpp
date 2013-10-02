@@ -58,7 +58,7 @@ void fuiStyle::LoadResFromFile(f2dStream* pStream, fuiResProvider* pProvider)
 			throw fcyException("fuiStyle::LoadResFromFile", "Property 'Name' not found.");
 		const wstring& tName = pSubNode->GetAttribute(L"Name");
 
-		fcyRefPointer<fuiRes> tRes = fuiResFactory::GetInstace()->CreateRes(pSubNode->GetName(), tName);
+		fcyRefPointer<fuiRes> tRes = fuiResFactory::GetInstance()->CreateRes(pSubNode->GetName(), tName);
 		
 		// ÉèÖÃÊôÐÔ
 		fcyXmlAttributeIterator tIter = pSubNode->GetFirstAttributeIter();
