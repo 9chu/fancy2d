@@ -126,12 +126,16 @@ static inline int vorbis_ftoi(double f){  /* yes, double!  Otherwise,
 typedef ogg_int16_t vorbis_fpu_control;
 
 static __inline int vorbis_ftoi(double f){
+#ifdef _M_ARM
+	return (long)((f>0.0f) ? (f + 0.5f):(f -0.5f));
+#else
         int i;
         __asm{
                 fld f
                 fistp i
         }
         return i;
+#endif
 }
 
 static __inline void vorbis_fpu_setround(vorbis_fpu_control *fpu){

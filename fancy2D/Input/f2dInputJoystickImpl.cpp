@@ -1,3 +1,5 @@
+#ifndef _M_ARM
+
 #include "f2dInputJoystickImpl.h"
 
 #include "../Engine/f2dEngineImpl.h"
@@ -549,3 +551,5 @@ fResult f2dInputJoystickImpl::SetSaturation(fFloat Percent)
 
 	return FCYERR_OK;
 }
+
+#endif

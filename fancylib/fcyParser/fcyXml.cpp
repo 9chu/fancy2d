@@ -987,5 +987,5 @@ void fcyXmlDocument::Save(fcyStream* pOut)const
 	fByte tUTF16LE[2] = { 0xFF, 0xFE };
 	pOut->SetLength(0);
 	pOut->WriteBytes(tUTF16LE, 2, NULL);
-	pOut->WriteBytes((fData)&tOutStr[0], tOutStr.size() * 2, NULL);
+	pOut->WriteBytes((fData)&tOutStr[0], tOutStr.length() * sizeof(wchar_t), NULL);
 }

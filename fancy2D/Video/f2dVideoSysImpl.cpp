@@ -1,3 +1,5 @@
+#ifndef _M_ARM
+
 #include "f2dVideoSysImpl.h"
 
 #include "../Engine/f2dEngineImpl.h"
@@ -133,3 +135,5 @@ fResult f2dVideoSysImpl::CreateVideo(f2dStream* pStream, fuInt Flag, f2dVideo** 
 
 	return FCYERR_OK;
 }
+
+#endif

@@ -1,5 +1,9 @@
 #include "f2dSoundSysAPI.h"
 
+#ifdef _M_ARM
+const GUID IID_IDirectSoundNotify = { 0xb0210783, 0x89cd, 0x11d0, { 0xaf, 0x8,  0x0,  0xa0,  0xc9,  0x25,  0xcd,  0x16 } };
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 
 f2dSoundSysAPI::f2dSoundSysAPI()

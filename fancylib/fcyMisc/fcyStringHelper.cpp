@@ -165,7 +165,7 @@ std::string fcyStringHelper::Trim(const std::string &Org)
 	return TrimLeft(TrimRight(Org));
 }
 
-wstring fcyStringHelper::MultiByteToWideChar(string Org, fuInt CodePage)
+wstring fcyStringHelper::MultiByteToWideChar(const std::string& Org, fuInt CodePage)
 {
 	fuInt dwNum = ::MultiByteToWideChar(CodePage, 0, Org.c_str(), -1, NULL, 0); // 获得长度
 	wchar_t *pwText = new wchar_t[dwNum];
@@ -175,7 +175,7 @@ wstring fcyStringHelper::MultiByteToWideChar(string Org, fuInt CodePage)
 	return retStr;
 }
 
-string fcyStringHelper::WideCharToMultiByte(wstring Org, fuInt CodePage)
+string fcyStringHelper::WideCharToMultiByte(const std::wstring& Org, fuInt CodePage)
 {
 	DWORD tCount = ::WideCharToMultiByte(CodePage, NULL,Org.c_str(), -1, NULL, 0, NULL, FALSE);
 	char *tText=NULL;

@@ -8,6 +8,17 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef _M_ARM
+std::string fcyCPUID::GetCPUString()
+{
+	return "{Not supported on ARM platform}";
+}
+
+std::string fcyCPUID::GetCPUBrand()
+{
+	return "{Not supported on ARM platform}";
+}
+#else
 std::string fcyCPUID::GetCPUString()
 {
 	int tCPUInfo[4] = {-1};
@@ -39,3 +50,4 @@ std::string fcyCPUID::GetCPUBrand()
 
 	return fcyStringHelper::Trim(tCPUBrandString);
 }
+#endif

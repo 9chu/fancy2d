@@ -1,3 +1,5 @@
+#ifndef _M_ARM
+
 #include "f2dInputMouseImpl.h"
 
 #include "../Engine/f2dEngineImpl.h"
@@ -349,3 +351,5 @@ fInt f2dInputMouseImpl::GetOffsetZ()
 	m_TotalOffsetZ = 0;
 	return tTotalOffset;
 }
+
+#endif

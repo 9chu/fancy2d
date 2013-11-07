@@ -1,3 +1,5 @@
+#ifndef _M_ARM
+
 #include "f2dVideoImpl.h"
 
 #include "f2dVideoSysImpl.h"
@@ -494,3 +496,5 @@ fResult f2dVideoImpl::SetPan(fFloat Pan)
 	else
 		return FCYERR_OK;
 }
+
+#endif

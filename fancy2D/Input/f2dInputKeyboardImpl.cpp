@@ -1,3 +1,5 @@
+#ifndef _M_ARM
+
 #include "f2dInputKeyboardImpl.h"
 
 #include "../Engine/f2dEngineImpl.h"
@@ -435,3 +437,5 @@ fBool f2dInputKeyboardImpl::IsKeyDown(F2DINPUTKEYCODE KeyCode)
 		return false;
 	return m_ButtonState[KeyCode];
 }
+
+#endif

@@ -1,3 +1,5 @@
+#ifndef _M_ARM
+
 #include "f2dInputSysImpl.h"
 
 #include "f2dInputMouseImpl.h"
@@ -221,3 +223,5 @@ fResult f2dInputSysImpl::CreateJoystick(fInt DevIndex, fBool bGlobalFocus, f2dIn
 
 	return FCYERR_OK;
 }
+
+#endif

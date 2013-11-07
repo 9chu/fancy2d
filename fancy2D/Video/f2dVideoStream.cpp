@@ -1,3 +1,5 @@
+#ifndef _M_ARM
+
 #include "f2dVideoStream.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -140,3 +142,5 @@ STDMETHODIMP f2dVideoStreamReader::Unregister()
 {
 	return S_OK;
 }
+
+#endif

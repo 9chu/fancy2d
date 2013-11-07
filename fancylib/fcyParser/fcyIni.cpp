@@ -189,8 +189,10 @@ fcyIniSection* fcyIni::parseIniSection(fcyLexicalReader& tReader)
 			if(tReader.IsEOF())
 				break;
 
-			// 一个节
-			if(tReader.PeekChar() == L'[')
+			tChar = tReader.PeekChar();
+			if(tChar == L';')
+				continue;
+			else if(tChar == L'[')
 				break;
 
 			wstring Key;
@@ -217,9 +219,11 @@ fcyIniSection* fcyIni::parseIniSection(fcyLexicalReader& tReader)
 			}
 
 			// 读取Value直到行末
-			while(!(tReader.IsEOF() || (tChar = tReader.ReadChar())==L'\n'))
+			while(!( tReader.IsEOF() || (tChar = tReader.ReadChar())==L'\n'))
 			{
-				if(tChar != L'\r')
+				if(tChar == L'\0')
+					break;
+				else if(tChar != L'\r')
 					Value += tChar;
 			}
 
@@ -324,7 +328,7 @@ fBool fcyIni::WriteToStream(fcyStream* pStream)
 	wstring tTemp;
 	WriteToStr(tTemp);
 
-	if(FCYFAILED(pStream->WriteBytes((fcData)&tTemp[0], tTemp.size()*2, NULL)))
+	if(FCYFAILED(pStream->WriteBytes((fcData)&tTemp[0], tTemp.length()*sizeof(wchar_t), NULL)))
 		return false;
 
 	return true;

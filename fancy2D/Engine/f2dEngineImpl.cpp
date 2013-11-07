@@ -212,8 +212,10 @@ f2dEngineImpl::f2dEngineImpl(const fcyRect& WinPos, fcStrW Title, fBool Windowed
 		m_pWindow = m_WinClass.CreateRenderWindow(WinPos, Title, false, F2DWINBORDERTYPE_FIXED);
 		m_pRenderer = new f2dRendererImpl(this, (fuInt)WinPos.GetWidth(), (fuInt)WinPos.GetHeight(), Windowed, VSync, AA);
 		m_pSoundSys = new f2dSoundSysImpl(this);
+#ifndef _M_ARM
 		m_pInputSys = new f2dInputSysImpl(this);
 		m_pVideoSys = new f2dVideoSysImpl(this);
+#endif
 	}
 	catch(...)
 	{
@@ -297,6 +299,7 @@ fResult f2dEngineImpl::InitSoundSys()
 
 fResult f2dEngineImpl::InitInputSys()
 {
+#ifndef _M_ARM
 	if(m_pInputSys || !m_pWindow)
 		return FCYERR_ILLEGAL;
 
@@ -311,6 +314,9 @@ fResult f2dEngineImpl::InitInputSys()
 	}
 
 	return FCYERR_OK;
+#else
+	return FCYERR_NOTSUPPORT;
+#endif
 }
 
 fResult f2dEngineImpl::InitRenderer(fuInt BufferWidth, fuInt BufferHeight, fBool Windowed, fBool VSync, F2DAALEVEL AALevel)
@@ -333,6 +339,7 @@ fResult f2dEngineImpl::InitRenderer(fuInt BufferWidth, fuInt BufferHeight, fBool
 
 fResult f2dEngineImpl::InitVideoSys()
 {
+#ifndef _M_ARM
 	if(m_pVideoSys || !m_pRenderer)
 		return FCYERR_ILLEGAL;
 
@@ -347,6 +354,9 @@ fResult f2dEngineImpl::InitVideoSys()
 	}
 
 	return FCYERR_OK;
+#else
+	return FCYERR_NOTSUPPORT;
+#endif
 }
 
 f2dSoundSys* f2dEngineImpl::GetSoundSys() { return m_pSoundSys; }
@@ -561,7 +571,8 @@ void f2dEngineImpl::DoUpdate(fDouble ElapsedTime, f2dFPSControllerImpl* pFPSCont
 	m_Sec.UnLock();
 
 	// 更新输入设备
-	m_pInputSys->Update();
+	if(m_pInputSys)
+		m_pInputSys->Update();
 
 	// 执行监听器
 	if(m_pListener)

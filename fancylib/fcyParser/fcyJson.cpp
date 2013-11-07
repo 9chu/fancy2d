@@ -676,6 +676,6 @@ void fcyJson::WriteToStream(fcyStream* pOut)
 	{
 		m_Root->writeToStr(tOutStr);
 
-		pOut->WriteBytes((fData)&tOutStr[0], tOutStr.size() * 2, NULL);
+		pOut->WriteBytes((fData)&tOutStr[0], tOutStr.length() * sizeof(wchar_t), NULL);
 	}
 }

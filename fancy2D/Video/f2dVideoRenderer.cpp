@@ -1,3 +1,5 @@
+#ifndef _M_ARM
+
 #include "f2dVideoRenderer.h"
 
 #include <Dvdmedia.h>
@@ -439,3 +441,5 @@ HRESULT f2dVideoRenderer::DoRenderSample(IMediaSample *pMediaSample)
 
 	return S_OK;
 }
+
+#endif

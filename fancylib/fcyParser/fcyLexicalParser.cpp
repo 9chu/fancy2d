@@ -88,7 +88,7 @@ fBool fcyLexicalReader::checkUTF16LE(fcyStream* pStream)
 			pStream->SetPosition(FCYSEEKORIGIN_BEG, tPos);
 	}
 	else
-			pStream->SetPosition(FCYSEEKORIGIN_BEG, tPos);
+		pStream->SetPosition(FCYSEEKORIGIN_BEG, tPos);
 
 	return false;
 }
@@ -99,8 +99,9 @@ wstring fcyLexicalReader::preprocess(fcyStream* pStream)
 	{
 		wstring tRet;
 		fLen tSize = pStream->GetLength() - pStream->GetPosition();
-		tRet.resize((size_t)tSize);
-		pStream->ReadBytes((fData)&tRet[0], tSize, NULL);
+		tRet.resize((size_t)tSize / sizeof(wchar_t));
+		if(tRet.length())
+			pStream->ReadBytes((fData)tRet.data(), tSize, NULL);
 		return tRet;
 	}
 	else if(checkUTF8(pStream))
@@ -108,7 +109,8 @@ wstring fcyLexicalReader::preprocess(fcyStream* pStream)
 		string tTemp;
 		fLen tSize = pStream->GetLength() - pStream->GetPosition();
 		tTemp.resize((size_t)tSize);
-		pStream->ReadBytes((fData)&tTemp[0], tSize, NULL);
+		if(tTemp.length())
+			pStream->ReadBytes((fData)tTemp.data(), tSize, NULL);
 		return fcyStringHelper::MultiByteToWideChar(tTemp, CP_UTF8);
 	}
 	else
@@ -116,7 +118,8 @@ wstring fcyLexicalReader::preprocess(fcyStream* pStream)
 		string tTemp;
 		fLen tSize = pStream->GetLength() - pStream->GetPosition();
 		tTemp.resize((size_t)tSize);
-		pStream->ReadBytes((fData)&tTemp[0], tSize, NULL);
+		if(tTemp.length())
+			pStream->ReadBytes((fData)tTemp.data(), tSize, NULL);
 		return fcyStringHelper::MultiByteToWideChar(tTemp, CP_OEMCP);
 	}
 }

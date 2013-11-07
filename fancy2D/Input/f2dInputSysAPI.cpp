@@ -1,3 +1,5 @@
+#ifndef _M_ARM
+
 #include "f2dInputSysAPI.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -25,3 +27,5 @@ HRESULT f2dInputSysAPI::DLLEntry_DirectInput8Create(HINSTANCE hinst, DWORD dwVer
 {
 	return m_Entry_pDirectInput8Create(hinst, dwVersion, riidltf, ppvOut, punkOuter);
 }
+
+#endif

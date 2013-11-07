@@ -51,15 +51,9 @@ private:
 	f2dRenderer* m_pRenderer;
 	f2dRenderDevice* m_pDev;
 	f2dSoundSys* m_pSoundSys;
-	f2dInputSys* m_pInputSys;
-	f2dVideoSys* m_pVideoSys;
 
 	// 渲染器
 	fcyRefPointer<f2dGraphics2D> m_pGraph2D;
-	fcyRefPointer<f2dGraphics3D> m_pGraph3D;
-
-	// 键盘
-	fcyRefPointer<f2dInputKeyboard> m_KeyBoard;
 
 	// 测试用
 	MyForce m_Force;
@@ -193,7 +187,7 @@ protected: // 引擎消息
 
 			static float s_Timer = 0;
 			s_Timer += (float)ElapsedTime;
-			if(s_Timer > 0.2f)
+			if(s_Timer > 0.02f)
 			{
 				s_Timer = 0.f;
 				m_ParticlePool->Emitted(m_Sprite, fcyVec2(640.f / 2, -50.f), fcyVec2(5.f, 8.f), tParticleDesc);
@@ -202,7 +196,7 @@ protected: // 引擎消息
 
 			m_ParticlePool->Update((float)ElapsedTime);
 		}
-
+		
 		fCharW tBuffer[256];
 		swprintf_s(tBuffer, L"FPS:%.2lf 粒子:%d", pFPSController->GetFPS(), m_ParticlePool->GetCount());
 		m_pRootUIPage->FindControl(L"TestLabel")->RawSetProperty(L"Text", tBuffer);
@@ -294,8 +288,6 @@ public:
 		m_pRenderer = m_pEngine->GetRenderer();
 		m_pDev = m_pEngine->GetRenderer()->GetDevice();
 		m_pSoundSys = m_pEngine->GetSoundSys();
-		m_pInputSys = m_pEngine->GetInputSys();
-		m_pVideoSys = m_pEngine->GetVideoSys();
 
 		// 信息自举
 		showSelfInfo();
@@ -308,17 +300,10 @@ public:
 
 			// 创建渲染器
 			m_pDev->CreateGraphics2D(0, 0, &m_pGraph2D);
-			m_pDev->CreateGraphics3D(NULL, &m_pGraph3D);
-			m_pGraph3D->SetWorldTransform(fcyMatrix4::GetScaleMatrix(0.8f));
-			m_pGraph3D->SetProjTransform(fcyMatrix4::GetPespctiveLH(4.f/3.f, 3.14f/4.f, 0.1f, 1000.f));
-			m_pGraph3D->SetViewTransform(fcyMatrix4::GetLookAtLH(fcyVec3(0.f,0.f,100.f), fcyVec3(), fcyVec3(0.f,1.f,0.f)));
 
 			// 创建RT
 			m_pDev->CreateRenderTarget(0, 0, true, &m_RT);
 			m_pRenderer->CreateSprite2D(m_RT, &m_RTSprite);
-
-			// 创建键盘
-			m_pInputSys->CreateKeyboard(-1, false, &m_KeyBoard);
 
 			tProvider = fuiResProviderImpl(m_pFileSys, m_pRenderer);
 
@@ -384,4 +369,3 @@ int main()
 	// system("pause");
 	return 0;
 }
-
