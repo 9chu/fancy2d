@@ -1,11 +1,16 @@
 #include "fuiFactory.h"
 
+#include "../fcyUIControl/fuiBorder.h"
 #include "../fcyUIControl/fuiLabel.h"
 #include "../fcyUIControl/fuiButton.h"
 #include "../fcyUIControl/fuiCursor.h"
 #include "../fcyUIControl/fuiIME.h"
 #include "../fcyUIControl/fuiEditBox.h"
 #include "../fcyUIControl/fuiImageBox.h"
+#include "../fcyUIControl/fuiImagedButton.h"
+#include "../fcyUIControl/fuiLabelEx.h"
+#include "../fcyUIControl/fuiParticleEmitter.h"
+#include "../fcyUIControl/fuiParticlePool.h"
 
 using namespace std;
 
@@ -19,6 +24,11 @@ fuiFactory::fuiFactory()
 	RegisterControlCreator<fuiIME>(L"fuiIME");
 	RegisterControlCreator<fuiEditBox>(L"fuiEditBox");
 	RegisterControlCreator<fuiImageBox>(L"fuiImageBox");
+	RegisterControlCreator<fuiImagedButton>(L"fuiImagedButton");
+	RegisterControlCreator<fuiLabelEx>(L"fuiLabelEx");
+	RegisterControlCreator<fuiParticleEmitter>(L"fuiParticleEmitter");
+	RegisterControlCreator<fuiParticlePool>(L"fuiParticlePool");
+	RegisterControlCreator<fuiBorder>(L"fuiBorder");
 }
 
 fuiFactory::~fuiFactory()
@@ -40,6 +50,7 @@ fuiResFactory::fuiResFactory()
 	RegisterResCreator<fuiSprite>(L"Sprite");
 	RegisterResCreator<fuiBorderSprite>(L"BorderSprite");
 	RegisterResCreator<fuiFont>(L"Font");
+	RegisterResCreator<fuiParticleDesc>(L"ParticleDesc");
 }
 
 fuiResFactory::~fuiResFactory()

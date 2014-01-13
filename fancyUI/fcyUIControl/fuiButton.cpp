@@ -1,5 +1,7 @@
 #include "fuiButton.h"
 
+#include "fuiExceptionMacro.h"
+
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,23 +84,17 @@ fuiButton::~fuiButton()
 
 void fuiButton::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 {
-	m_pDefault = (fuiBorderSprite*)GetControlStyle()->QueryRes(m_DefaultSprite);
-	m_pMouseOn = (fuiBorderSprite*)GetControlStyle()->QueryRes(m_MouseOnSprite);
-	m_pMouseDown = (fuiBorderSprite*)GetControlStyle()->QueryRes(m_MouseDownSprite);
+	fcyRefPointer<fuiBorderSprite> tDefault;
+	fcyRefPointer<fuiBorderSprite> tMouseOn;
+	fcyRefPointer<fuiBorderSprite> tMouseDown;
 
-	if(!m_DefaultSprite.empty() && !m_pDefault)
-		throw fcyException("fuiButton::OnStyleChanged", "Res not found.");
-	if(!m_MouseOnSprite.empty() && !m_pMouseOn)
-		throw fcyException("fuiButton::OnStyleChanged", "Res not found.");
-	if(!m_MouseDownSprite.empty() && !m_pMouseDown)
-		throw fcyException("fuiButton::OnStyleChanged", "Res not found.");
+	FUIGETRESANDCHECK(m_DefaultSprite, tDefault, fuiBorderSprite, fuiRes::RESTYPE_BORDERSPRITE, "fuiButton::OnStyleChanged");
+	FUIGETRESANDCHECK(m_MouseOnSprite, tMouseOn, fuiBorderSprite, fuiRes::RESTYPE_BORDERSPRITE, "fuiButton::OnStyleChanged");
+	FUIGETRESANDCHECK(m_MouseDownSprite, tMouseDown, fuiBorderSprite, fuiRes::RESTYPE_BORDERSPRITE, "fuiButton::OnStyleChanged");
 
-	if(m_pDefault && m_pDefault->GetResType() != fuiRes::RESTYPE_BORDERSPRITE)
-		throw fcyException("fuiButton::OnStyleChanged", "Res type error.");
-	if(m_pMouseOn && m_pMouseOn->GetResType() != fuiRes::RESTYPE_BORDERSPRITE)
-		throw fcyException("fuiButton::OnStyleChanged", "Res type error.");
-	if(m_pMouseDown && m_pMouseDown->GetResType() != fuiRes::RESTYPE_BORDERSPRITE)
-		throw fcyException("fuiButton::OnStyleChanged", "Res type error.");
+	m_pDefault = tDefault;
+	m_pMouseOn = tMouseOn;
+	m_pMouseDown = tMouseDown;
 }
 
 void fuiButton::OnSizeChanged(fuiControl* pThis, fuiEventArgs* pArgs)

@@ -33,6 +33,9 @@ protected:
 	/// @brief 默认样式
 	fcyRefPointer<fuiStyle> m_pDefaultStyle;
 
+	/// @brief 绑定的f2dRenderer
+	f2dRenderer* m_pRenderer;
+
 	/// @brief 渲染器
 	fuiGraphics m_pGraphics;
 
@@ -118,8 +121,14 @@ protected: // for fuiControl
 	/// @brief  取消控件注册
 	void UnregisterControl(fuiControl* pControl);
 public:
+	/// @brief 获得绑定的renderer
+	f2dRenderer* GetRenderer() { return m_pRenderer; }
 	/// @brief  加载布局文件
 	void LoadLayoutFromFile(fcyStream* pStream);
+	/// @brief  获得控件
+	/// @note   若控件不存在则抛出异常
+	/// @return 控件弱引用
+	fuiControl* GetControl(const std::wstring& Name);
 	/// @brief  寻找控件
 	/// @return 控件弱引用或者NULL
 	fuiControl* FindControl(const std::wstring& Name);

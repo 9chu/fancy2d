@@ -78,6 +78,27 @@
     <ClInclude Include="fcyUIBase\fuiPropBlock.h">
       <Filter>fcyUIBase\header</Filter>
     </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiLabelEx.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiParticlePool.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiParticleEmitter.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiExceptionMacro.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiImagedButton.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiBorder.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiHSliderBar.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fcyUIBase\fuiControl.cpp">
@@ -124,6 +145,24 @@
     </ClCompile>
     <ClCompile Include="fcyUIBase\fuiPropBlock.cpp">
       <Filter>fcyUIBase\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiLabelEx.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiParticlePool.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiParticleEmitter.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiImagedButton.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiBorder.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiHSliderBar.cpp">
+      <Filter>fcyUIControl\source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

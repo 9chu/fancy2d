@@ -328,6 +328,10 @@ fBool fcyIni::WriteToStream(fcyStream* pStream)
 	wstring tTemp;
 	WriteToStr(tTemp);
 
+	// UTF 16 BOM
+	fByte tUTF16LE[2] = { 0xFF, 0xFE };
+	pStream->SetLength(0);
+	pStream->WriteBytes(tUTF16LE, 2, NULL);
 	if(FCYFAILED(pStream->WriteBytes((fcData)&tTemp[0], tTemp.length()*sizeof(wchar_t), NULL)))
 		return false;
 

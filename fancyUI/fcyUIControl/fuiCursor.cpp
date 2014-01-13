@@ -1,5 +1,7 @@
 #include "fuiCursor.h"
 
+#include "fuiExceptionMacro.h"
+
 #include "../fcyUIBase/fuiPage.h"
 
 using namespace std;
@@ -30,12 +32,11 @@ fuiCursor::~fuiCursor()
 
 void fuiCursor::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 {
-	m_pCursorSprite = (fuiSprite*)GetControlStyle()->QueryRes(m_CursorSprite);
+	fcyRefPointer<fuiSprite> tCursorSprite;
 
-	if(!m_CursorSprite.empty() && !m_pCursorSprite)
-		throw fcyException("fuiCursor::OnStyleChanged", "Res not found.");
-	if(m_pCursorSprite && m_pCursorSprite->GetResType() != fuiRes::RESTYPE_SPRITE)
-		throw fcyException("fuiCursor::OnStyleChanged", "Res type error.");
+	FUIGETRESANDCHECK(m_CursorSprite, tCursorSprite, fuiSprite, fuiRes::RESTYPE_SPRITE, "fuiCursor::OnStyleChanged");
+
+	m_pCursorSprite = tCursorSprite;
 }
 
 void fuiCursor::OnGlobalMouseMove(fuiControl* pThis, fuiEventArgs* pArgs)

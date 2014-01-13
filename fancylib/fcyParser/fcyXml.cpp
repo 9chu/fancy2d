@@ -893,6 +893,9 @@ fcyXmlDocument::fcyXmlDocument(const std::wstring& Str)
 fcyXmlDocument::fcyXmlDocument(fcyStream* pStream)
 	: m_pRootElement(NULL)
 {
+	if(!pStream)
+		throw fcyException("fcyXmlDocument::fcyXmlDocument", "Param 'pStream' is null.");
+
 	fcyLexicalReader tReader(preprocessXml(pStream));
 
 	// »•‘§¥¶¿Ì

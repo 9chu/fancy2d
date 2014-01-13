@@ -45,6 +45,9 @@ fcyLexicalReader::fcyLexicalReader(const wstring& SrcText)
 fcyLexicalReader::fcyLexicalReader(fcyStream* pStream)
 	: m_Pos(0)
 {
+	if(!pStream)
+		throw fcyException("fcyLexicalReader::fcyLexicalReader", "Param 'pStream' is null.");
+
 	m_Str = preprocess(pStream);
 	m_Len = m_Str.size();
 }

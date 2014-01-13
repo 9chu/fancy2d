@@ -1,6 +1,6 @@
 #include "fuiLabel.h"
 
-#include <fcyMisc/fcyStringHelper.h>
+#include "fuiExceptionMacro.h"
 
 using namespace std;
 
@@ -137,16 +137,14 @@ void fuiLabel::OnTextChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 
 void fuiLabel::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 {
+	fcyRefPointer<fuiFont> tFont;
+
+	FUIGETRESANDCHECK(m_FontName, tFont, fuiFont, fuiRes::RESTYPE_FONT, "fuiLabel::OnStyleChanged");
+
+	m_Font = tFont;
+
 	m_pFontProvider = NULL;
 	m_pFontRenderer = NULL;
-
-	m_Font = (fuiFont*)GetControlStyle()->QueryRes(m_FontName);
-
-	if(!m_FontName.empty() && !m_Font)
-		throw fcyException("fuiLabel::OnStyleChanged", "Res not found.");
-	if(m_Font && m_Font->GetResType() != fuiRes::RESTYPE_FONT)
-		throw fcyException("fuiLabel::OnStyleChanged", "Font res error.");
-
 	if(m_Font)
 	{
 		m_pFontProvider = ((fuiFont*)m_Font)->GetFontProvider();

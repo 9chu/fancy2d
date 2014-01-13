@@ -4,11 +4,46 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// void*
+
+void fuiPropertyAccessorHelper<void*>::DefaultGetter(std::wstring& PropData, void* const* Value)
+{
+	fCharW tBuffer[32];
+	if(sizeof(void*) == 4)
+		swprintf_s(tBuffer, L"@%u", (fuInt)*Value);
+	else if(sizeof(void*) == 8)
+		swprintf_s(tBuffer, L"@%I64u", (fuLong)*Value);
+	else
+		throw fcyException("fuiPropertyAccessorHelper<void*>::DefaultGetter", "sizeof(void*) unexpected.");
+
+	PropData = tBuffer;
+}
+
+void fuiPropertyAccessorHelper<void*>::DefaultSetter(const std::wstring& PropData, void** Value)
+{
+	void* tValue;
+
+	if(sizeof(void*) == 4)
+	{
+		if(1 != swscanf_s(PropData.c_str(), L"@%d", (fuInt*)&tValue))
+			throw fcyException("fuiPropertyAccessorHelper<void*>::DefaultSetter", "Property string is not correct.");
+	}
+	else if(sizeof(void*) == 8)
+	{
+		if(1 != swscanf_s(PropData.c_str(), L"@%I64u", (fuLong*)&tValue))
+			throw fcyException("fuiPropertyAccessorHelper<void*>::DefaultSetter", "Property string is not correct.");
+	}
+	else
+		throw fcyException("fuiPropertyAccessorHelper<void*>::DefaultSetter", "sizeof(void*) unexpected.");
+
+	*Value = tValue;
+}
+
 // int
 
 void fuiPropertyAccessorHelper<int>::DefaultGetter(std::wstring& PropData, const int* Value)
 {
-	fCharW tBuffer[256];
+	fCharW tBuffer[32];
 	swprintf_s(tBuffer, L"%d", *Value);
 
 	PropData = tBuffer;
@@ -56,7 +91,7 @@ void fuiPropertyAccessorHelper<bool>::DefaultSetter(const std::wstring& PropData
 
 void fuiPropertyAccessorHelper<float>::DefaultGetter(std::wstring& PropData, const float* Value)
 {
-	fCharW tBuffer[256];
+	fCharW tBuffer[64];
 	swprintf_s(tBuffer, L"%f", *Value);
 
 	PropData = tBuffer;
@@ -76,7 +111,7 @@ void fuiPropertyAccessorHelper<float>::DefaultSetter(const std::wstring& PropDat
 
 void fuiPropertyAccessorHelper<fcyVec2>::DefaultGetter(std::wstring& PropData, const fcyVec2* Value)
 {
-	fCharW tBuffer[256];
+	fCharW tBuffer[64*2];
 	swprintf_s(tBuffer, L"%f,%f", Value->x, Value->y);
 
 	PropData = tBuffer;
@@ -96,7 +131,7 @@ void fuiPropertyAccessorHelper<fcyVec2>::DefaultSetter(const std::wstring& PropD
 
 void fuiPropertyAccessorHelper<fcyVec3>::DefaultGetter(std::wstring& PropData, const fcyVec3* Value)
 {
-	fCharW tBuffer[256];
+	fCharW tBuffer[64*3];
 	swprintf_s(tBuffer, L"%f,%f,%f", Value->x, Value->y, Value->z);
 
 	PropData = tBuffer;
@@ -116,7 +151,7 @@ void fuiPropertyAccessorHelper<fcyVec3>::DefaultSetter(const std::wstring& PropD
 
 void fuiPropertyAccessorHelper<fcyVec4>::DefaultGetter(std::wstring& PropData, const fcyVec4* Value)
 {
-	fCharW tBuffer[256];
+	fCharW tBuffer[64*4];
 	swprintf_s(tBuffer, L"%f,%f,%f,%f", Value->x, Value->y, Value->z, Value->w);
 
 	PropData = tBuffer;
@@ -136,7 +171,7 @@ void fuiPropertyAccessorHelper<fcyVec4>::DefaultSetter(const std::wstring& PropD
 
 void fuiPropertyAccessorHelper<fcyRect>::DefaultGetter(std::wstring& PropData, const fcyRect* Value)
 {
-	fCharW tBuffer[256];
+	fCharW tBuffer[64*4];
 	swprintf_s(tBuffer, L"%f,%f,%f,%f", Value->a.x, Value->a.y, Value->b.x, Value->b.y);
 
 	PropData = tBuffer;
@@ -156,7 +191,7 @@ void fuiPropertyAccessorHelper<fcyRect>::DefaultSetter(const std::wstring& PropD
 
 void fuiPropertyAccessorHelper<fcyColor>::DefaultGetter(std::wstring& PropData, const fcyColor* Value)
 {
-	fCharW tBuffer[256];
+	fCharW tBuffer[64];
 	swprintf_s(tBuffer, L"%hhu,%hhu,%hhu,%hhu", Value->a, Value->r, Value->g, Value->b);
 
 	PropData = tBuffer;

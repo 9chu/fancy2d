@@ -217,11 +217,11 @@ void fuiBorderSprite::Draw(fuiGraphics* pGraph, const fcyRect& Pos, const fcyCol
 	m_pBorderSprite->Draw(pRealGraph, fcyRect(Pos.b.x - m_Margin.b.x, Pos.a.y, Pos.b.x,                Pos.a.y + m_Margin.a.y), m_Sprites[0][2]);
 
 	m_pBorderSprite->Draw(pRealGraph, fcyRect(Pos.a.x,                Pos.a.y + m_Margin.a.y, Pos.a.x + m_Margin.a.x, Pos.b.y - m_Margin.b.y), m_Sprites[1][0]);
-	m_pBorderSprite->Draw(pRealGraph, fcyRect(Pos.a.x + m_Margin.a.x, Pos.a.y + m_Margin.a.y, Pos.b.x - m_Margin.b.y, Pos.b.y - m_Margin.b.y), m_Sprites[1][1]);
+	m_pBorderSprite->Draw(pRealGraph, fcyRect(Pos.a.x + m_Margin.a.x, Pos.a.y + m_Margin.a.y, Pos.b.x - m_Margin.b.x, Pos.b.y - m_Margin.b.y), m_Sprites[1][1]);
 	m_pBorderSprite->Draw(pRealGraph, fcyRect(Pos.b.x - m_Margin.b.x, Pos.a.y + m_Margin.a.y, Pos.b.x,                Pos.b.y - m_Margin.b.y), m_Sprites[1][2]);
 	
 	m_pBorderSprite->Draw(pRealGraph, fcyRect(Pos.a.x,                Pos.b.y - m_Margin.b.y, Pos.a.x + m_Margin.a.x, Pos.b.y), m_Sprites[2][0]);
-	m_pBorderSprite->Draw(pRealGraph, fcyRect(Pos.a.x + m_Margin.a.x, Pos.b.y - m_Margin.b.y, Pos.b.x - m_Margin.b.y, Pos.b.y), m_Sprites[2][1]);
+	m_pBorderSprite->Draw(pRealGraph, fcyRect(Pos.a.x + m_Margin.a.x, Pos.b.y - m_Margin.b.y, Pos.b.x - m_Margin.b.x, Pos.b.y), m_Sprites[2][1]);
 	m_pBorderSprite->Draw(pRealGraph, fcyRect(Pos.b.x - m_Margin.b.x, Pos.b.y - m_Margin.b.y, Pos.b.x,                Pos.b.y), m_Sprites[2][2]);
 }
 
@@ -239,7 +239,7 @@ void fuiBorderSprite::ConstructRes(fuiResProvider* pProvider)
 		throw fcyException("fuiBorderSprite::ConstructRes", "f2dRenderer::CreateSprite2D failed.");
 
 	fcyRect tUVCoord = m_Margin;
-	tUVCoord.b = m_Rect.b - m_Rect.a - tUVCoord.b;
+	tUVCoord.b = m_Rect.b - m_Rect.a - m_Margin.b;
 	tUVCoord.a.x /= m_Rect.GetWidth();
 	tUVCoord.b.x /= m_Rect.GetWidth();
 	tUVCoord.a.y /= m_Rect.GetHeight();
@@ -293,3 +293,45 @@ void fuiFont::ConstructRes(fuiResProvider* pProvider)
 	if(FCYFAILED(pRenderer->CreateFontRenderer(m_pProvider, &m_pRenderer)))
 		throw fcyException("fuiFont::ConstructRes", "f2dRenderer::CreateFontRenderer failed.");
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+fuiParticleDesc::fuiParticleDesc(const std::wstring& Name)
+	: fuiRes(RESTYPE_PARTICLE_DESC, Name)
+{
+	m_ParticleDesc.StartScale = fcyVec2(1.f, 1.f);
+	m_ParticleDesc.EndScale = fcyVec2(1.f, 1.f);
+
+	m_PosRange_Accessor = fuiPropertyAccessor<fcyRect>(&m_ParticleDesc.PosRange);
+	m_VRange_Accessor = fuiPropertyAccessor<fcyVec2>(&m_ParticleDesc.VRange);
+	m_VAngleRange_Accessor = fuiPropertyAccessor<fcyVec2>(&m_ParticleDesc.VAngleRange);
+	m_ARRange_Accessor = fuiPropertyAccessor<fcyVec2>(&m_ParticleDesc.ARRange);
+	m_ATRange_Accessor = fuiPropertyAccessor<fcyVec2>(&m_ParticleDesc.ATRange);
+	m_InitialAngle_Accessor = fuiPropertyAccessor<fcyVec2>(&m_ParticleDesc.InitialAngle);
+	m_SpinRange_Accessor = fuiPropertyAccessor<fcyVec2>(&m_ParticleDesc.SpinRange);
+	m_LifeTimeRange_Accessor = fuiPropertyAccessor<fcyVec2>(&m_ParticleDesc.LifeTimeRange);
+	m_StartColor_Accessor = fuiPropertyAccessor<fcyColor>(&m_ParticleDesc.StartColor);
+	m_StartColorRange_Accessor = fuiPropertyAccessor<fcyVec2>(&m_ParticleDesc.StartColorRange);
+	m_EndColor_Accessor = fuiPropertyAccessor<fcyColor>(&m_ParticleDesc.EndColor);
+	m_StartScale_Accessor = fuiPropertyAccessor<fcyVec2>(&m_ParticleDesc.StartScale);
+	m_StartScaleRange_Accessor = fuiPropertyAccessor<fcyVec2>(&m_ParticleDesc.StartScaleRange);
+	m_EndScale_Accessor = fuiPropertyAccessor<fcyVec2>(&m_ParticleDesc.EndScale);
+
+	RegisterProperty(L"PosRange", &m_PosRange_Accessor);
+	RegisterProperty(L"VRange", &m_VRange_Accessor);
+	RegisterProperty(L"VAngleRange", &m_VAngleRange_Accessor);
+	RegisterProperty(L"ARRange", &m_ARRange_Accessor);
+	RegisterProperty(L"ATRange", &m_ATRange_Accessor);
+	RegisterProperty(L"InitialAngle", &m_InitialAngle_Accessor);
+	RegisterProperty(L"SpinRange", &m_SpinRange_Accessor);
+	RegisterProperty(L"LifeTimeRange", &m_LifeTimeRange_Accessor);
+	RegisterProperty(L"StartColor", &m_StartColor_Accessor);
+	RegisterProperty(L"StartColorRange", &m_StartColorRange_Accessor);
+	RegisterProperty(L"EndColor", &m_EndColor_Accessor);
+	RegisterProperty(L"StartScale", &m_StartScale_Accessor);
+	RegisterProperty(L"StartScaleRange", &m_StartScaleRange_Accessor);
+	RegisterProperty(L"EndScale", &m_EndScale_Accessor);
+}
+
+void fuiParticleDesc::ConstructRes(fuiResProvider* pProvider)
+{}

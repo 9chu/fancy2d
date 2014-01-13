@@ -1,43 +1,30 @@
 ////////////////////////////////////////////////////////////////////////////////
-/// @file  fuiImageBox.h
-/// @brief fancyUI 图像框
+/// @file  fuiBorder.h
+/// @brief fancyUI 边框
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "../fcyUIBase/fuiControl.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @brief UI 图像框
+/// @brief UI 边框
 ////////////////////////////////////////////////////////////////////////////////
-class fuiImageBox :
+class fuiBorder :
 	public fuiControl
 {
-public:
-	enum IMAGEFILLMETHOD
-	{
-		IMAGEFILLMETHOD_LEFTTOP,
-		IMAGEFILLMETHOD_FIT,
-		IMAGEFILLMETHOD_STRETCH
-	};
 protected: // 属性
-	std::wstring m_Image;
+	std::wstring m_BorderImage;
 	fcyColor m_BlendColor;
-	IMAGEFILLMETHOD m_ImageFillMethod;
 	
-	fuiPropertyAccessor<std::wstring> m_Image_Accessor;
+	fuiPropertyAccessor<std::wstring> m_BorderImage_Accessor;
 	fuiPropertyAccessor<fcyColor> m_BlendColor_Accessor;
-	fuiPropertyAccessor<IMAGEFILLMETHOD> m_ImageFillMethod_Accessor;
 protected: // 绘图资源
-	fcyRefPointer<fuiSprite> m_pImageSprite;
+	fcyRefPointer<fuiBorderSprite> m_pBorderImageSprite;
 	
 	void OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs);
-protected:
-	/// @brief 绘制图片
-	/// @note  可以由派生类调用的渲染接口
-	void DrawImage(fuiGraphics* pGraph, fuiSprite* pSprite, const fcyColor& BlendColor, IMAGEFILLMETHOD Method);
 public: // 实现接口
 	void Update(fDouble ElapsedTime);
 	void Render(fuiGraphics* pGraph);
 public:
-	fuiImageBox(fuiPage* pRootPage, const std::wstring& Name);
-	~fuiImageBox();
+	fuiBorder(fuiPage* pRootPage, const std::wstring& Name);
+	~fuiBorder();
 };

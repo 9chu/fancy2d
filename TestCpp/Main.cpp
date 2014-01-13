@@ -19,28 +19,6 @@
 
 using namespace std;
 
-class MyForce :
-	public f2dParticleForce
-{
-protected:
-	f2dParticlePool* m_pPool;
-	
-public:
-	void SetPool(f2dParticlePool* pPool)
-	{
-		m_pPool = pPool;
-	}
-public:
-	void OnUpdate(fFloat ElapsedTime, fcyVec2& Pos, fcyVec2& V, float& Angle)
-	{
-		V += fcyVec2(0.f, 20.f) * ElapsedTime;
-	}
-public:
-	MyForce()
-		: m_pPool(NULL)
-	{}
-};
-
 class MyApp :
 	public f2dEngineEventListener
 {
@@ -56,16 +34,10 @@ private:
 	fcyRefPointer<f2dGraphics2D> m_pGraph2D;
 
 	// 测试用
-	MyForce m_Force;
-
 	fuiResProviderImpl tProvider;
 	fcyRefPointer<fuiPage> m_pRootUIPage;
 
-	fcyRefPointer<f2dSprite> m_Sprite;
-	fcyRefPointer<f2dParticlePool> m_ParticlePool;
-
-	fcyRefPointer<f2dTexture2D> m_RT;
-	fcyRefPointer<f2dSprite> m_RTSprite;
+	fcyRefPointer<f2dGeometryRenderer> m_pGRender;
 private:  // 功能函数
 	void showSelfInfo()
 	{
@@ -148,113 +120,34 @@ protected: // 引擎消息
 		// 更新UI
 		m_pRootUIPage->Update(ElapsedTime);
 
-		{
-			f2dParticleCreationDesc tParticleDesc = 
-			{
-				fcyRect(fcyVec2(-640.f / 2, -10.f), fcyVec2(640.f / 2, 10.f)),
-				fcyVec2(30.f, 40.f),  // V
-				fcyVec2(3.14f / 4.f, 3.14f / 4.f * 3),  // VAngle
-				fcyVec2(0.f, 0.f),   // AR
-				fcyVec2(0.f, 0.f),   // AT
-				fcyVec2(0.f, 3.14f * 2), // IA
-				fcyVec2(0.3f, 0.8f), // Spin
-				fcyVec2(10.f, 15.f),
-				fcyColor(200,200,0,0),
-				fcyVec2(0, 0),
-				fcyColor(80,50,0,0),
-				fcyVec2(0.8f,0.8f),
-				fcyVec2(-0.3f,0.3f),
-				fcyVec2(0.5f,0.5f)
-			};
-
-			f2dParticleCreationDesc tParticleDesc2 = 
-			{
-				fcyRect(fcyVec2(-640.f / 2, -10.f), fcyVec2(640.f / 2, 10.f)),
-				fcyVec2(30.f, 40.f),  // V
-				fcyVec2(3.14f / 4.f, 3.14f / 4.f * 3),  // VAngle
-				fcyVec2(0.f, 0.f),   // AR
-				fcyVec2(0.f, 0.f),   // AT
-				fcyVec2(0.f, 3.14f * 2), // IA
-				fcyVec2(0.3f, 0.8f), // Spin
-				fcyVec2(10.f, 15.f),
-				fcyColor(200,0,0,100),
-				fcyVec2(0, 0),
-				fcyColor(80,0,0,80),
-				fcyVec2(0.8f,0.8f),
-				fcyVec2(-0.3f,0.3f),
-				fcyVec2(0.5f,0.5f)
-			};
-
-			static float s_Timer = 0;
-			s_Timer += (float)ElapsedTime;
-			if(s_Timer > 0.02f)
-			{
-				s_Timer = 0.f;
-				m_ParticlePool->Emitted(m_Sprite, fcyVec2(640.f / 2, -50.f), fcyVec2(5.f, 8.f), tParticleDesc);
-				m_ParticlePool->Emitted(m_Sprite, fcyVec2(640.f / 2, -50.f), fcyVec2(5.f, 8.f), tParticleDesc2);
-			}
-
-			m_ParticlePool->Update((float)ElapsedTime);
-		}
-		
 		fCharW tBuffer[256];
-		swprintf_s(tBuffer, L"FPS:%.2lf 粒子:%d", pFPSController->GetFPS(), m_ParticlePool->GetCount());
+		swprintf_s(tBuffer, L"FPS:%.2lf", pFPSController->GetFPS());
 		m_pRootUIPage->FindControl(L"TestLabel")->RawSetProperty(L"Text", tBuffer);
 
 		return true;
 	}
 	fBool OnRender(fDouble ElapsedTime, f2dFPSController* pFPSController)
 	{
-		// 画枫叶
+		static fcyColor s_ColorArr[4] = 
 		{
-			m_pDev->SetRenderTarget(m_RT);
-			m_pDev->Clear(0x00FFFFFF);
+			fcyColor(255,255,255),
+			fcyColor(255,255,255),
+			fcyColor(255,255,255),
+			fcyColor(255,255,255)
+		};
 
-			f2dBlendState tState;
-			tState.AlphaSrcBlend = F2DBLENDFACTOR_SRCALPHA;
-			tState.AlphaDestBlend = F2DBLENDFACTOR_INVSRCALPHA;
-			tState.AlphaBlendOp = F2DBLENDOPERATOR_ADD;
-			tState.SrcBlend = F2DBLENDFACTOR_SRCALPHA;
-			tState.DestBlend = F2DBLENDFACTOR_INVSRCALPHA;
-			tState.BlendOp = F2DBLENDOPERATOR_ADD;
-			m_pGraph2D->SetBlendState(tState);
-
-			m_pGraph2D->Begin();
-			m_ParticlePool->Render(m_pGraph2D);
-			m_pGraph2D->End();
-
-			m_pDev->SetRenderTarget(NULL);
-		}
-
-		// 作图
-		f2dBlendState tState;
-		tState.AlphaSrcBlend = F2DBLENDFACTOR_SRCALPHA;
-		tState.AlphaDestBlend = F2DBLENDFACTOR_INVSRCALPHA;
-		tState.AlphaBlendOp = F2DBLENDOPERATOR_ADD;
-		tState.SrcBlend = F2DBLENDFACTOR_ONE;
-		tState.DestBlend = F2DBLENDFACTOR_ONE;
-		tState.BlendOp = F2DBLENDOPERATOR_REVSUBTRACT;
-		m_pGraph2D->SetBlendState(tState);
-
-		m_pDev->Clear(0xFFFFFFFF);
-
-		m_pGraph2D->Begin();
-
-		// 在这里作图...
-		m_RTSprite->Draw(m_pGraph2D, fcyVec2(m_RT->GetWidth() / 2.f, m_RT->GetHeight() / 2.f));
-
-		m_pGraph2D->End();
-		
-		tState.AlphaSrcBlend = F2DBLENDFACTOR_SRCALPHA;
-		tState.AlphaDestBlend = F2DBLENDFACTOR_INVSRCALPHA;
-		tState.AlphaBlendOp = F2DBLENDOPERATOR_ADD;
-		tState.SrcBlend = F2DBLENDFACTOR_SRCALPHA;
-		tState.DestBlend = F2DBLENDFACTOR_INVSRCALPHA;
-		tState.BlendOp = F2DBLENDOPERATOR_ADD;
-		m_pGraph2D->SetBlendState(tState);
+		m_pDev->Clear(0);
 
 		// 绘制UI
-		m_pRootUIPage->Render();
+		// m_pRootUIPage->Render();
+
+		// 测试性绘制
+		m_pGraph2D->Begin();
+		for(int i = 0; i<100; ++i)
+		{
+			m_pGRender->FillRectangle(m_pGraph2D, fcyRect(50, 50, 100, 100), s_ColorArr);
+		}
+		m_pGraph2D->End();
 
 		return true; 
 	}
@@ -273,10 +166,10 @@ public:
 		// 创建引擎
 		if(FCYFAILED(CreateF2DEngineAndInit(
 			F2DVERSION,
-			fcyRect(50.f, 50.f, 640.f + 50.f, 480.f + 50.f), // 640x480
+			fcyRect(50.f, 50.f, 800.f + 50.f, 600.f + 50.f), // 640x480
 			L"无标题",               // 标题
 			true,
-			true,  // VSYNC
+			false,  // VSYNC
 			F2DAALEVEL_NONE,
 			this,
 			&m_pEngine,
@@ -300,13 +193,9 @@ public:
 
 			// 创建渲染器
 			m_pDev->CreateGraphics2D(0, 0, &m_pGraph2D);
-
-			// 创建RT
-			m_pDev->CreateRenderTarget(0, 0, true, &m_RT);
-			m_pRenderer->CreateSprite2D(m_RT, &m_RTSprite);
+			m_pRenderer->CreateGeometryRenderer(&m_pGRender);
 
 			tProvider = fuiResProviderImpl(m_pFileSys, m_pRenderer);
-
 			try
 			{
 				m_pRootUIPage.DirectSet(new fuiPage(L"Main", m_pRenderer, m_pGraph2D));
@@ -329,17 +218,6 @@ public:
 
 				return;
 			}
-
-			// Particle
-			fcyRefPointer<f2dTexture2D> pTex;
-			m_pDev->CreateTextureFromStream(
-				m_pFileSys->GetStream(L"Res\\Particle.png"),
-				0, 0, false, true, &pTex);
-			m_pRenderer->CreateSprite2D(pTex, &m_Sprite);
-			
-			m_pRenderer->CreateParticlePool(&m_ParticlePool);
-			m_ParticlePool->AppendForce(&m_Force);
-			m_Force.SetPool(m_ParticlePool);
 		}
 
 		// 显示窗口

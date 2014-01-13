@@ -1,8 +1,8 @@
 #include "fuiIME.h"
 
-#include "../fcyUIBase/fuiPage.h"
+#include "fuiExceptionMacro.h"
 
-#include <fcyMisc/fcyStringHelper.h>
+#include "../fcyUIBase/fuiPage.h"
 
 using namespace std;
 
@@ -239,27 +239,20 @@ void fuiIME::OnTextInputEnd(fuiControl* pThis, fuiEventArgs* pArgs)
 
 void fuiIME::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 {
+	fcyRefPointer<fuiBorderSprite> tSingleLineSkin;
+	fcyRefPointer<fuiBorderSprite> tMultiLineSkin;
+	fcyRefPointer<fuiFont> tFont;
+
+	FUIGETRESANDCHECK(m_SingleLineSkin, tSingleLineSkin, fuiBorderSprite, fuiRes::RESTYPE_BORDERSPRITE, "fuiIME::OnStyleChanged");
+	FUIGETRESANDCHECK(m_MultiLineSkin, tMultiLineSkin, fuiBorderSprite, fuiRes::RESTYPE_BORDERSPRITE, "fuiIME::OnStyleChanged");
+	FUIGETRESANDCHECK(m_FontName, tFont, fuiFont, fuiRes::RESTYPE_FONT, "fuiIME::OnStyleChanged");
+
+	m_pSingleLineSkin = tSingleLineSkin;
+	m_pMultiLineSkin = tMultiLineSkin;
+	m_Font = tFont;
+
 	m_pFontProvider = NULL;
 	m_pFontRenderer = NULL;
-
-	m_pSingleLineSkin = (fuiBorderSprite*)GetControlStyle()->QueryRes(m_SingleLineSkin);
-	m_pMultiLineSkin = (fuiBorderSprite*)GetControlStyle()->QueryRes(m_MultiLineSkin);
-	m_Font = (fuiFont*)GetControlStyle()->QueryRes(m_FontName);
-	
-	if(!m_SingleLineSkin.empty() && !m_pSingleLineSkin)
-		throw fcyException("fuiIME::OnStyleChanged", "Res not found.");
-	if(!m_MultiLineSkin.empty() && !m_pMultiLineSkin)
-		throw fcyException("fuiIME::OnStyleChanged", "Res not found.");
-	if(!m_FontName.empty() && !m_Font)
-		throw fcyException("fuiIME::OnStyleChanged", "Res not found.");
-
-	if(m_pSingleLineSkin && m_pSingleLineSkin->GetResType() != fuiRes::RESTYPE_BORDERSPRITE)
-		throw fcyException("fuiButton::OnStyleChanged", "Res type error.");
-	if(m_pMultiLineSkin && m_pMultiLineSkin->GetResType() != fuiRes::RESTYPE_BORDERSPRITE)
-		throw fcyException("fuiButton::OnStyleChanged", "Res type error.");
-	if(m_Font && m_Font->GetResType() != fuiRes::RESTYPE_FONT)
-		throw fcyException("fuiButton::OnStyleChanged", "Res type error.");
-
 	if(m_Font)
 	{
 		m_pFontProvider = m_Font->GetFontProvider();

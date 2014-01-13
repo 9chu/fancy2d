@@ -3,6 +3,7 @@
 #include "fuiFactory.h"
 
 #include <fcyOS/fcyDebug.h>
+#include <fcyMisc/fcyStringHelper.h>
 
 using namespace std;
 
@@ -276,7 +277,7 @@ F2DINPUTKEYCODE fuiPage::VKKeyToF2DKey(fuInt VKCode)
 ////////////////////////////////////////////////////////////////////////////////
 
 fuiPage::fuiPage(const std::wstring& Name, f2dRenderer* pRenderer, f2dGraphics2D* pGraph)
-	: fuiControl(this, Name), m_pGraphics(pRenderer, pGraph), m_bDebug(false),
+	: fuiControl(this, Name), m_pRenderer(pRenderer), m_pGraphics(pRenderer, pGraph), m_bDebug(false),
 	m_pControlAtMousePos(NULL), m_pLastMouseMoveControl(NULL), m_pLockMouseControl(NULL), m_pFocus(NULL)
 {
 	m_pDefaultStyle.DirectSet(new fuiStyle());
@@ -666,6 +667,20 @@ void fuiPage::LoadLayoutFromFile(fcyStream* pStream)
 
 	// º”‘ÿ≤ºæ÷
 	loadLayoutNode(pXmlRoot, this);
+}
+
+fuiControl* fuiPage::GetControl(const std::wstring& Name)
+{
+	unordered_map<std::wstring, fuiControl*>::iterator i = m_ControlMap.find(Name);
+	if(i == m_ControlMap.end())
+		throw fcyException(
+			"fuiPage::GetControl",
+			"Control '%s' not found in page '%s'.",
+			fcyStringHelper::WideCharToMultiByte(Name).c_str(),
+			fcyStringHelper::WideCharToMultiByte(GetName()).c_str()
+			);
+	else
+		return i->second;
 }
 
 fuiControl* fuiPage::FindControl(const std::wstring& Name)

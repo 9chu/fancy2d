@@ -367,6 +367,7 @@ fBool fcyJsonDict::Remove(fcStrW Name)
 			m_ObjList.erase(i);
 			break;
 		}
+		++i;
 	}
 
 	unordered_map<wstring, fcyJsonValue*>::iterator j = m_Cache.find(Name);
@@ -676,6 +677,10 @@ void fcyJson::WriteToStream(fcyStream* pOut)
 	{
 		m_Root->writeToStr(tOutStr);
 
+		// UTF 16 BOM
+		fByte tUTF16LE[2] = { 0xFF, 0xFE };
+		pOut->SetLength(0);
+		pOut->WriteBytes(tUTF16LE, 2, NULL);
 		pOut->WriteBytes((fData)&tOutStr[0], tOutStr.length() * sizeof(wchar_t), NULL);
 	}
 }

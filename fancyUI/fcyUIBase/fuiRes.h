@@ -97,7 +97,8 @@ public:
 		RESTYPE_USER,
 		RESTYPE_SPRITE,
 		RESTYPE_BORDERSPRITE,
-		RESTYPE_FONT
+		RESTYPE_FONT,
+		RESTYPE_PARTICLE_DESC
 	};
 private:
 	RESTYPE m_Type;
@@ -196,4 +197,35 @@ public:
 	void ConstructRes(fuiResProvider* pProvider);
 public:
 	fuiFont(const std::wstring& Name);
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// @brief Á£×Ó×ÊÔ´
+////////////////////////////////////////////////////////////////////////////////
+class fuiParticleDesc :
+	public fuiRes
+{
+protected:
+	f2dParticleCreationDesc m_ParticleDesc;
+
+	fuiPropertyAccessor<fcyRect>  m_PosRange_Accessor;
+	fuiPropertyAccessor<fcyVec2>  m_VRange_Accessor;
+	fuiPropertyAccessor<fcyVec2>  m_VAngleRange_Accessor;
+	fuiPropertyAccessor<fcyVec2>  m_ARRange_Accessor;
+	fuiPropertyAccessor<fcyVec2>  m_ATRange_Accessor;
+	fuiPropertyAccessor<fcyVec2>  m_InitialAngle_Accessor;
+	fuiPropertyAccessor<fcyVec2>  m_SpinRange_Accessor;
+	fuiPropertyAccessor<fcyVec2>  m_LifeTimeRange_Accessor;
+	fuiPropertyAccessor<fcyColor> m_StartColor_Accessor;
+	fuiPropertyAccessor<fcyVec2>  m_StartColorRange_Accessor;
+	fuiPropertyAccessor<fcyColor> m_EndColor_Accessor;
+	fuiPropertyAccessor<fcyVec2>  m_StartScale_Accessor;
+	fuiPropertyAccessor<fcyVec2>  m_StartScaleRange_Accessor;
+	fuiPropertyAccessor<fcyVec2>  m_EndScale_Accessor;
+public:
+	const f2dParticleCreationDesc& GetDesc() { return m_ParticleDesc; }
+public:
+	void ConstructRes(fuiResProvider* pProvider);
+public:
+	fuiParticleDesc(const std::wstring& Name);
 };

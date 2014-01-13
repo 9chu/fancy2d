@@ -12,4 +12,22 @@
   <!-- TEST -->
   <Font Name="Font0" FontSrc="Simple\msyh.ttf" FontSize="24,24" />
   <Sprite Name="Logo" Src="Simple\Logo.png" Rect="0,0,60,60" />
+  <Sprite Name="ParticleSprite0" Src="Simple\Particle.png" />
+  
+  <ParticleDesc Name="Particle0"
+    PosRange="-320,-10,320,10"
+    VRange="30,40"
+    VAngleRange="0.785,2.355"
+    ARRange="0,0"
+    ATRange="0,0"
+    InitialAngle="0,6.28"
+    SpinRange="0.3,0.8"
+    LifeTimeRange="10,15"
+    StartColor="200,200,0,0"
+	  StartColorRange="0,0"
+	  EndColor="80,50,0,0"
+    StartScale="0.8,0.8"
+	  StartScaleRange="-0.3,0.3"
+	  EndScale="0.5,0.5"
+	  />
 </fancyUIStyle>

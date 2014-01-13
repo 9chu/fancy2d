@@ -1,5 +1,7 @@
 #include "fuiEditBox.h"
 
+#include "fuiExceptionMacro.h"
+
 #include "../fcyUIBase/fuiPage.h"
 
 using namespace std;
@@ -182,32 +184,23 @@ void fuiEditBox::OnTextChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 
 void fuiEditBox::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 {
+	fcyRefPointer<fuiFont> tFont;
+	fcyRefPointer<fuiSprite> tCursor;
+	fcyRefPointer<fuiBorderSprite> tBorder;
+	fcyRefPointer<fuiBorderSprite> tActiveBorder;
+
+	FUIGETRESANDCHECK(m_FontName, tFont, fuiFont, fuiRes::RESTYPE_FONT, "fuiEditBox::OnStyleChanged");
+	FUIGETRESANDCHECK(m_CursorSprite, tCursor, fuiSprite, fuiRes::RESTYPE_SPRITE, "fuiEditBox::OnStyleChanged");
+	FUIGETRESANDCHECK(m_BorderSprite, tBorder, fuiBorderSprite, fuiRes::RESTYPE_BORDERSPRITE, "fuiEditBox::OnStyleChanged");
+	FUIGETRESANDCHECK(m_ActiveBorderSprite, tActiveBorder, fuiBorderSprite, fuiRes::RESTYPE_BORDERSPRITE, "fuiEditBox::OnStyleChanged");
+	
+	m_Font = tFont;
+	m_Cursor = tCursor;
+	m_Border = tBorder;
+	m_ActiveBorder = tActiveBorder;
+
 	m_pFontProvider = NULL;
 	m_pFontRenderer = NULL;
-
-	m_Font = (fuiFont*)GetControlStyle()->QueryRes(m_FontName);
-	m_Cursor = (fuiSprite*)GetControlStyle()->QueryRes(m_CursorSprite);
-	m_Border = (fuiBorderSprite*)GetControlStyle()->QueryRes(m_BorderSprite);
-	m_ActiveBorder = (fuiBorderSprite*)GetControlStyle()->QueryRes(m_ActiveBorderSprite);
-
-	if(!m_FontName.empty() && !m_Font)
-		throw fcyException("fuiEditBox::OnStyleChanged", "Res not found.");
-	if(!m_CursorSprite.empty() && !m_Cursor)
-		throw fcyException("fuiButton::OnStyleChanged", "Res not found.");
-	if(!m_BorderSprite.empty() && !m_Border)
-		throw fcyException("fuiButton::OnStyleChanged", "Res not found.");
-	if(!m_ActiveBorderSprite.empty() && !m_ActiveBorder)
-		throw fcyException("fuiButton::OnStyleChanged", "Res not found.");
-	
-	if(m_Font && m_Font->GetResType() != fuiRes::RESTYPE_FONT)
-		throw fcyException("fuiEditBox::OnStyleChanged", "Font res error.");
-	if(m_Cursor && m_Cursor->GetResType() != fuiRes::RESTYPE_SPRITE)
-		throw fcyException("fuiEditBox::OnStyleChanged", "Sprite res error.");
-	if(m_Border && m_Border->GetResType() != fuiRes::RESTYPE_BORDERSPRITE)
-		throw fcyException("fuiEditBox::OnStyleChanged", "Border sprite res error.");
-	if(m_ActiveBorder && m_ActiveBorder->GetResType() != fuiRes::RESTYPE_BORDERSPRITE)
-		throw fcyException("fuiButton::OnStyleChanged", "Border sprite res error.");
-
 	if(m_Font)
 	{
 		m_pFontProvider = ((fuiFont*)m_Font)->GetFontProvider();

@@ -28,12 +28,19 @@
     <ClInclude Include="fcyUIBase\fuiRes.h" />
     <ClInclude Include="fcyUIBase\fuiStyle.h" />
     <ClInclude Include="fcyUIBase\fuiGraphics.h" />
+    <ClInclude Include="fcyUIControl\fuiBorder.h" />
+    <ClInclude Include="fcyUIControl\fuiExceptionMacro.h" />
     <ClInclude Include="fcyUIControl\fuiButton.h" />
     <ClInclude Include="fcyUIControl\fuiCursor.h" />
     <ClInclude Include="fcyUIControl\fuiEditBox.h" />
     <ClInclude Include="fcyUIControl\fuiImageBox.h" />
+    <ClInclude Include="fcyUIControl\fuiImagedButton.h" />
     <ClInclude Include="fcyUIControl\fuiIME.h" />
     <ClInclude Include="fcyUIControl\fuiLabel.h" />
+    <ClInclude Include="fcyUIControl\fuiLabelEx.h" />
+    <ClInclude Include="fcyUIControl\fuiParticleEmitter.h" />
+    <ClInclude Include="fcyUIControl\fuiParticlePool.h" />
+    <ClInclude Include="fcyUIControl\fuiHSliderBar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fcyUIBase\fuiControl.cpp" />
@@ -45,12 +52,18 @@
     <ClCompile Include="fcyUIBase\fuiProperty.cpp" />
     <ClCompile Include="fcyUIBase\fuiRes.cpp" />
     <ClCompile Include="fcyUIBase\fuiStyle.cpp" />
+    <ClCompile Include="fcyUIControl\fuiBorder.cpp" />
     <ClCompile Include="fcyUIControl\fuiButton.cpp" />
     <ClCompile Include="fcyUIControl\fuiCursor.cpp" />
     <ClCompile Include="fcyUIControl\fuiImageBox.cpp" />
+    <ClCompile Include="fcyUIControl\fuiImagedButton.cpp" />
     <ClCompile Include="fcyUIControl\fuiIME.cpp" />
     <ClCompile Include="fcyUIControl\fuiLabel.cpp" />
     <ClCompile Include="fcyUIControl\fuiEditBox.cpp" />
+    <ClCompile Include="fcyUIControl\fuiLabelEx.cpp" />
+    <ClCompile Include="fcyUIControl\fuiParticleEmitter.cpp" />
+    <ClCompile Include="fcyUIControl\fuiParticlePool.cpp" />
+    <ClCompile Include="fcyUIControl\fuiHSliderBar.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5745204B-573E-49A9-9145-8031BDF53235}</ProjectGuid>

@@ -52,6 +52,13 @@ void fuiPropertyAccessorHelper<T>::DefaultSetter(const std::wstring&, T*)
 /// @brief 属性访问辅助 - 特化
 ////////////////////////////////////////////////////////////////////////////////
 template<>
+struct fuiPropertyAccessorHelper<void*>
+{
+	static void DefaultGetter(std::wstring&, void* const*);
+	static void DefaultSetter(const std::wstring&, void**);
+};
+
+template<>
 struct fuiPropertyAccessorHelper<int>
 {
 	static void DefaultGetter(std::wstring&, const int*);

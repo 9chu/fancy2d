@@ -35,4 +35,22 @@
             Image="Logo" BlendColor="200,0,0,0"
             FillMethod="Stretch"
             />
+            
+  <fuiLabelEx Name="TestLabelEx"
+            Left="20" Top="250" Width="600" Height="300"
+            Text="[color=&quot;255,200,200,0&quot;]你好[/color][color=&quot;255,100,100,200&quot;]世界[/color]"
+            FontName="Font0" FontColor="255,255,255,255" 
+            />
+            
+  <fuiParticlePool Name="TestParticlePool"
+            Left="0" Top="0" Width="800" Height="600"
+            >
+        <fuiParticleEmitter Name="fuiParticleEmitter0"
+                            Left="400" Top="-20"
+                            Particle="Particle0"
+                            ParticleSprite="ParticleSprite0"
+                            EmitterTimeRange="0.2,0.4"
+                            EmitterCountRange="5,10" 
+                            />
+  </fuiParticlePool>
 </fancyUILayout>

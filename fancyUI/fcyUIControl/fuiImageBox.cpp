@@ -1,5 +1,7 @@
 #include "fuiImageBox.h"
 
+#include "fuiExceptionMacro.h"
+
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,27 +66,21 @@ fuiImageBox::~fuiImageBox()
 
 void fuiImageBox::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 {
-	m_pImageSprite = (fuiSprite*)GetControlStyle()->QueryRes(m_Image);
+	fcyRefPointer<fuiSprite> tImageSprite;
 
-	if(!m_Image.empty() && !m_pImageSprite)
-		throw fcyException("fuiImageBox::OnStyleChanged", "Res not found.");
-	if(m_pImageSprite && m_pImageSprite->GetResType() != fuiRes::RESTYPE_SPRITE)
-		throw fcyException("fuiImageBox::OnStyleChanged", "Res type error.");
+	FUIGETRESANDCHECK(m_Image, tImageSprite, fuiSprite, fuiRes::RESTYPE_SPRITE, "fuiImageBox::OnStyleChanged");
+
+	m_pImageSprite = tImageSprite;
 }
 
-void fuiImageBox::Update(fDouble ElapsedTime)
+void fuiImageBox::DrawImage(fuiGraphics* pGraph, fuiSprite* pSprite, const fcyColor& BlendColor, IMAGEFILLMETHOD Method)
 {
-	fuiControl::Update(ElapsedTime);
-}
-
-void fuiImageBox::Render(fuiGraphics* pGraph)
-{
-	if(m_pImageSprite)
+	if(pSprite)
 	{
-		f2dSprite* p = m_pImageSprite->GetSprite();
-		p->SetColor(m_BlendColor);
+		f2dSprite* p = pSprite->GetSprite();
+		p->SetColor(BlendColor);
 
-		switch(m_ImageFillMethod)
+		switch(Method)
 		{
 		case IMAGEFILLMETHOD_LEFTTOP:
 			{
@@ -108,6 +104,16 @@ void fuiImageBox::Render(fuiGraphics* pGraph)
 			break;
 		}
 	}
+}
+
+void fuiImageBox::Update(fDouble ElapsedTime)
+{
+	fuiControl::Update(ElapsedTime);
+}
+
+void fuiImageBox::Render(fuiGraphics* pGraph)
+{
+	DrawImage(pGraph, m_pImageSprite, m_BlendColor, m_ImageFillMethod);
 
 	fuiControl::Render(pGraph);
 }
