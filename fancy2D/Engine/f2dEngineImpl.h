@@ -112,7 +112,7 @@ protected:
 	void Run_FullMultiThread(fuInt UpdateMaxFPS, fuInt RenderMaxFPS);
 
 	void DoUpdate(fDouble ElapsedTime, f2dFPSControllerImpl* pFPSController);
-	void DoRender(fDouble ElapsedTime, f2dFPSControllerImpl* pFPSController, f2dRenderDeviceImpl* pDev);
+	void DoRender(fDouble ElapsedTime, f2dFPSControllerImpl* pFPSController, fcyStopWatch& Timer, f2dRenderDeviceImpl* pDev);
 public: // 内部公开方法
 	// 当异常被触发时调用该函数
 	void ThrowException(const fcyException& e);
