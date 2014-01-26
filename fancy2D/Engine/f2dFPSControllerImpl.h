@@ -31,45 +31,26 @@ protected:
 	fuInt m_FPSMax;       ///< @brief 最大FPS
 	fDouble m_FrameDelay; ///< @brief 帧时间间隔
 public: // 公开
-	/// @brief 延迟并逼近目标时间
-	void DoDelay(fcyStopWatch& Watch)
-	{
-		fDouble tElapsedTime = Watch.GetElpased();
-
-		// FPS限制
-		if(m_FPSMax && tElapsedTime < m_FrameDelay)
-		{
-			fuInt tTimeToSleep = (fuInt)((m_FrameDelay - tElapsedTime) * 1000.);
-
-			// Sleep限速
-			if(tTimeToSleep > 2)
-				Sleep(tTimeToSleep - 2);
-
-			// 自旋精确限速
-			while((tElapsedTime = Watch.GetElpased()) < m_FrameDelay) {}
-		}
-	}
-	/// @brief 粗略延迟到目标时间
-	void DoDelayRough(fcyStopWatch& Watch)
-	{
-		fDouble tElapsedTime = Watch.GetElpased();
-
-		// FPS限制
-		if(m_FPSMax && tElapsedTime < m_FrameDelay)
-		{
-			fuInt tTimeToSleep = (fuInt)((m_FrameDelay - tElapsedTime) * 1000.);
-
-			// Sleep限速
-			if(tTimeToSleep > 5)
-				Sleep(tTimeToSleep - 5);
-		}
-	}
 	/// @brief 更新FPS控制器
 	/// @note  获得两个时间点之间的流逝时间并更新FPS计数器
 	fDouble Update(fcyStopWatch& Watch)
 	{
 		fDouble tElapsedTime = Watch.GetElpased();
 
+		// FPS限制
+		if(m_FPSMax && tElapsedTime < m_FrameDelay)
+		{
+			fuInt tTimeToSleep = (fuInt)((m_FrameDelay - tElapsedTime) * 1000.);
+
+			// Sleep限速
+			if(tTimeToSleep > 1)
+				Sleep(tTimeToSleep - 1);
+
+			// 自旋精确限速
+			while((tElapsedTime = Watch.GetElpased()) < m_FrameDelay) {}
+		}
+
+		tElapsedTime = Watch.GetElpased();
 		Watch.Reset();
 
 		m_TotalFrame++;
@@ -99,6 +80,7 @@ public: // 接口实现
 	void SetLimitedFPS(fuInt iMaxFPS)
 	{
 		m_FPSMax = iMaxFPS;
+		m_FrameDelay = m_FPSMax ? 1./m_FPSMax : 0;
 	}
 	fDouble GetFPS()
 	{

@@ -86,6 +86,7 @@ fuInt f2dEngineImpl::UpdateAndRenderThread::ThreadJob()
 	// 执行渲染更新循环
 	fcyCriticalSection& tLock = m_pEngine->m_Sec;
 	fBool bExit = false;
+	fBool bDoPresent = false;
 	fDouble tTime = 0;
 	while(1)
 	{
@@ -96,15 +97,19 @@ fuInt f2dEngineImpl::UpdateAndRenderThread::ThreadJob()
 		// 检查退出
 		if(bExit)
 			break;
-
+		
 		// 更新FPS
 		tTime = tFPSController.Update(tTimer);
 		
+		// 执行显示事件
+		if(bDoPresent)
+			m_pEngine->DoPresent(tpRenderDev);
+
 		// 执行更新事件
 		m_pEngine->DoUpdate(tTime, &tFPSController);
 
 		// 执行渲染事件
-		m_pEngine->DoRender(tTime, &tFPSController, tTimer, tpRenderDev);
+		bDoPresent = m_pEngine->DoRender(tTime, &tFPSController, tpRenderDev);
 	}
 
 	// 投递终止消息
@@ -137,7 +142,6 @@ fuInt f2dEngineImpl::UpdateThread::ThreadJob()
 			break;
 
 		// 更新FPS
-		tFPSController.DoDelay(tTimer);  // [重要] 需要单独进行延迟操作
 		tTime = tFPSController.Update(tTimer);
 		
 		// 执行更新事件
@@ -167,6 +171,7 @@ fuInt f2dEngineImpl::RenderThread::ThreadJob()
 	// 执行渲染更新循环
 	fcyCriticalSection& tLock = m_pEngine->m_Sec;
 	fBool bExit = false;
+	fBool bDoPresent = false;
 	fDouble tTime = 0;
 	while(1)
 	{
@@ -180,9 +185,13 @@ fuInt f2dEngineImpl::RenderThread::ThreadJob()
 
 		// 更新FPS
 		tTime = tFPSController.Update(tTimer);
+
+		// 执行显示事件
+		if(bDoPresent)
+			m_pEngine->DoPresent(tpRenderDev);
 		
 		// 执行渲染事件
-		m_pEngine->DoRender(tTime, &tFPSController, tTimer, tpRenderDev);
+		bDoPresent = m_pEngine->DoRender(tTime, &tFPSController, tpRenderDev);
 	}
 
 	return 0;
@@ -428,6 +437,7 @@ void f2dEngineImpl::Run_SingleThread(fuInt UpdateMaxFPS)
 
 	// 执行程序循环
 	fBool bExit = false;
+	fBool bDoPresent = false;
 	fDouble tTime = 0;
 	fDouble tMsgTime = 0;
 	MSG tMsg;
@@ -458,11 +468,15 @@ void f2dEngineImpl::Run_SingleThread(fuInt UpdateMaxFPS)
 		// 更新FPS
 		tTime = tFPSController.Update(tTimer) - tMsgTime;  // 修正由于处理消息额外耗费的时间
 		
+		// 执行显示事件
+		if(bDoPresent)
+			DoPresent(tpRenderDev);
+
 		// 执行更新事件
 		DoUpdate(tTime, &tFPSController);
 
 		// 执行渲染事件
-		DoRender(tTime, &tFPSController, tTimer, tpRenderDev);
+		bDoPresent = DoRender(tTime, &tFPSController, tpRenderDev);
 	}
 }
 
@@ -590,22 +604,20 @@ void f2dEngineImpl::DoUpdate(fDouble ElapsedTime, f2dFPSControllerImpl* pFPSCont
 	}
 }
 
-void f2dEngineImpl::DoRender(fDouble ElapsedTime, f2dFPSControllerImpl* pFPSController, fcyStopWatch& Timer, f2dRenderDeviceImpl* pDev)
+bool f2dEngineImpl::DoRender(fDouble ElapsedTime, f2dFPSControllerImpl* pFPSController, f2dRenderDeviceImpl* pDev)
 {
 	// 同步设备状态，处理设备丢失
 	if(pDev && FCYOK(pDev->SyncDevice()))
 	{
 		if(m_pListener) // 触发渲染事件
-			if(m_pListener->OnRender(ElapsedTime, pFPSController))
-			{
-				// [重要] 在Present函数前粗略逼近到时间点
-				pFPSController->DoDelayRough(Timer);
-
-				// 递交画面
-				pDev->Present();
-			}
+			return m_pListener->OnRender(ElapsedTime, pFPSController);
 	}
 
-	// 完全逼近
-	pFPSController->DoDelay(Timer);
+	return false;
+}
+
+void f2dEngineImpl::DoPresent(f2dRenderDeviceImpl* pDev)
+{
+	// 递交画面
+	pDev->Present();
 }
