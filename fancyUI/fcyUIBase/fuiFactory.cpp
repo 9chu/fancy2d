@@ -11,6 +11,7 @@
 #include "../fcyUIControl/fuiLabelEx.h"
 #include "../fcyUIControl/fuiParticleEmitter.h"
 #include "../fcyUIControl/fuiParticlePool.h"
+#include "../fcyUIControl/fuiHProgressBar.h"
 
 using namespace std;
 
@@ -29,6 +30,7 @@ fuiFactory::fuiFactory()
 	RegisterControlCreator<fuiParticleEmitter>(L"fuiParticleEmitter");
 	RegisterControlCreator<fuiParticlePool>(L"fuiParticlePool");
 	RegisterControlCreator<fuiBorder>(L"fuiBorder");
+	RegisterControlCreator<fuiHProgressBar>(L"fuiHProgressBar");
 }
 
 fuiFactory::~fuiFactory()

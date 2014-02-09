@@ -108,7 +108,17 @@ void fuiControl::registerAllProperty()
 			SetLayerPriority(v);
 		}
 	);
-	m_bVisiable_Accessor = fuiPropertyAccessor<bool>(&m_bVisiable);
+	m_bVisiable_Accessor = fuiPropertyAccessor<bool>(
+		&m_bVisiable,
+		[&](std::wstring& Prop, const bool* v) {
+			fuiPropertyAccessorHelper<bool>::DefaultGetter(Prop, v);
+		},
+		[&](const std::wstring& Prop, bool*) {
+			bool v;
+			fuiPropertyAccessorHelper<bool>::DefaultSetter(Prop, &v);
+			SetVisiable(v);
+		}
+	);
 
 	// 注册属性访问器
 	RegisterProperty(L"Name", &m_Name_Accessor);
@@ -127,6 +137,8 @@ void fuiControl::registerAllProperty()
 void fuiControl::registerAllEvent()
 {
 	// 注册事件
+	RegisterEvent(L"OnVisiableChanged");
+
 	RegisterEvent(L"OnParentChanged");
 	RegisterEvent(L"OnStyleChanged");
 	RegisterEvent(L"OnPosChanged");
@@ -381,6 +393,17 @@ void fuiControl::SetLayerPriority(fFloat Value)
 	m_LayerPriority = Value;
 	if(m_pParent && m_pParent != this)
 		m_pParent->resortControl();
+}
+
+void fuiControl::SetVisiable(fBool Value)
+{
+	if(m_bVisiable != Value)
+	{
+		m_bVisiable = Value;
+
+		// 触发事件
+		ExecEvent(L"OnVisiableChanged");
+	}
 }
 
 void fuiControl::Update(fDouble ElapsedTime)

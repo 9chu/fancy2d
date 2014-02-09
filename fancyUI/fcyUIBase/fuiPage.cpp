@@ -429,7 +429,7 @@ void fuiPage::debugDraw(fuiGraphics* pGraph, fuiControl* pControl)
 
 fuiControl* fuiPage::getControlAtPos(fuiControl* pControl, const fcyVec2& Pos, fcyVec2& PosOut)
 {
-	if(pControl->GetMouseTrans())
+	if(pControl->GetMouseTrans() || pControl->GetVisiable() == false)
 		return NULL;
 
 	fcyVec2 tPos = Pos - pControl->m_Rect.a;
@@ -583,13 +583,13 @@ void fuiPage::sendMouseButtonUp(MOUSEBUTTON Button, fcyVec2* MousePos)
 		switch(Button)
 		{
 		case MOUSEBUTTON_L:
-			ExecEvent(L"OnGlobalMouseLDown");
+			ExecEvent(L"OnGlobalMouseLUp");
 			break;
 		case MOUSEBUTTON_M:
-			ExecEvent(L"OnGlobalMouseMDown");
+			ExecEvent(L"OnGlobalMouseMUp");
 			break;
 		case MOUSEBUTTON_R:
-			ExecEvent(L"OnGlobalMouseRDown");
+			ExecEvent(L"OnGlobalMouseRUp");
 			break;
 		}
 	}
@@ -722,6 +722,27 @@ void fuiPage::SetFocusControl(fuiControl* p)
 	{
 		m_pFocus->ExecEvent(L"OnGetFocus");
 		sendSubControlGetFocusMsg(m_pFocus);
+	}
+}
+
+void fuiPage::ReleaseMouseEventCatch()
+{
+	if(m_pLockMouseControl)
+	{
+		switch(m_MouseUnlockEvent)
+		{
+		case MOUSEBUTTON_L:
+			m_pLockMouseControl->ExecEvent(L"OnMouseLUp");
+			break;
+		case MOUSEBUTTON_M:
+			m_pLockMouseControl->ExecEvent(L"OnMouseMUp");
+			break;
+		case MOUSEBUTTON_R:
+			m_pLockMouseControl->ExecEvent(L"OnMouseRUp");
+			break;
+		}
+		
+		m_pLockMouseControl = NULL;
 	}
 }
 

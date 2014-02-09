@@ -142,6 +142,8 @@ public:
 	fuiControl* GetFocusControl() { return m_pFocus; }
 	/// @brief 设置焦点
 	void SetFocusControl(fuiControl* p);
+	/// @brief 强制解除控件的鼠标捕获
+	void ReleaseMouseEventCatch();
 public: // 接口实现
 	fuiStyle* GetControlStyle()const;
 	void SetControlStyle(fuiStyle* pStyle);

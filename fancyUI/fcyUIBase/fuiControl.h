@@ -155,7 +155,7 @@ public:
 	/// @brief 返回可见性
 	fBool GetVisiable()const { return m_bVisiable; }
 	/// @brief 设置可见性
-	void SetVisiable(fBool Value) { m_bVisiable = Value; }
+	void SetVisiable(fBool Value);
 public:  // 覆写操作
 	/// @brief 更新控件状态
 	virtual void Update(fDouble ElapsedTime);

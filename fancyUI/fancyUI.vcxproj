@@ -33,6 +33,7 @@
     <ClInclude Include="fcyUIControl\fuiButton.h" />
     <ClInclude Include="fcyUIControl\fuiCursor.h" />
     <ClInclude Include="fcyUIControl\fuiEditBox.h" />
+    <ClInclude Include="fcyUIControl\fuiHProgressBar.h" />
     <ClInclude Include="fcyUIControl\fuiImageBox.h" />
     <ClInclude Include="fcyUIControl\fuiImagedButton.h" />
     <ClInclude Include="fcyUIControl\fuiIME.h" />
@@ -55,6 +56,7 @@
     <ClCompile Include="fcyUIControl\fuiBorder.cpp" />
     <ClCompile Include="fcyUIControl\fuiButton.cpp" />
     <ClCompile Include="fcyUIControl\fuiCursor.cpp" />
+    <ClCompile Include="fcyUIControl\fuiHProgressBar.cpp" />
     <ClCompile Include="fcyUIControl\fuiImageBox.cpp" />
     <ClCompile Include="fcyUIControl\fuiImagedButton.cpp" />
     <ClCompile Include="fcyUIControl\fuiIME.cpp" />

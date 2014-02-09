@@ -99,6 +99,9 @@
     <ClInclude Include="fcyUIControl\fuiHSliderBar.h">
       <Filter>fcyUIControl\header</Filter>
     </ClInclude>
+    <ClInclude Include="fcyUIControl\fuiHProgressBar.h">
+      <Filter>fcyUIControl\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fcyUIBase\fuiControl.cpp">
@@ -162,6 +165,9 @@
       <Filter>fcyUIControl\source</Filter>
     </ClCompile>
     <ClCompile Include="fcyUIControl\fuiHSliderBar.cpp">
+      <Filter>fcyUIControl\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fcyUIControl\fuiHProgressBar.cpp">
       <Filter>fcyUIControl\source</Filter>
     </ClCompile>
   </ItemGroup>
