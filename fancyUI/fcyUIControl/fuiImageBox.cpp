@@ -75,7 +75,7 @@ void fuiImageBox::OnStyleChanged(fuiControl* pThis, fuiEventArgs* pArgs)
 
 void fuiImageBox::DrawImage(fuiGraphics* pGraph, fuiSprite* pSprite, const fcyColor& BlendColor, IMAGEFILLMETHOD Method)
 {
-	if(pSprite)
+	if(pSprite && BlendColor.a != 0)
 	{
 		f2dSprite* p = pSprite->GetSprite();
 		p->SetColor(BlendColor);

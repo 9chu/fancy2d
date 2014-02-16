@@ -160,7 +160,7 @@ void fuiLabel::Update(fDouble ElapsedTime)
 
 void fuiLabel::Render(fuiGraphics* pGraph)
 {
-	if(m_pFontProvider && m_pFontRenderer)
+	if(m_pFontProvider && m_pFontRenderer && m_FontColor.a != 0)
 	{
 		// ÉèÖÃÑÕÉ«
 		m_pFontRenderer->SetColor(m_FontColor);
