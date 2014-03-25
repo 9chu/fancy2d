@@ -105,12 +105,34 @@ void f2dSpriteAnimationImpl::ReverseSplitAndAppend(fuInt* FrameTimeArr, f2dTextu
 	}
 }
 
-void f2dSpriteAnimationImpl::InitInstance(f2dSpriteAnimationInstance& Instance)const
+void f2dSpriteAnimationImpl::InitInstance(f2dSpriteAnimationInstance& Instance, bool bResetBlendColor, bool bResetFlipType)const
 {
 	Instance.KeyFrameIndex = 0;
 	Instance.KeyFrameElapsedTime = 0;
-	Instance.FlipType = F2DSPRITEFLIP_NONE;
-	Instance.BlendColor = 0xFF000000;
+
+	if(bResetFlipType)
+		Instance.FlipType = F2DSPRITEFLIP_NONE;
+	if(bResetBlendColor)
+		Instance.BlendColor = 0xFF000000;
+}
+
+void f2dSpriteAnimationImpl::InitInstanceToEnd(f2dSpriteAnimationInstance& Instance, bool bResetBlendColor, bool bResetFlipType)const
+{
+	if(GetKeyFrameCount() > 0)
+	{
+		Instance.KeyFrameIndex = GetKeyFrameCount() - 1;
+		Instance.KeyFrameElapsedTime = GetKeyFrameTime(Instance.KeyFrameIndex);
+	}
+	else
+	{
+		Instance.KeyFrameIndex = 0;
+		Instance.KeyFrameElapsedTime = 0;
+	}
+	
+	if(bResetFlipType)
+		Instance.FlipType = F2DSPRITEFLIP_NONE;
+	if(bResetBlendColor)
+		Instance.BlendColor = 0xFF000000;
 }
 
 fBool f2dSpriteAnimationImpl::StepInstance(f2dSpriteAnimationInstance& Instance)const

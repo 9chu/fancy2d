@@ -358,16 +358,16 @@ struct f2dSpriteAnimation :
 	/// @brief 返回帧对应的精灵
 	virtual f2dSprite* GetSprite(fuInt Index)=0;
 	/// @brief 返回帧对应的时间
-	virtual fInt GetFrameTime(fuInt Index)=0;
+	virtual fInt GetKeyFrameTime(fuInt Index)const=0;
 	/// @brief 设置帧对应的精灵
 	virtual fResult SetSprite(fuInt Index, f2dSprite* pSprite)=0;
 	/// @brief 设置帧对应的时间
-	virtual fResult SetFrameTime(fuInt Index, fuInt Time)=0;
+	virtual fResult SetKeyFrameTime(fuInt Index, fuInt Time)=0;
 
 	/// @brief 计算总帧数
-	virtual fuInt GetFrameCount()=0;
+	virtual fuInt GetFrameCount()const=0;
 	/// @brief 返回关键帧个数
-	virtual fuInt GetKeyFrameCount()=0;
+	virtual fuInt GetKeyFrameCount()const=0;
 
 	/// @brief 追加关键帧
 	virtual fuInt Append(fuInt FrameTime, f2dTexture2D* FrameTex)=0;
@@ -399,13 +399,17 @@ struct f2dSpriteAnimation :
 	/// @brief 设置循环
 	virtual void SetLoop(fBool bLoop)=0;
 
-	/// @brief  初始化实例
-	virtual void InitInstance(f2dSpriteAnimationInstance& Instance)const=0;
+	/// @brief     初始化实例
+	/// @param[in] Instance 实例对象
+	virtual void InitInstance(f2dSpriteAnimationInstance& Instance, bool bResetBlendColor = true, bool bResetFlipType = true)const=0;
+	/// @brief     初始化实例到动画结尾
+	/// @param[in] Instance 实例对象
+	virtual void InitInstanceToEnd(f2dSpriteAnimationInstance& Instance, bool bResetBlendColor = true, bool bResetFlipType = true)const=0;
 	/// @brief  单步实例
 	/// @return 若动画结束返回false
 	virtual fBool StepInstance(f2dSpriteAnimationInstance& Instance)const=0;
 	/// @brief  后退一步
-	/// @return 若动画结束返回true
+	/// @return 若动画结束返回false
 	virtual fBool StepbackInstance(f2dSpriteAnimationInstance& Instance)const=0;
 	/// @brief  跳到帧
 	virtual fResult JumpTo(f2dSpriteAnimationInstance& Instance, fuInt FrameIndex)const=0;

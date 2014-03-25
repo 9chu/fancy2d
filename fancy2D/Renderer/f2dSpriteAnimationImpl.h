@@ -40,7 +40,7 @@ public:
 		else
 			return m_AnimationList[Index].FrameSprite;
 	}
-	fInt GetFrameTime(fuInt Index)
+	fInt GetKeyFrameTime(fuInt Index)const
 	{
 		if(Index >= m_AnimationList.size())
 			return NULL;
@@ -60,7 +60,7 @@ public:
 			return FCYERR_OK;
 		}
 	}
-	fResult SetFrameTime(fuInt Index, fuInt Time)
+	fResult SetKeyFrameTime(fuInt Index, fuInt Time)
 	{
 		if(Index >= m_AnimationList.size())
 			return FCYERR_OUTOFRANGE;
@@ -71,11 +71,11 @@ public:
 		}
 	}
 
-	fuInt GetFrameCount()
+	fuInt GetFrameCount()const
 	{
 		fuInt tRet = 0;
 
-		std::vector<Frame>::iterator i = m_AnimationList.begin();
+		std::vector<Frame>::const_iterator i = m_AnimationList.begin();
 		while(i != m_AnimationList.end())
 		{
 			tRet += i->FrameTime;
@@ -85,7 +85,7 @@ public:
 
 		return tRet;
 	}
-	fuInt GetKeyFrameCount()
+	fuInt GetKeyFrameCount()const
 	{
 		return m_AnimationList.size();
 	}
@@ -109,7 +109,8 @@ public:
 	fBool IsLoop()const { return m_bLoop; }
 	void SetLoop(fBool bLoop) { m_bLoop = bLoop; }
 
-	void InitInstance(f2dSpriteAnimationInstance& Instance)const;
+	void InitInstance(f2dSpriteAnimationInstance& Instance, bool bResetBlendColor, bool bResetFlipType)const;
+	void InitInstanceToEnd(f2dSpriteAnimationInstance& Instance, bool bResetBlendColor, bool bResetFlipType)const;
 	fBool StepInstance(f2dSpriteAnimationInstance& Instance)const;
 	fBool StepbackInstance(f2dSpriteAnimationInstance& Instance)const;
 	fResult JumpTo(f2dSpriteAnimationInstance& Instance, fuInt FrameIndex)const;
