@@ -14,7 +14,7 @@ fuiIME::fuiIME(fuiPage* pRootPage, const std::wstring& Name)
 	m_pFontProvider(NULL), m_pFontRenderer(NULL), m_bInInput(false), m_bInComposition(false)
 {
 	// 默认属性
-	SetVisiable(false);
+	SetVisible(false);
 	SetLayerPriority(FUIIME_LAYERPRIORITY);
 
 	// 设置访问器
@@ -163,7 +163,7 @@ void fuiIME::readCandidate(f2dIMECandidateList* pList)
 
 void fuiIME::showIME()
 {
-	SetVisiable(m_bInInput && m_bInComposition);
+	SetVisible(m_bInInput && m_bInComposition);
 }
 
 void fuiIME::OnIMEClosed(fuiControl* pThis, fuiEventArgs* pArgs)

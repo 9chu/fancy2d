@@ -47,7 +47,7 @@ public: // 接口实现
 	void WriteData(fcyStream* pStream);
 public:
 	fcyModelIndexLabel()
-		: fcyModelLabel(FFM_MAKE_LABELNAME8(LABELNAME)) {}
+		: fcyModelLabel(FMM_MAKE_LABELNAME8(LABELNAME)) {}
 protected:
 	~fcyModelIndexLabel() {}
 };

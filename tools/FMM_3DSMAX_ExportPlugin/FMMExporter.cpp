@@ -37,7 +37,7 @@ int CFMMExporter::DoExport(const MCHAR *name,ExpInterface *ei,Interface *i, BOOL
 	}
 	catch(...)
 	{
-		MessageBoxW(0, L"创建文件失败。", L"FFMExporter - 错误", 0);
+		MessageBoxW(0, L"创建文件失败。", L"FMMExporter - 错误", 0);
 		return FALSE;
 	}
 	tFile->SetLength(0);
@@ -84,16 +84,16 @@ int CFMMExporter::DoExport(const MCHAR *name,ExpInterface *ei,Interface *i, BOOL
 		// 注册顶点信息
 		tContext.VertexLabel->ResizeElement(4);
 		tContext.VertexLabel->GetVertexElement(0).Type = fcyModelVertexLabel::ELEMENTTYPE_FLOAT3;
-		tContext.VertexLabel->GetVertexElement(0).Usage = FFM_MAKE_LABELNAME8("POSITION");
+		tContext.VertexLabel->GetVertexElement(0).Usage = FMM_MAKE_LABELNAME8("POSITION");
 		tContext.VertexLabel->GetVertexElement(0).UsageIndex = 0;
 		tContext.VertexLabel->GetVertexElement(1).Type = fcyModelVertexLabel::ELEMENTTYPE_FLOAT3;
-		tContext.VertexLabel->GetVertexElement(1).Usage = FFM_MAKE_LABELNAME8("NORMAL\0\0");
+		tContext.VertexLabel->GetVertexElement(1).Usage = FMM_MAKE_LABELNAME8("NORMAL\0\0");
 		tContext.VertexLabel->GetVertexElement(1).UsageIndex = 0;
 		tContext.VertexLabel->GetVertexElement(2).Type = fcyModelVertexLabel::ELEMENTTYPE_COLOR;
-		tContext.VertexLabel->GetVertexElement(2).Usage = FFM_MAKE_LABELNAME8("COLOR\0\0\0");
+		tContext.VertexLabel->GetVertexElement(2).Usage = FMM_MAKE_LABELNAME8("COLOR\0\0\0");
 		tContext.VertexLabel->GetVertexElement(2).UsageIndex = 0;
 		tContext.VertexLabel->GetVertexElement(3).Type = fcyModelVertexLabel::ELEMENTTYPE_FLOAT2;
-		tContext.VertexLabel->GetVertexElement(3).Usage = FFM_MAKE_LABELNAME8("TEXCOORD");
+		tContext.VertexLabel->GetVertexElement(3).Usage = FMM_MAKE_LABELNAME8("TEXCOORD");
 		tContext.VertexLabel->GetVertexElement(3).UsageIndex = 0;
 	}
 

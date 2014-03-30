@@ -13,8 +13,8 @@ fcyModelMeshExporter::ModelMeshInfo fcyModelMeshExporter::ExportMesh(fcyModelMes
 	*pOut = NULL;
 
 	// 获得关键标签
-	fcyRefPointer<fcyModelLabel> tVertexLabel = Mesh.FindLabel(FFM_MAKE_LABELNAME8(fcyModelVertexLabel::LABELNAME));
-	fcyRefPointer<fcyModelLabel> tIndexLabel = Mesh.FindLabel(FFM_MAKE_LABELNAME8(fcyModelIndexLabel::LABELNAME));
+	fcyRefPointer<fcyModelLabel> tVertexLabel = Mesh.FindLabel(FMM_MAKE_LABELNAME8(fcyModelVertexLabel::LABELNAME));
+	fcyRefPointer<fcyModelLabel> tIndexLabel = Mesh.FindLabel(FMM_MAKE_LABELNAME8(fcyModelIndexLabel::LABELNAME));
 	
 	// 检查关键标签是否存在
 	if(!tVertexLabel || !tIndexLabel)
@@ -32,33 +32,33 @@ fcyModelMeshExporter::ModelMeshInfo fcyModelMeshExporter::ExportMesh(fcyModelMes
 
 		fuLong tUsage = tElement.Usage;
 
-		if(tUsage == FFM_MAKE_LABELNAME8("POSITION"))
+		if(tUsage == FMM_MAKE_LABELNAME8("POSITION"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_POSITION;
-		else if(tUsage == FFM_MAKE_LABELNAME8("WEIGHT\0\0"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("WEIGHT\0\0"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_BLENDWEIGHT;
-		else if(tUsage == FFM_MAKE_LABELNAME8("INDICES\0"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("INDICES\0"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_BLENDINDICES;
-		else if(tUsage == FFM_MAKE_LABELNAME8("NORMAL\0\0"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("NORMAL\0\0"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_NORMAL;
-		else if(tUsage == FFM_MAKE_LABELNAME8("PSIZE\0\0\0"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("PSIZE\0\0\0"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_PSIZE;
-		else if(tUsage == FFM_MAKE_LABELNAME8("TEXCOORD"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("TEXCOORD"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_TEXCOORD;
-		else if(tUsage == FFM_MAKE_LABELNAME8("TANGENT\0"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("TANGENT\0"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_TANGENT;
-		else if(tUsage == FFM_MAKE_LABELNAME8("BINORMAL"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("BINORMAL"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_BINORMAL;
-		else if(tUsage == FFM_MAKE_LABELNAME8("TESSFACT"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("TESSFACT"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_TESSFACTOR;
-		else if(tUsage == FFM_MAKE_LABELNAME8("POST\0\0\0\0"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("POST\0\0\0\0"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_POSITIONT;
-		else if(tUsage == FFM_MAKE_LABELNAME8("COLOR\0\0\0"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("COLOR\0\0\0"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_COLOR;
-		else if(tUsage == FFM_MAKE_LABELNAME8("FOG\0\0\0\0\0"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("FOG\0\0\0\0\0"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_FOG;
-		else if(tUsage == FFM_MAKE_LABELNAME8("DEPTH\0\0\0"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("DEPTH\0\0\0"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_DEPTH;
-		else if(tUsage == FFM_MAKE_LABELNAME8("SAMPLE\0\0"))
+		else if(tUsage == FMM_MAKE_LABELNAME8("SAMPLE\0\0"))
 			tVertexElementList[i].Usage = F2DVDUSAGE_SAMPLE;
 		else 
 		{
@@ -110,7 +110,7 @@ fcyModelMeshExporter::ModelMeshInfo fcyModelMeshExporter::ExportMesh(fcyModelMes
 	for(fuInt i = 0; i<Mesh.GetLabelList().size(); ++i)
 	{
 		fcyRefPointer<fcyModelLabel> tSubsetLabel = Mesh.GetLabelList()[i];
-		if(tSubsetLabel->GetLabelName() == FFM_MAKE_LABELNAME8(fcyModelSubsetLabel::LABELNAME))
+		if(tSubsetLabel->GetLabelName() == FMM_MAKE_LABELNAME8(fcyModelSubsetLabel::LABELNAME))
 		{
 			fcyModelSubsetLabel* pLabel = (fcyModelSubsetLabel*)*tSubsetLabel;
 
@@ -132,7 +132,7 @@ fcyModelMeshExporter::ModelMeshInfo fcyModelMeshExporter::ExportMesh(fcyModelMes
 	for(fuInt i = 0; i<Mesh.GetLabelList().size(); ++i)
 	{
 		fcyRefPointer<fcyModelLabel> tMaterialLabel = Mesh.GetLabelList()[i];
-		if(tMaterialLabel->GetLabelName() == FFM_MAKE_LABELNAME8(fcyModelMaterialLabel::LABELNAME))
+		if(tMaterialLabel->GetLabelName() == FMM_MAKE_LABELNAME8(fcyModelMaterialLabel::LABELNAME))
 		{
 			fcyModelMaterialLabel* pLabel = (fcyModelMaterialLabel*)*tMaterialLabel;
 

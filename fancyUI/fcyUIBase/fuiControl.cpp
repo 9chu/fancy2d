@@ -10,7 +10,7 @@ using namespace std;
 
 fuiControl::fuiControl(fuiPage* pRootControl, const std::wstring& Name)
 	: m_pRootPage(pRootControl), m_pStyle(NULL), m_pParent(NULL), m_Name(Name), 
-	m_bClip(false), m_bMouseTrans(false), m_LayerPriority(0.f), m_bVisiable(true)
+	m_bClip(false), m_bMouseTrans(false), m_LayerPriority(0.f), m_bVisible(true)
 {
 	if(m_pRootPage == NULL)
 		throw fcyException("fuiControl::fuiControl", "Param 'pRootControl' is null.");
@@ -108,15 +108,15 @@ void fuiControl::registerAllProperty()
 			SetLayerPriority(v);
 		}
 	);
-	m_bVisiable_Accessor = fuiPropertyAccessor<bool>(
-		&m_bVisiable,
+	m_bVisible_Accessor = fuiPropertyAccessor<bool>(
+		&m_bVisible,
 		[&](std::wstring& Prop, const bool* v) {
 			fuiPropertyAccessorHelper<bool>::DefaultGetter(Prop, v);
 		},
 		[&](const std::wstring& Prop, bool*) {
 			bool v;
 			fuiPropertyAccessorHelper<bool>::DefaultSetter(Prop, &v);
-			SetVisiable(v);
+			SetVisible(v);
 		}
 	);
 
@@ -131,13 +131,13 @@ void fuiControl::registerAllProperty()
 	RegisterProperty(L"Clip", &m_Clip_Accessor);
 	RegisterProperty(L"MouseTrans", &m_MouseTrans_Accessor);
 	RegisterProperty(L"LayerPriority", &m_LayerPriority_Accessor);
-	RegisterProperty(L"Visiable", &m_bVisiable_Accessor);
+	RegisterProperty(L"Visible", &m_bVisible_Accessor);
 }
 
 void fuiControl::registerAllEvent()
 {
 	// 注册事件
-	RegisterEvent(L"OnVisiableChanged");
+	RegisterEvent(L"OnVisibleChanged");
 
 	RegisterEvent(L"OnParentChanged");
 	RegisterEvent(L"OnStyleChanged");
@@ -395,14 +395,14 @@ void fuiControl::SetLayerPriority(fFloat Value)
 		m_pParent->resortControl();
 }
 
-void fuiControl::SetVisiable(fBool Value)
+void fuiControl::SetVisible(fBool Value)
 {
-	if(m_bVisiable != Value)
+	if(m_bVisible != Value)
 	{
-		m_bVisiable = Value;
+		m_bVisible = Value;
 
 		// 触发事件
-		ExecEvent(L"OnVisiableChanged");
+		ExecEvent(L"OnVisibleChanged");
 	}
 }
 
@@ -420,7 +420,7 @@ void fuiControl::Render(fuiGraphics* pGraph)
 	{
 		fuiControl* p = m_SubControlList[i];
 
-		if(p->GetVisiable())
+		if(p->GetVisible())
 		{
 			if(p->GetClip())
 				pGraph->PushClipRect(p->m_Rect);

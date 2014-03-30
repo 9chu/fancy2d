@@ -28,7 +28,7 @@ fancy模型网格文件格式约定 - v1
          字符串使用一个fuInt来说明长度，之后紧跟若干个fChar字符，默认情况下要
          求使用utf8对字符串进行编码。同时字符串应该以'\0'结尾
          
-         struct FFM_String {
+         struct FMM_String {
              fuInt Size;
              fChar StrData[Size];
          };
@@ -56,27 +56,27 @@ fancy模型网格文件格式约定 - v1
          标签字符串的含义通常用以指示数据块的用途或数据的用途，对于自定义标签，
          请使用'_'作为首字母。
          
-         #define FFM_LABEL(X,N) fChar X[N]
+         #define FMM_LABEL(X,N) fChar X[N]
          
 > 文件定义
   网格文件以FMM(Fancy Model Mesh File)作为后缀。
   文件以文件头开始。
 
     // 文件头部
-    struct FFM_Header {
-        FFM_LABEL(Header, 4) = "FFM\0"; // 固定的四个字符
+    struct FMM_Header {
+        FMM_LABEL(Header, 4) = "FMM\0"; // 固定的四个字符
         fuInt Version        = 100;     // 版本号 = 1.00
         fuInt BlockCount;               // 数据块个数
-        FFM_String Author;              // 模型作者
-        FFM_String Description;         // 模型描述及版权信息
+        FMM_String Author;              // 模型作者
+        FMM_String Description;         // 模型描述及版权信息
     };
     
-  文件头后面紧跟若干个数据块，数量应该和 FFM_Header.BlockCount 一致。
+  文件头后面紧跟若干个数据块，数量应该和 FMM_Header.BlockCount 一致。
   数据块以头和数据域组成。
   
     // 数据块头部
-    struct FFM_BlockHeader {
-        FFM_LABEL(Name, 8); // 8字节标签，说明数据块类型。自定义类型以_开头
+    struct FMM_BlockHeader {
+        FMM_LABEL(Name, 8); // 8字节标签，说明数据块类型。自定义类型以_开头
         fuInt BlockSize;    // 说明当前数据块长度，不含头部大小
     };
     
@@ -88,7 +88,7 @@ fancy模型网格文件格式约定 - v1
      "SUBSET\0\0"     描述子集数据
      "MATERIAL"       描述材质数据
     
-  紧跟着数据块头部为 FFM_BlockHeader.BlockSize 长度的块数据。依照相应标签的格
+  紧跟着数据块头部为 FMM_BlockHeader.BlockSize 长度的块数据。依照相应标签的格
   式进行定义。
   
   读取完所有数据块后模型解析工作结束，若仍有额外数据，则视为用户附加数据，不予
@@ -104,7 +104,7 @@ fancy模型网格文件格式约定 - v1
     a. 头部
     
         // 顶点数据块头部
-        struct FFM_VertexBlockHeader {
+        struct FMM_VertexBlockHeader {
             fuInt VertexCount;        // 描述顶点数量
             fuInt VertexElementCount; // 描述组成一个顶点的元素数量
             fByte StreamFlag;         // 描述数据域的存储方式
@@ -116,25 +116,25 @@ fancy模型网格文件格式约定 - v1
         };
       
       头部之后跟着一个描述顶点元素的数组，元素数量应该等于 
-      FFM_VertexBlockHeader.VertexElementCount 具体元素描述如下：
+      FMM_VertexBlockHeader.VertexElementCount 具体元素描述如下：
       
         // 顶点元素描述
-        struct FFM_VertexElement {
-            FFM_ELEMENTTYPE Type; // 描述元素的数据格式，定义如下
-            FFM_LABEL(Usage, 8);  // 描述元素的用途
+        struct FMM_VertexElement {
+            FMM_ELEMENTTYPE Type; // 描述元素的数据格式，定义如下
+            FMM_LABEL(Usage, 8);  // 描述元素的用途
             fByte UsageIndex;     // 描述元素的用途索引
         };
         
         // 元素数据格式
-        enum FFM_ELEMENTTYPE {
-            FFM_ELEMENTTYPE_FLOAT,   // 4字节浮点
-            FFM_ELEMENTTYPE_FLOAT2,  // 2*4字节浮点
-            FFM_ELEMENTTYPE_FLOAT3,  // 3*4字节浮点
-            FFM_ELEMENTTYPE_FLOAT4,  // 4*4字节浮点
-            FFM_ELEMENTTYPE_COLOR,   // 4*1字节BGRA颜色分量
-            FFM_ELEMENTTYPE_UBYTE4,  // 4*1字节
-            FFM_ELEMENTTYPE_SHORT2,  // 2*2有符号短整数
-            FFM_ELEMENTTYPE_SHORT4   // 4*2有符号短整数
+        enum FMM_ELEMENTTYPE {
+            FMM_ELEMENTTYPE_FLOAT,   // 4字节浮点
+            FMM_ELEMENTTYPE_FLOAT2,  // 2*4字节浮点
+            FMM_ELEMENTTYPE_FLOAT3,  // 3*4字节浮点
+            FMM_ELEMENTTYPE_FLOAT4,  // 4*4字节浮点
+            FMM_ELEMENTTYPE_COLOR,   // 4*1字节BGRA颜色分量
+            FMM_ELEMENTTYPE_UBYTE4,  // 4*1字节
+            FMM_ELEMENTTYPE_SHORT2,  // 2*2有符号短整数
+            FMM_ELEMENTTYPE_SHORT4   // 4*2有符号短整数
         };
         
         其中预定义的USAGE如下
@@ -156,14 +156,14 @@ fancy模型网格文件格式约定 - v1
     
     b. 数据域
       接下来的部分描述所有顶点数据。单个顶点的数据大小应该由顶点声明推导出来。
-      元素个数应该同 FFM_VertexBlockHeader.VertCount 一致。
-      具体存储方式由 FFM_VertexBlockHeader.StreamFlag 定义。
+      元素个数应该同 FMM_VertexBlockHeader.VertCount 一致。
+      具体存储方式由 FMM_VertexBlockHeader.StreamFlag 定义。
       
 > 标签定义：INDEX
   INDEX部分用以描述索引。
   
     // 顶点数据块头部
-    struct FFM_IndexBlockHeader {
+    struct FMM_IndexBlockHeader {
         fuInt IndexCount;    // 描述索引数量
         fBool UseInt32Index; // 描述是否使用4位整数作为索引，否则使用短整数
         fChar StreamFlag;    // 描述数据域的存储方式
@@ -174,42 +174,42 @@ fancy模型网格文件格式约定 - v1
                              //   4-7   用户自定义标记
     };
       
-  接下来跟着 FFM_IndexBlockHeader.IndexCount 个索引数据，单个索引大小由
-  FFM_IndexBlockHeader.UseInt32Index 定义。
+  接下来跟着 FMM_IndexBlockHeader.IndexCount 个索引数据，单个索引大小由
+  FMM_IndexBlockHeader.UseInt32Index 定义。
   索引下标应该由0开始。
-  索引数据的具体储存由 FFM_IndexBlockHeader.StreamFlag 定义。
+  索引数据的具体储存由 FMM_IndexBlockHeader.StreamFlag 定义。
   
 > 标签定义：SUBSET
   SUBSET部分描述了模型的子集。一个SUBSET描述一个子集。
   在没有定义子集的情况下模型将无法渲染。
   
     // 子集数据
-    struct FFM_SubsetBlock {
-        FFM_String SubsetName;      // 子集名称，在模型数据中不可重复
-        FFM_String MaterialName;    // 材质名称
-        FFM_PRIMTYPE PrimitiveType; // 图元类型
+    struct FMM_SubsetBlock {
+        FMM_String SubsetName;      // 子集名称，在模型数据中不可重复
+        FMM_String MaterialName;    // 材质名称
+        FMM_PRIMTYPE PrimitiveType; // 图元类型
         fuInt StartIndex;           // 索引开始下标
         fuInt PrimitiveCount;       // 图元数量
     };
    
-    // FFM_PRIMTYPE 图元类型定义如下
-    enum FFM_PRIMTYPE {
-	      FFM_PRIMTYPE_NULL          = 0,  // 无效值
-        FFM_PRIMTYPE_POINTLIST     = 1,  // 点集
-        FFM_PRIMTYPE_LINELIST      = 2,  // 线集
-        FFM_PRIMTYPE_LINESTRIP     = 3,  // 线带集
-        FFM_PRIMTYPE_TRIANGLELIST  = 4,  // 三角形集
-        FFM_PRIMTYPE_TRIANGLESTRIP = 5,  // 三角形带
-        FFM_PRIMTYPE_TRIANGLEFAN   = 6   // 三角形扇
+    // FMM_PRIMTYPE 图元类型定义如下
+    enum FMM_PRIMTYPE {
+	      FMM_PRIMTYPE_NULL          = 0,  // 无效值
+        FMM_PRIMTYPE_POINTLIST     = 1,  // 点集
+        FMM_PRIMTYPE_LINELIST      = 2,  // 线集
+        FMM_PRIMTYPE_LINESTRIP     = 3,  // 线带集
+        FMM_PRIMTYPE_TRIANGLELIST  = 4,  // 三角形集
+        FMM_PRIMTYPE_TRIANGLESTRIP = 5,  // 三角形带
+        FMM_PRIMTYPE_TRIANGLEFAN   = 6   // 三角形扇
     };
     
 > 标签定义：MATERIAL
   MATERIAL部分描述了以何种方式来渲染一个子集。
   
     // 材质数据
-    struct FFM_MaterialData {
-        FFM_String MaterialName;  // 材质名称，在模型中不可重复
-        FFM_String DefineXML;     // 材质定义数据(无头部XML)
+    struct FMM_MaterialData {
+        FMM_String MaterialName;  // 材质名称，在模型中不可重复
+        FMM_String DefineXML;     // 材质定义数据(无头部XML)
     };
     
   材质数据XML格式：

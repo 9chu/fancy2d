@@ -11,7 +11,7 @@ using namespace std;
 fuiEditBox::fuiEditBox(fuiPage* pRootPage, const std::wstring& Name)
 	: fuiControl(pRootPage, Name), m_LeftTextWidth(0), m_CursorPos(0), m_CursorLeft(0),
 	m_pFontProvider(NULL), m_pFontRenderer(NULL), m_bInText(false), m_OffsetToInputBox(fcyVec2(0.f, 3.f)),
-	m_CursorDrawAtY(0.f), m_bCursorVisiable(false), m_CursorDisplayInterval(1.f), m_Timer(0),
+	m_CursorDrawAtY(0.f), m_bCursorVisible(false), m_CursorDisplayInterval(1.f), m_Timer(0),
 	m_bFitCursor(true)
 {
 	// 设置访问器
@@ -248,7 +248,7 @@ void fuiEditBox::OnCharInput(fuiControl* pThis, fuiEventArgs* pArgs)
 	
 	OnTextChanged(pThis, pArgs);
 	
-	m_bCursorVisiable = true;
+	m_bCursorVisible = true;
 	m_Timer = 0.;
 }
 
@@ -277,7 +277,7 @@ void fuiEditBox::OnKeyDown(fuiControl* pThis, fuiEventArgs* pArgs)
 		break;
 	}
 
-	m_bCursorVisiable = true;
+	m_bCursorVisible = true;
 	m_Timer = 0.;
 }
 
@@ -290,7 +290,7 @@ void fuiEditBox::OnGetFocus(fuiControl* pThis, fuiEventArgs* pArgs)
 	// 重新设置输入框位置
 	adjustPos();
 
-	m_bCursorVisiable = true;
+	m_bCursorVisible = true;
 	m_Timer = 0.;
 }
 
@@ -300,7 +300,7 @@ void fuiEditBox::OnLostFocus(fuiControl* pThis, fuiEventArgs* pArgs)
 
 	m_pRootPage->ExecEvent(L"OnTextInputEnd");
 
-	m_bCursorVisiable = false;
+	m_bCursorVisible = false;
 	m_Timer = 0;
 }
 
@@ -346,7 +346,7 @@ void fuiEditBox::OnMouseLDown(fuiControl* pThis, fuiEventArgs* pArgs)
 		adjustPos();
 
 		m_Timer = 0;
-		m_bCursorVisiable = true;
+		m_bCursorVisible = true;
 	}
 }
 
@@ -358,7 +358,7 @@ void fuiEditBox::Update(fDouble ElapsedTime)
 		if(m_Timer >= m_CursorDisplayInterval)
 		{
 			m_Timer = 0;
-			m_bCursorVisiable = !m_bCursorVisiable;
+			m_bCursorVisible = !m_bCursorVisible;
 		}
 	}
 }
@@ -387,7 +387,7 @@ void fuiEditBox::Render(fuiGraphics* pGraph)
 	}
 	pGraph->PopClipRect();
 
-	if(m_bCursorVisiable && m_Cursor)
+	if(m_bCursorVisible && m_Cursor)
 	{
 		if(m_bFitCursor && m_pFontProvider)
 		{

@@ -139,15 +139,7 @@ protected: // 引擎消息
 		m_pDev->Clear(0);
 
 		// 绘制UI
-		// m_pRootUIPage->Render();
-
-		// 测试性绘制
-		m_pGraph2D->Begin();
-		for(int i = 0; i<100; ++i)
-		{
-			m_pGRender->FillRectangle(m_pGraph2D, fcyRect(50, 50, 100, 100), s_ColorArr);
-		}
-		m_pGraph2D->End();
+		m_pRootUIPage->Render();
 
 		return true; 
 	}
@@ -166,7 +158,7 @@ public:
 		// 创建引擎
 		if(FCYFAILED(CreateF2DEngineAndInit(
 			F2DVERSION,
-			fcyRect(50.f, 50.f, 800.f + 50.f, 600.f + 50.f), // 640x480
+			fcyRect(50.f, 50.f, 640.f + 50.f, 480.f + 50.f), // 640x480
 			L"无标题",               // 标题
 			true,
 			false,  // VSYNC
@@ -201,14 +193,18 @@ public:
 				m_pRootUIPage.DirectSet(new fuiPage(L"Main", m_pRenderer, m_pGraph2D));
 				m_pRootUIPage->GetControlStyle()->LoadResFromFile(m_pFileSys->GetStream(L"Simple\\Style.xml"), &tProvider);
 				m_pRootUIPage->LoadLayoutFromFile(m_pFileSys->GetStream(L"Simple\\Layout.xml"));
-				m_pRootUIPage->SetDebugMode(false);
+				m_pRootUIPage->SetDebugMode(true);
 
 				m_pRootUIPage->FindControl(L"TestEditBox")->GetEvent(L"OnTextChanged") +=
 					[&](fuiControl* p, fuiEventArgs* pArgs)
 					{
-						m_pRootUIPage->FindControl(L"TestLabel")->RawSetProperty(L"Text", p->RawGetProperty(L"Text"));
+						try
+						{
+							m_pRootUIPage->FindControl(L"TestLabelEx")->RawSetProperty(L"Text", p->RawGetProperty(L"Text"));
+						}
+						catch(...) { m_pRootUIPage->FindControl(L"TestLabelEx")->RawSetProperty(L"Text", L"[color=\"250,200,0,0\"]输入不合法[/color]"); }
 					};
-				m_pRootUIPage->FindControl(L"TestImage")->SetVisiable(false);
+				m_pRootUIPage->FindControl(L"TestImage")->SetVisible(false);
 			}
 			catch(const fcyException& e)
 			{

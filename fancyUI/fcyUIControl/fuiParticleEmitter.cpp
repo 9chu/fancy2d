@@ -15,7 +15,7 @@ fuiParticleEmitter::fuiParticleEmitter(fuiPage* pRootPage, const std::wstring& N
 	m_bClip = false;
 	m_bMouseTrans = true;
 
-	SetVisiable(false);
+	SetVisible(false);
 
 	// …Ë÷√∑√Œ ∆˜
 	m_Particle_Accessor = fuiPropertyAccessor<wstring>(

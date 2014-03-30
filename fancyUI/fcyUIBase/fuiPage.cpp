@@ -429,7 +429,7 @@ void fuiPage::debugDraw(fuiGraphics* pGraph, fuiControl* pControl)
 
 fuiControl* fuiPage::getControlAtPos(fuiControl* pControl, const fcyVec2& Pos, fcyVec2& PosOut)
 {
-	if(pControl->GetMouseTrans() || pControl->GetVisiable() == false)
+	if(pControl->GetMouseTrans() || pControl->GetVisible() == false)
 		return NULL;
 
 	fcyVec2 tPos = Pos - pControl->m_Rect.a;
@@ -764,7 +764,7 @@ void fuiPage::Render(fuiGraphics* pGraph)
 		pGraph->PushClipRect(m_Rect);
 	pGraph->PushOffset(m_Rect.a);
 
-	if(GetVisiable())
+	if(GetVisible())
 		fuiControl::Render(pGraph);
 
 	if(GetClip())

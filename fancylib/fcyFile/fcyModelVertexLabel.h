@@ -19,7 +19,7 @@ public:
 	/// @brief 标签名
 	static const fChar LABELNAME[8];
 
-	/// @brief FFM顶点元素类型
+	/// @brief FMM顶点元素类型
 	enum ELEMENTTYPE 
 	{
 		ELEMENTTYPE_FLOAT,   ///< @brief 4字节浮点
@@ -32,7 +32,7 @@ public:
 		ELEMENTTYPE_SHORT4   ///< @brief 4*2有符号短整数
 	};
 
-	/// @brief FFM顶点元素
+	/// @brief FMM顶点元素
 	struct VertexElement
 	{
 		ELEMENTTYPE Type;  ///< @brief 描述元素的数据格式，定义如下
@@ -92,7 +92,7 @@ public: // 接口实现
 	void WriteData(fcyStream* pStream);
 public:
 	fcyModelVertexLabel()
-		: fcyModelLabel(FFM_MAKE_LABELNAME8(LABELNAME)) {}
+		: fcyModelLabel(FMM_MAKE_LABELNAME8(LABELNAME)) {}
 protected:
 	~fcyModelVertexLabel() {}
 };

@@ -45,7 +45,7 @@ protected: // 属性
 	fBool m_bClip;           ///< @brief [读写] 裁剪
 	fBool m_bMouseTrans;     ///< @brief [读写] 鼠标穿透
 	fFloat m_LayerPriority;  ///< @brief [读写] 层次优先权
-	fBool m_bVisiable;       ///< @brief [读写] 是否可见
+	fBool m_bVisible;        ///< @brief [读写] 是否可见
 
 	// 访问器
 	fuiPropertyAccessor<std::wstring> m_Name_Accessor;   ///< @brief 控件名访问器 
@@ -58,7 +58,7 @@ protected: // 属性
 	fuiPropertyAccessor<bool> m_Clip_Accessor;           ///< @brief 裁剪访问器
 	fuiPropertyAccessor<bool> m_MouseTrans_Accessor;     ///< @brief 鼠标穿透访问器
 	fuiPropertyAccessor<float> m_LayerPriority_Accessor; ///< @brief 层次优先权访问器
-	fuiPropertyAccessor<bool> m_bVisiable_Accessor;      ///< @brief 可见性访问器
+	fuiPropertyAccessor<bool> m_bVisible_Accessor;       ///< @brief 可见性访问器
 
 	// 注册所有默认属性
 	void registerAllProperty();
@@ -153,9 +153,9 @@ public:
 	/// @brief 设置层次优先级
 	void SetLayerPriority(fFloat Value);
 	/// @brief 返回可见性
-	fBool GetVisiable()const { return m_bVisiable; }
+	fBool GetVisible()const { return m_bVisible; }
 	/// @brief 设置可见性
-	void SetVisiable(fBool Value);
+	void SetVisible(fBool Value);
 public:  // 覆写操作
 	/// @brief 更新控件状态
 	virtual void Update(fDouble ElapsedTime);

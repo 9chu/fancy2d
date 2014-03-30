@@ -16,13 +16,13 @@
 /// @{
 
 /// @brief 标签名称
-#define FFM_LABELNAME fuLong
+#define FMM_LABELNAME fuLong
 
 /// @brief 创建标签
-#define FFM_MAKE_LABELNAME8(Str) (*((fuLong*)Str))
+#define FMM_MAKE_LABELNAME8(Str) (*((fuLong*)Str))
 
 /// @brief 创建标签_4字节
-#define FFM_MAKE_LABELNAME4(Str) (*((fuInt*)Str))
+#define FMM_MAKE_LABELNAME4(Str) (*((fuInt*)Str))
 
 /// @brief 模型数据标签
 class fcyModelLabel;
@@ -40,7 +40,7 @@ public:
 	public:
 		AutoRegister()
 		{
-			fcyModelLabel::GetFactory().RegisterLabel<T>(FFM_MAKE_LABELNAME8(T::LABELNAME));
+			fcyModelLabel::GetFactory().RegisterLabel<T>(FMM_MAKE_LABELNAME8(T::LABELNAME));
 		}
 	};
 public:
@@ -65,23 +65,23 @@ protected:
 		}
 	};
 protected:
-	std::unordered_map< FFM_LABELNAME, fcyRefPointer<CreatorFunction> > m_ConstructFunc;
+	std::unordered_map< FMM_LABELNAME, fcyRefPointer<CreatorFunction> > m_ConstructFunc;
 public:
 	/// @brief 获得标签对象
-	CreatorFunction* GetCreator(FFM_LABELNAME Name)
+	CreatorFunction* GetCreator(FMM_LABELNAME Name)
 	{
 		return m_ConstructFunc[Name];
 	}
 	/// @brief 注册标签对象
 	template<typename T>
-	void RegisterLabel(FFM_LABELNAME Name)
+	void RegisterLabel(FMM_LABELNAME Name)
 	{
 		if(m_ConstructFunc[Name])
 			FCYSAFEKILL(m_ConstructFunc[Name]);
 		(*&m_ConstructFunc[Name]) = new CreatorFunctionImpl<T>();
 	}
 	/// @brief 取消标签对象注册
-	void UnregisterLabel(FFM_LABELNAME Name)
+	void UnregisterLabel(FMM_LABELNAME Name)
 	{
 		if(m_ConstructFunc[Name])
 			m_ConstructFunc[Name] = NULL;
@@ -127,10 +127,10 @@ public:
 		tWritter.Write(&tStr[0], tStr.size());
 	}
 protected:
-	FFM_LABELNAME m_LabelName;
+	FMM_LABELNAME m_LabelName;
 public:
 	/// @brief 获得标签名
-	FFM_LABELNAME GetLabelName() { return m_LabelName; }
+	FMM_LABELNAME GetLabelName() { return m_LabelName; }
 
 	/// @brief 从流读取数据
 	/// @note  不含标签头
@@ -141,7 +141,7 @@ public:
 protected:
 	fcyModelLabel(const fcyModelLabel& Org);
 public:
-	fcyModelLabel(FFM_LABELNAME LabelName)
+	fcyModelLabel(FMM_LABELNAME LabelName)
 		: m_LabelName(LabelName) {}
 protected:
 	virtual ~fcyModelLabel() {}

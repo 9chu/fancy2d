@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// @file  FMMExport.h
-/// @brief FFM模型导出插件实现
+/// @brief FMM模型导出插件实现
 /// @note  实现SceneExport
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
@@ -96,7 +96,7 @@ public: // 接口实现
 	/// @brief 返回支持的扩展名数量
 	int	ExtCount() { return 1; }
 	/// @brief 返回扩展名（不带'.'）
-	const char* Ext(int n) { return "FFM"; }
+	const char* Ext(int n) { return "FMM"; }
 	/// @brief 返回扩展名说明
 	const char* LongDesc() { return "fancy Model Mesh File"; }
 	/// @brief 返回短说明

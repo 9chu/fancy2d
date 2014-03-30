@@ -46,7 +46,7 @@ private:
 	fcyVec2 m_TextDrawAt;   ///< @brief 保存Text的笔触位置
 	float m_CursorDrawAtY;  ///< @brief 光标绘制位置
 
-	fBool m_bCursorVisiable; ///< @brief 光标是否可见
+	fBool m_bCursorVisible; ///< @brief 光标是否可见
 	
 	double m_Timer;          ///< @brief 光标计时器
 

@@ -15,7 +15,7 @@
   <fuiEditBox Name="TestEditBox"
               Left="20" Top="50" Width="600" Height="80"
               Text=""
-              FontName="Font0" FontColor="255,0,0,0"
+              FontName="Font1" FontColor="255,0,0,0"
               Margin="8,8,8,8"
               OffsetToInputBox="0,5"
               BlendColor="200,0,0,0"
@@ -27,7 +27,7 @@
   <fuiLabel Name="TestLabel"
             Left="20" Top="150" Width="600" Height="80"
             Text=""
-            FontName="Font0" FontColor="255,0,255,0" 
+            FontName="Font1" FontColor="255,0,255,0" 
             HAlign="Center" VAlign="Center"
             />
   <fuiImageBox Name="TestImage"
