@@ -29,3 +29,6 @@ cloc.bat
 *.sdf
 *.opensdf
 .netrc
+/tools/FMMMetadataEditor/bin
+
+/tools/FMMMetadataEditor/obj

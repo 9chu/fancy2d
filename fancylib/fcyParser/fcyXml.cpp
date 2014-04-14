@@ -335,6 +335,15 @@ void fcyXmlElement::Save(std::wstring& pOut, fuInt Indentation)const
 			
 			++i;
 		}
+
+		// 缩进
+		for(fuInt i = 0; i<Indentation; ++i)
+		{
+			pOut += L"\t";
+		}
+
+		// 闭合标签
+		pOut += L"</" + m_Name + L">\n";
 	}
 	else if(m_Content.size())
 	{
@@ -363,16 +372,10 @@ void fcyXmlElement::Save(std::wstring& pOut, fuInt Indentation)const
 				break;
 			}
 		}
-	}
-	
-	// 缩进
-	for(fuInt i = 0; i<Indentation; ++i)
-	{
-		pOut += L"\t";
-	}
 
-	// 闭合标签
-	pOut += L"</" + m_Name + L">\n";
+		// 闭合标签
+		pOut += L"</" + m_Name + L">\n";
+	}
 }
 
 fcyXmlElement* fcyXmlElement::Clone(fcyXmlDocument* pDoc)const
