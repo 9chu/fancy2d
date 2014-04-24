@@ -36,6 +36,7 @@
             this.ToolStripMenuItem_newIndex = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem_newSubset = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem_newMat = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_newBoundingBox = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem_userData = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton_remove = new System.Windows.Forms.ToolStripButton();
             this.toolStrip_labels.SuspendLayout();
@@ -76,6 +77,7 @@
             this.ToolStripMenuItem_newIndex,
             this.ToolStripMenuItem_newSubset,
             this.ToolStripMenuItem_newMat,
+            this.ToolStripMenuItem_newBoundingBox,
             this.ToolStripMenuItem_userData});
             this.toolStripDropDownButton_new.Image = global::FMMMetadataEditor.Properties.Resources.ICON_ADD;
             this.toolStripDropDownButton_new.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -112,6 +114,13 @@
             this.ToolStripMenuItem_newMat.Size = new System.Drawing.Size(152, 22);
             this.ToolStripMenuItem_newMat.Text = "材质数据块";
             this.ToolStripMenuItem_newMat.Click += new System.EventHandler(this.ToolStripMenuItem_newMat_Click);
+            // 
+            // ToolStripMenuItem_newBoundingBox
+            // 
+            this.ToolStripMenuItem_newBoundingBox.Name = "ToolStripMenuItem_newBoundingBox";
+            this.ToolStripMenuItem_newBoundingBox.Size = new System.Drawing.Size(152, 22);
+            this.ToolStripMenuItem_newBoundingBox.Text = "包围盒数据块";
+            this.ToolStripMenuItem_newBoundingBox.Click += new System.EventHandler(this.ToolStripMenuItem_newBoundingBox_Click);
             // 
             // ToolStripMenuItem_userData
             // 
@@ -164,5 +173,6 @@
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_newMat;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_userData;
         private System.Windows.Forms.ToolStripButton toolStripButton_remove;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_newBoundingBox;
     }
 }

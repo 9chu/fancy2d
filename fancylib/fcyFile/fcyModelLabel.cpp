@@ -4,6 +4,7 @@
 #include "fcyModelIndexLabel.h"
 #include "fcyModelMaterialLabel.h"
 #include "fcyModelSubsetLabel.h"
+#include "fcyModelBoundingBoxLabel.h"
 
 using namespace std;
 
@@ -11,8 +12,9 @@ using namespace std;
 
 fcyModelLabelFactory::fcyModelLabelFactory()
 {
-	AutoRegister<fcyModelVertexLabel>   VertexLabel;
-	AutoRegister<fcyModelIndexLabel>    IndexLabel;
-	AutoRegister<fcyModelMaterialLabel> MaterialLabel;
-	AutoRegister<fcyModelSubsetLabel>   SubsetLabel;
+	AutoRegister<fcyModelVertexLabel>      VertexLabel;
+	AutoRegister<fcyModelIndexLabel>       IndexLabel;
+	AutoRegister<fcyModelMaterialLabel>    MaterialLabel;
+	AutoRegister<fcyModelSubsetLabel>      SubsetLabel;
+	AutoRegister<fcyModelBoundingBoxLabel> BoundingBoxLabel;
 }

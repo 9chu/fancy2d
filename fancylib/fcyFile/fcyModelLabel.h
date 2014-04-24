@@ -4,6 +4,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "../fcyRefObj.h"
+#include "../fcyMath.h"
 #include "../fcyIO/fcyStream.h"
 #include "../fcyIO/fcyBinaryHelper.h"
 #include "../fcyMisc/fcyStringHelper.h"

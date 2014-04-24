@@ -19,6 +19,29 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+
+CFMMExporter::OutputContext::OutputContext()
+{
+	CoordMin = fcyVec3(
+		std::numeric_limits<float>::max(),
+		std::numeric_limits<float>::max(),
+		std::numeric_limits<float>::max()
+		);
+	CoordMax = fcyVec3(
+		std::numeric_limits<float>::min(),
+		std::numeric_limits<float>::min(),
+		std::numeric_limits<float>::min()
+		);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 CFMMExporter::CFMMExporter(void)
 {
 }
@@ -73,13 +96,14 @@ int CFMMExporter::DoExport(const MCHAR *name,ExpInterface *ei,Interface *i, BOOL
 	// 准备模型数据
 	OutputContext tContext;
 	{
-		tContext.VertexLabel = new fcyModelVertexLabel();
-		tContext.VertexLabel->Release();
+		tContext.VertexLabel.DirectSet(new fcyModelVertexLabel());
 		tContext.MeshData.GetLabelList().push_back(*tContext.VertexLabel);
 
-		tContext.IndexLabel = new fcyModelIndexLabel();
-		tContext.IndexLabel->Release();
+		tContext.IndexLabel.DirectSet(new fcyModelIndexLabel());
 		tContext.MeshData.GetLabelList().push_back(*tContext.IndexLabel);
+
+		tContext.BoundingBoxLabel.DirectSet(new fcyModelBoundingBoxLabel());
+		tContext.MeshData.GetLabelList().push_back(*tContext.BoundingBoxLabel);
 
 		// 注册顶点信息
 		tContext.VertexLabel->ResizeElement(4);
@@ -118,6 +142,10 @@ int CFMMExporter::DoExport(const MCHAR *name,ExpInterface *ei,Interface *i, BOOL
 		// 导出节点
 		ExportSubNode(&tContext, pGameNode);
 	}
+
+	// 写出包围盒
+	tContext.BoundingBoxLabel->SetMax(tContext.CoordMax);
+	tContext.BoundingBoxLabel->SetMin(tContext.CoordMin);
 
 	// 保存数据
 	tContext.MeshData.Save(tFile);
@@ -299,7 +327,7 @@ void CFMMExporter::ExportMaterial(OutputContext* pContext, IGameMaterial* pMat, 
 					tNode->SetAttribute(L"ClipW", ExportProperty(pTextureMap->GetClipWData()));
 					tNode->SetAttribute(L"ClipH", ExportProperty(pTextureMap->GetClipHData()));
 
-					tNode->SetAttribute(L"Filename", fcyStringHelper::MultiByteToWideChar(pTextureMap->GetBitmapFileName()));
+					tNode->SetAttribute(L"FileName", fcyStringHelper::MultiByteToWideChar(pTextureMap->GetBitmapFileName()));
 				}
 
 				tRoot->AppendNode(tNode);
@@ -402,6 +430,24 @@ void CFMMExporter::ExportMesh(OutputContext* pContext, IGameNode* pParent, IGame
 		// 创建面的顶点
 		Vertex tVert[3];
 		FillFaceVertex(pObj, pFace, tVert);
+
+		// 扩展包围盒
+		for(int j = 0; j < 3; ++j)
+		{
+			if(pContext->CoordMin.x > tVert[j].Position.x)
+				pContext->CoordMin.x = tVert[j].Position.x;
+			if(pContext->CoordMin.y > tVert[j].Position.y)
+				pContext->CoordMin.y = tVert[j].Position.y;
+			if(pContext->CoordMin.z > tVert[j].Position.z)
+				pContext->CoordMin.z = tVert[j].Position.z;
+			
+			if(pContext->CoordMax.x < tVert[j].Position.x)
+				pContext->CoordMax.x = tVert[j].Position.x;
+			if(pContext->CoordMax.y < tVert[j].Position.y)
+				pContext->CoordMax.y = tVert[j].Position.y;
+			if(pContext->CoordMax.z < tVert[j].Position.z)
+				pContext->CoordMax.z = tVert[j].Position.z;
+		}
 
 		// 从缓存查询
 		unordered_map<Vertex, fuInt>::iterator v0 = tIndexCache.find(tVert[0]);

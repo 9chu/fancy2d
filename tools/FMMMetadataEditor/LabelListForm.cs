@@ -63,10 +63,12 @@ namespace FMMMetadataEditor
                 tBase = new VertexEditor(tNode, Block);
             else if (Block is fancyModelMesh.IndexBlock)
                 tBase = new IndexEditor(tNode, Block);
-            if (Block is fancyModelMesh.SubsetBlock)
+            else if (Block is fancyModelMesh.SubsetBlock)
                 tBase = new SubsetEditor(tNode, Block);
             else if (Block is fancyModelMesh.MaterialBlock)
                 tBase = new MaterialEditor(tNode, Block);
+            else if (Block is fancyModelMesh.BoundingBoxBlock)
+                tBase = new BoundingBoxEditor(tNode, Block);
             else if (Block is fancyModelMesh.UnknownBlock)
                 tBase = new UserDataEditor(tNode, Block);
 
@@ -138,6 +140,16 @@ namespace FMMMetadataEditor
             }
         }
 
+        private void ToolStripMenuItem_newBoundingBox_Click(object sender, EventArgs e)
+        {
+            if (_File != null)
+            {
+                fancyModelMesh.Block tBlock = new fancyModelMesh.BoundingBoxBlock();
+                _File.BlockList.Add(tBlock);
+                AddNode(tBlock);
+            }
+        }
+
         private void ToolStripMenuItem_userData_Click(object sender, EventArgs e)
         {
             if (_File != null)
@@ -159,6 +171,8 @@ namespace FMMMetadataEditor
                     String.Format("确认删除数据块 {0} ？\n\n该操作不可逆！", tForm.Block.BlockName), 
                     "删除数据块", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
                 {
+                    _File.BlockList.Remove(tForm.Block);
+
                     if (tForm != null)
                     {
                         tForm.Close();

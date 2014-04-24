@@ -58,10 +58,12 @@ namespace FMMMetadataEditor
         {
             _LabelForm.Show(dockPanel_main, WeifenLuo.WinFormsUI.Docking.DockState.DockLeft);
 
+            /*
 #if DEBUG
             // for DEBUG
             load(@"C:\Users\CHU\Desktop\鸟居\torii.fmm");
 #endif
+            */
         }
 
         private void ToolStripMenuItem_new_Click(object sender, EventArgs e)

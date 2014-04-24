@@ -14,6 +14,7 @@
 #include "fcyModelIndexLabel.h"
 #include "fcyModelMaterialLabel.h"
 #include "fcyModelSubsetLabel.h"
+#include "fcyModelBoundingBoxLabel.h"
 
 /// @addtogroup fancy库文件支持
 /// @brief 提供部分格式文件的读写支持

@@ -43,6 +43,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoundingBoxEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BoundingBoxEditor.Designer.cs">
+      <DependentUpon>BoundingBoxEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="fancyModelMesh.cs" />
     <Compile Include="IndexEditor.cs">
       <SubType>Form</SubType>
@@ -100,6 +106,9 @@
     <Compile Include="VertexEditor.Designer.cs">
       <DependentUpon>VertexEditor.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="BoundingBoxEditor.resx">
+      <DependentUpon>BoundingBoxEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="IndexEditor.resx">
       <DependentUpon>IndexEditor.cs</DependentUpon>
     </EmbeddedResource>

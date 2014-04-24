@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <limits>
 #include <unordered_map>
 #include <string>
 
@@ -80,9 +81,14 @@ protected:
 		fcyModelMeshFile MeshData;                          ///< @brief 模型数据
 		fcyRefPointer<fcyModelVertexLabel> VertexLabel;     ///< @brief 顶点标签
 		fcyRefPointer<fcyModelIndexLabel> IndexLabel;       ///< @brief 索引标签
+		fcyRefPointer<fcyModelBoundingBoxLabel> BoundingBoxLabel;  ///< @brief 包围盒标签
+
+		fcyVec3 CoordMin, CoordMax;                         ///< @brief 用于计算包围盒
 
 		std::unordered_map<int, std::wstring> MatCache;     ///< @brief 缓存 <材质ID, 材质名>
 		std::unordered_map<Vertex, fuInt> IndexCache;       ///< @brief 缓存所有顶点的索引
+
+		OutputContext();
 	};
 protected:
 	void FillFaceVertex(IGameMesh* pMesh, FaceEx* pFace, Vertex Out[]);

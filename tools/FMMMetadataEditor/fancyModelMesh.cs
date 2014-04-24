@@ -1145,6 +1145,99 @@ namespace fancyModelMesh
     }
 
     /// <summary>
+    /// 包围盒区块
+    /// </summary>
+    public class BoundingBoxBlock : Block
+    {
+        [DisplayName("X最小值")]
+        [Description("获取或设置包围盒在X轴的最小值")]
+        public float MinX { get; set; }
+        [DisplayName("Y最小值")]
+        [Description("获取或设置包围盒在Y轴的最小值")]
+        public float MinY { get; set; }
+        [DisplayName("Z最小值")]
+        [Description("获取或设置包围盒在Z轴的最小值")]
+        public float MinZ { get; set; }
+        [DisplayName("X最大值")]
+        [Description("获取或设置包围盒在X轴的最大值")]
+        public float MaxX { get; set; }
+        [DisplayName("Y最大值")]
+        [Description("获取或设置包围盒在Y轴的最大值")]
+        public float MaxY { get; set; }
+        [DisplayName("Z最大值")]
+        [Description("获取或设置包围盒在Z轴的最大值")]
+        public float MaxZ { get; set; }
+
+        public override UInt32 GetBlockSize()
+        {
+            return 6 * 4;
+        }
+
+        public override void New()
+        {
+            MinX = MinY = MinZ = 0;
+            MaxX = MaxY = MaxZ = 0;
+        }
+
+        public override void Load(BinaryReader Reader)
+        {
+            New();
+
+            try
+            {
+                UInt32 tBlockLen = Reader.ReadUInt32();
+                long tPos = Reader.BaseStream.Position;
+                MinX = Reader.ReadSingle();
+                MinY = Reader.ReadSingle();
+                MinZ = Reader.ReadSingle();
+                MaxX = Reader.ReadSingle();
+                MaxY = Reader.ReadSingle();
+                MaxZ = Reader.ReadSingle();
+
+                // 检查大小
+                if (Reader.BaseStream.Position - tPos != tBlockLen)
+                    throw new FormatException("BoundingBox block format error.");
+            }
+            catch
+            {
+                New();
+
+                throw;
+            }
+        }
+
+        public override void Save(BinaryWriter Writer)
+        {
+            base.Save(Writer);
+
+            Writer.Write(MinX);
+            Writer.Write(MinY);
+            Writer.Write(MinZ);
+            Writer.Write(MaxX);
+            Writer.Write(MaxY);
+            Writer.Write(MaxZ);
+        }
+
+        public BoundingBoxBlock Clone()
+        {
+            BoundingBoxBlock tRet = new BoundingBoxBlock();
+            tRet.MinX = MinX;
+            tRet.MinY = MinY;
+            tRet.MinZ = MinZ;
+            tRet.MaxX = MaxX;
+            tRet.MaxY = MaxY;
+            tRet.MaxZ = MaxZ;
+            return tRet;
+        }
+
+        public BoundingBoxBlock()
+            : base("BOUNDBOX")
+        {
+            New();
+        }
+    }
+
+    /// <summary>
     /// 未知区块
     /// </summary>
     public class UnknownBlock : Block
@@ -1309,6 +1402,9 @@ namespace fancyModelMesh
                             break;
                         case "MATERIAL":
                             tBlock = new MaterialBlock();
+                            break;
+                        case "BOUNDBOX":
+                            tBlock = new BoundingBoxBlock();
                             break;
                         default:
                             tBlock = new UnknownBlock(tBlockHeader.Content);

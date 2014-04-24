@@ -4,6 +4,7 @@ fancy模型网格文件格式约定 - v1
   fancy模型网格文件旨在用以描述一种通用的二进制模型储存格式方便游戏加载读取。
   该格式基于块的形式描述数据，并公开其详细定义，同时允许用户自行定制包含的数
   据块。
+  FMM不规定坐标系统，但是使用3DSMAX导出工具导出的模型将使用DirectX左手坐标系。
   
 > 文件数据格式
   在未有特别说明情况下，二进制数据由以下数据类型组成：
@@ -87,6 +88,7 @@ fancy模型网格文件格式约定 - v1
      "INDEX\0\0\0"    描述索引数据
      "SUBSET\0\0"     描述子集数据
      "MATERIAL"       描述材质数据
+     "BOUNDBOX"       描述包围盒信息
     
   紧跟着数据块头部为 FMM_BlockHeader.BlockSize 长度的块数据。依照相应标签的格
   式进行定义。
@@ -205,6 +207,7 @@ fancy模型网格文件格式约定 - v1
     
 > 标签定义：MATERIAL
   MATERIAL部分描述了以何种方式来渲染一个子集。
+  FMM不强制规定材质的描述形式，当使用导出插件导出数据时默认使用XML来表示数据。
   
     // 材质数据
     struct FMM_MaterialData {
@@ -212,7 +215,7 @@ fancy模型网格文件格式约定 - v1
         FMM_String DefineXML;     // 材质定义数据(无头部XML)
     };
     
-  材质数据XML格式：
+  参考材质数据XML格式：
   <!-- Extern 若不为空，则材质来自外部 -->
   <fancyModelMaterial Extern="Mat01.xml">
     <!-- 标准材质参数 -->
@@ -223,10 +226,23 @@ fancy模型网格文件格式约定 - v1
 		<!--不透明度-->   <Opacity>1.00</Opacity>
 		<!--镜面光等级--> <SpecularLevel>1.00</SpecularLevel>
 		
+		<!--纹理--> <Texture FileName="..."></Texture>
+		
 		<!-- 以下为FX材质属性 -->
 		<!--技术--> <Technique>Default</Technique>
 		<!--参数--> <Param Type="Texture2D" Name="Tex">1.png</Param>
   </fancyModelMaterial>
   
   材质的更多定义可交由用户自行描述。
+
+> 标签定义：BOUNDBOX
+  BOUNDBOX描述了模型的包围盒信息。这个块可选。
+  若有多个BOUNDBOX，则取第一个块。
+  
+    // 包围盒数据
+    struct FMM_BoundingBox {
+        FMM_Vector3 Min;   // 最小坐标
+        FMM_Vector3 Max;   // 最大坐标
+    };
+    
   
