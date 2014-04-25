@@ -10,8 +10,12 @@ void fcyModelBoundingBoxLabel::ReadData(fcyStream* pStream)
 {
 	fcyBinaryReader tReader(pStream);
 
-	m_Min = fcyVec3(tReader.ReadFloat(), tReader.ReadFloat(), tReader.ReadFloat());
-	m_Max = fcyVec3(tReader.ReadFloat(), tReader.ReadFloat(), tReader.ReadFloat());
+	m_Min.x = tReader.ReadFloat();
+	m_Min.y = tReader.ReadFloat();
+	m_Min.z = tReader.ReadFloat();
+	m_Max.x = tReader.ReadFloat();
+	m_Max.y = tReader.ReadFloat();
+	m_Max.z = tReader.ReadFloat();
 }
 
 void fcyModelBoundingBoxLabel::WriteData(fcyStream* pStream)

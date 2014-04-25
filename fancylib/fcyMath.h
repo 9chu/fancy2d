@@ -624,26 +624,7 @@ public:
 	/// @brief ¾ØÕó×Ô³Ë
 	fcyMatrix4& operator*=(const fcyMatrix4& right)
 	{
-		_11 = _11 * right._11 + _12 * right._21 + _13 * right._31 + _14 * right._41;
-		_12 = _11 * right._12 + _12 * right._22 + _13 * right._32 + _14 * right._42;
-		_13 = _11 * right._13 + _12 * right._23 + _13 * right._33 + _14 * right._43;
-		_14 = _11 * right._14 + _12 * right._24 + _13 * right._34 + _14 * right._44;
-
-		_21 = _21 * right._11 + _22 * right._21 + _23 * right._31 + _24 * right._41;
-		_22 = _21 * right._12 + _22 * right._22 + _23 * right._32 + _24 * right._42;
-		_23 = _21 * right._13 + _22 * right._23 + _23 * right._33 + _24 * right._43;
-		_24 = _21 * right._14 + _22 * right._24 + _23 * right._34 + _24 * right._44;
-
-		_31 = _31 * right._11 + _32 * right._21 + _33 * right._31 + _34 * right._41;
-		_32 = _31 * right._12 + _32 * right._22 + _33 * right._32 + _34 * right._42;
-		_33 = _31 * right._13 + _32 * right._23 + _33 * right._33 + _34 * right._43;
-		_34 = _31 * right._14 + _32 * right._24 + _33 * right._34 + _34 * right._44;
-
-		_41 = _41 * right._11 + _42 * right._21 + _43 * right._31 + _44 * right._41;
-		_42 = _41 * right._12 + _42 * right._22 + _43 * right._32 + _44 * right._42;
-		_43 = _41 * right._13 + _42 * right._23 + _43 * right._33 + _44 * right._43;
-		_44 = _41 * right._14 + _42 * right._24 + _43 * right._34 + _44 * right._44;
-
+		*this = *this * right;
 		return *this;
 	};
 public:

@@ -2,6 +2,8 @@
 
 #include "f2dRenderDeviceImpl.h"
 
+#include <fcyOS/fcyDebug.h>
+
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -133,6 +135,15 @@ f2dEffectImpl::f2dEffectImpl(f2dRenderDeviceImpl* pDev, f2dStream* pStream, fBoo
 				pErr->GetBufferPointer());
 
 			FCYSAFEKILL(pErr);
+
+			// 强制截断以满足fcyException大小
+			if(tErrBuffer.size() > 453)
+			{
+				tErrBuffer[450] = '.';
+				tErrBuffer[451] = '.';
+				tErrBuffer[452] = '.';
+				tErrBuffer[453] = '\0';
+			}
 
 			throw fcyException("f2dEffectImpl::f2dEffectImpl", tErrBuffer.c_str());
 		}
