@@ -262,7 +262,7 @@ void f2dTexture2DRenderTarget::OnRenderDeviceReset()
 ////////////////////////////////////////////////////////////////////////////////
 
 f2dDepthStencilSurfaceImpl::f2dDepthStencilSurfaceImpl(f2dRenderDevice* pDev, fuInt Width, fuInt Height, fBool AutoResize, fBool Discard)
-	: m_pParent(pDev), m_pSurface(NULL), m_Width(Width), m_bAutoResize(AutoResize), m_bDiscard(Discard)
+	: m_pParent(pDev), m_pSurface(NULL), m_Width(Width), m_Height(Height), m_bAutoResize(AutoResize), m_bDiscard(Discard)
 {
 	if(m_bAutoResize)
 	{
@@ -275,7 +275,7 @@ f2dDepthStencilSurfaceImpl::f2dDepthStencilSurfaceImpl(f2dRenderDevice* pDev, fu
 	HRESULT tHR = ((IDirect3DDevice9*)m_pParent->GetHandle())->CreateDepthStencilSurface(m_Width, m_Height, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, 0, Discard, &m_pSurface, NULL);
 
 	if(FAILED(tHR))
-		throw fcyWin32COMException("f2dTexture2DDynamic::f2dTexture2DDynamic", "IDirect3DDevice9::CreateTexture Failed.", tHR);
+		throw fcyWin32COMException("f2dDepthStencilSurfaceImpl::f2dDepthStencilSurfaceImpl", "IDirect3DDevice9::CreateDepthStencilSurface Failed.", tHR);
 
 	// ×·¼Ó¼àÌýÆ÷
 	m_pParent->AttachListener(this);
