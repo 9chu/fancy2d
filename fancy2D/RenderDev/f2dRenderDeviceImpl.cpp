@@ -1041,7 +1041,7 @@ fResult f2dRenderDeviceImpl::SetDepthStencilSurface(f2dDepthStencilSurface* pSur
 	if(!pSurface)
 	{
 		FCYSAFEKILL(m_pCurBackDepthBuffer);
-		m_pDev->SetRenderTarget(0, m_pBackDepthBuffer);
+		m_pDev->SetDepthStencilSurface(m_pBackDepthBuffer);
 		FCYSAFEKILL(m_pBackDepthBuffer);
 		return FCYERR_OK;
 	}
