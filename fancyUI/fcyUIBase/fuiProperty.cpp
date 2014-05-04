@@ -199,17 +199,17 @@ void fuiPropertyAccessorHelper<fcyColor>::DefaultGetter(std::wstring& PropData, 
 
 void fuiPropertyAccessorHelper<fcyColor>::DefaultSetter(const std::wstring& PropData, fcyColor* Value)
 {
-	int t[4];
+	float t[4];
 
-	if(4 != swscanf_s(PropData.c_str(), L"%u,%u,%u,%u", &t[0], &t[1], &t[2], &t[3]))
+	if(4 != swscanf_s(PropData.c_str(), L"%f,%f,%f,%f", &t[0], &t[1], &t[2], &t[3]))
 	{
-		if(3 != swscanf_s(PropData.c_str(), L"%u,%u,%u", &t[1], &t[2], &t[3]))
+		if(3 != swscanf_s(PropData.c_str(), L"%f,%f,%f", &t[1], &t[2], &t[3]))
 			throw fcyException("fuiPropertyAccessorHelper<fcyColor>::DefaultSetter", "Property string is not correct.");
 		else
-			t[0] = 255;
+			t[0] = 255.f;
 	}
 
-	*Value = fcyColor(t[0], t[1], t[2], t[3]);
+	*Value = fcyColor((int)t[0], (int)t[1], (int)t[2], (int)t[3]);
 }
 
 // std::wstring

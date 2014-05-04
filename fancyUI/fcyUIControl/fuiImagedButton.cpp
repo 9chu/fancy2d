@@ -102,7 +102,7 @@ void fuiImagedButton::Render(fuiGraphics* pGraph)
 		tSprite = m_pImageSprite;
 
 	// 调用基类进行绘制
-	fuiImageBox::DrawImage(pGraph, tSprite, m_BlendColor, m_ImageFillMethod);
+	fuiImageBox::DrawImage(pGraph, tSprite, m_BlendColor, m_ImageFillMethod, m_ColorBlendMethod);
 
 	// 跳过fuiImageBox的Render
 	fuiControl::Render(pGraph);
