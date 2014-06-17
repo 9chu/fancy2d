@@ -180,9 +180,6 @@
     <ClInclude Include="fcyMisc\fcyFunctor.h">
       <Filter>fcyMisc\header</Filter>
     </ClInclude>
-    <ClInclude Include="fcyMisc\fcyFunctorDetail.h">
-      <Filter>fcyMisc\header</Filter>
-    </ClInclude>
     <ClInclude Include="fcyOS\fcyCPUID.h">
       <Filter>fcyOS\header</Filter>
     </ClInclude>

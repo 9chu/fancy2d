@@ -6,6 +6,7 @@
 #include "f2dRenderDeviceAPI.h"
 
 #include "../Engine/f2dWindowImpl.h"
+#include "../f2dEngine.h"
 
 class f2dEngineImpl;
 
@@ -22,6 +23,24 @@ private:
 		fInt Priority;   // 优先级
 
 		ListenerNode* pNext;
+	};
+
+	// 解决从非主线程调用TestCooperativeLevel的问题
+	class DeviceSyncTest
+		: public f2dMainThreadDelegate
+	{
+	private:
+		IDirect3DDevice9* m_pDev;
+		HRESULT m_HR;
+	public:
+		void AddRef() { /* do nothing */ }
+		void Release() { /* do nothing */ }
+		void Excute() { m_HR = m_pDev->TestCooperativeLevel(); }
+		void Reset() { m_HR = S_OK; }
+		HRESULT GetResult()const { return m_HR; }
+	public:
+		DeviceSyncTest(IDirect3DDevice9* p)
+			: m_pDev(p), m_HR(S_OK) {}
 	};
 
 	struct VertexDeclareInfo
@@ -49,6 +68,9 @@ private:
 	D3DPRESENT_PARAMETERS m_D3Dpp;
 	D3DVIEWPORT9 m_ViewPort;
 	std::string m_DevName;
+
+	// 跨线程事件
+	DeviceSyncTest* m_pSyncTestObj;
 	
 	// 监听器链表
 	ListenerNode* m_ListenerList;

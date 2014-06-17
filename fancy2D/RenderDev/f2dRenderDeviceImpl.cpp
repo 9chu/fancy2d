@@ -35,8 +35,8 @@ f2dRenderDeviceImpl::VertexDeclareInfo::~VertexDeclareInfo()
 ////////////////////////////////////////////////////////////////////////////////
 
 f2dRenderDeviceImpl::f2dRenderDeviceImpl(f2dEngineImpl* pEngine, fuInt BackBufferWidth, fuInt BackBufferHeight, fBool Windowed, fBool VSync, F2DAALEVEL AALevel)
-	: m_pEngine(pEngine), m_pD3D9(NULL), m_pDev(NULL), m_hWnd((HWND)pEngine->GetMainWindow()->GetHandle()),
-	m_bDevLost(false), m_pBackBuffer(NULL), m_pBackDepthBuffer(NULL), m_pCurGraphics(NULL),
+: m_pEngine(pEngine), m_pD3D9(NULL), m_pDev(NULL), m_hWnd((HWND)pEngine->GetMainWindow()->GetHandle()), 
+	m_pSyncTestObj(NULL), m_bDevLost(false), m_pBackBuffer(NULL), m_pBackDepthBuffer(NULL), m_pCurGraphics(NULL),
 	m_ListenerList(NULL), m_pWinSurface(NULL), m_pCurBackBuffer(NULL), m_pCurBackDepthBuffer(NULL),
 	m_pCurVertDecl(NULL), m_CreateThreadID(GetCurrentThreadId())
 {
@@ -105,6 +105,8 @@ f2dRenderDeviceImpl::f2dRenderDeviceImpl(f2dEngineImpl* pEngine, fuInt BackBuffe
 		FCYSAFEKILL(m_pD3D9);
 		throw fcyWin32COMException("f2dRenderDeviceImpl::f2dRenderDeviceImpl", "IDirect3D9::CreateDevice Failed.", tHR);
 	}
+	else
+		m_pSyncTestObj = new DeviceSyncTest(m_pDev);
 
 	// --- 获取设备参数 ---
 	D3DADAPTER_IDENTIFIER9 tIdentify;
@@ -165,6 +167,8 @@ f2dRenderDeviceImpl::~f2dRenderDeviceImpl()
 	// 释放顶点声明
 	m_VDCache.clear();
 
+	FCYSAFEDEL(m_pSyncTestObj);
+
 	// 释放DX组件
 	FCYSAFEKILL(m_pWinSurface);
 	FCYSAFEKILL(m_pDev);
@@ -205,28 +209,11 @@ HRESULT f2dRenderDeviceImpl::doReset(D3DPRESENT_PARAMETERS* pD3DPP)
 
 HRESULT f2dRenderDeviceImpl::doTestCooperativeLevel()
 {
-	struct _Work : public fcyRefObjImpl<f2dMainThreadDelegate>
-	{
-		IDirect3DDevice9* pDev;
-		HRESULT HR;
-		
-		void Excute() { HR = pDev->TestCooperativeLevel(); }
-
-		_Work(IDirect3DDevice9* p)
-			: pDev(p), HR(S_OK) {}
-	};
-
 	if(GetCurrentThreadId() != m_CreateThreadID)
 	{
-		HRESULT tHR;
-		_Work* tWork = new _Work(m_pDev);
-
-		m_pEngine->InvokeDelegateAndWait(tWork);
-
-		tHR = tWork->HR;
-		FCYSAFEKILL(tWork);
-
-		return tHR;
+		m_pSyncTestObj->Reset();
+		m_pEngine->InvokeDelegateAndWait(m_pSyncTestObj);
+		return m_pSyncTestObj->GetResult();
 	}
 	else
 	{

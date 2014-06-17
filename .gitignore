@@ -32,3 +32,4 @@ cloc.bat
 /tools/FMMMetadataEditor/bin
 
 /tools/FMMMetadataEditor/obj
+*.suo

@@ -12,39 +12,122 @@
 template<typename T>
 class fcyFunctor;
 
-#define FCYMAKEFUNCTOR 0
-#include "fcyFunctorDetail.h"
-#undef FCYMAKEFUNCTOR
+template<typename R, typename... P>
+class fcyFunctor<R(P...)>
+{
+private:
+	class fcyFunctorCallBack :
+		public fcyRefObj
+	{
+	public:
+		virtual R Invoke(P...) = 0;  // (P1,P2,P3...)
+	protected:
+		virtual ~fcyFunctorCallBack() {}
+	};
 
-#define FCYMAKEFUNCTOR 1
-#include "fcyFunctorDetail.h"
-#undef FCYMAKEFUNCTOR
+	template<typename StaticFunc>
+	class fcyFunctorCallBack_StaticFunc :
+		public fcyRefObjImpl<fcyFunctorCallBack>
+	{
+	private:
+		StaticFunc m_pFunc;
+	public:
+		R Invoke(P... args)  // (P1 p1, P2 p2, P3 p3...)
+		{
+			return m_pFunc(args...); // (p1, p2, p3...)
+		}
+	public:
+		fcyFunctorCallBack_StaticFunc(StaticFunc Func)
+			: m_pFunc(Func) {}
+	};
 
-#define FCYMAKEFUNCTOR 2
-#include "fcyFunctorDetail.h"
-#undef FCYMAKEFUNCTOR
+	template<typename Class, typename MemFunc>
+	class fcyFunctorCallBack_MemFunc :
+		public fcyRefObjImpl<fcyFunctorCallBack>
+	{
+	private:
+		Class* m_pClsPtr;
+		MemFunc m_pClsMemFunc;
+	public:
+		R Invoke(P... args) // (P1 p1, P2 p2, P3 p3...)
+		{
+			return (m_pClsPtr->*m_pClsMemFunc)(args...); // (p1, p2, p3...)
+		}
+	public:
+		fcyFunctorCallBack_MemFunc(Class* Ptr, MemFunc Func)
+			: m_pClsPtr(Ptr), m_pClsMemFunc(Func) {}
+	};
+private:
+	fcyFunctorCallBack* m_pCallBack;
+public:
+	fcyFunctor& operator=(const fcyFunctor& Right)
+	{
+		if (this != &Right)
+		{
+			FCYSAFEKILL(m_pCallBack);
 
-#define FCYMAKEFUNCTOR 3
-#include "fcyFunctorDetail.h"
-#undef FCYMAKEFUNCTOR
+			m_pCallBack = Right.m_pCallBack;
 
-#define FCYMAKEFUNCTOR 4
-#include "fcyFunctorDetail.h"
-#undef FCYMAKEFUNCTOR
+			if (m_pCallBack)
+				m_pCallBack->AddRef();
+		}
 
-#define FCYMAKEFUNCTOR 5
-#include "fcyFunctorDetail.h"
-#undef FCYMAKEFUNCTOR
+		return *this;
+	}
 
-#define FCYMAKEFUNCTOR 6
-#include "fcyFunctorDetail.h"
-#undef FCYMAKEFUNCTOR
+	bool operator==(const fcyFunctor& Right)
+	{
+		return (m_pCallBack == Right.m_pCallBack);
+	}
 
-#define FCYMAKEFUNCTOR 7
-#include "fcyFunctorDetail.h"
-#undef FCYMAKEFUNCTOR
+	R operator() (P... args) // (P1 p1, P2 p2, P3 p3...)
+	{
+		if (!m_pCallBack)
+			throw fcyException("fcyFunctor::operator()", "Invalid pointer.");
+		else
+			return m_pCallBack->Invoke(args...); // (p1, p2, p3...)
+	}
+	R operator() (P... args)const // (P1 p1, P2 p2, P3 p3...)
+	{
+		if (!m_pCallBack)
+			throw fcyException("fcyFunctor::operator()const", "Invalid pointer.");
+		else
+			return m_pCallBack->Invoke(args...); // (p1, p2, p3...)
+	}
+public:
+	bool Empty()const
+	{
+		return (NULL == m_pCallBack);
+	}
+public:
+	fcyFunctor()
+		: m_pCallBack(NULL) { }
 
-#define FCYMAKEFUNCTOR 8
-#include "fcyFunctorDetail.h"
-#undef FCYMAKEFUNCTOR
+	template<typename StaticFunc>
+	fcyFunctor(StaticFunc pFunc)
+		: m_pCallBack(NULL)
+	{
+		m_pCallBack = new fcyFunctorCallBack_StaticFunc<StaticFunc>(pFunc);
+	}
+
+	template<typename Class, typename MemFunc>
+	fcyFunctor(Class* Ptr, MemFunc pFunc)
+		: m_pCallBack(NULL)
+	{
+		m_pCallBack = new fcyFunctorCallBack_MemFunc<Class, MemFunc>(Ptr, pFunc);
+	}
+
+	fcyFunctor(const fcyFunctor& Org)
+		: m_pCallBack(Org.m_pCallBack)
+	{
+		if (m_pCallBack)
+			m_pCallBack->AddRef();
+	}
+
+	~fcyFunctor()
+	{
+		FCYSAFEKILL(m_pCallBack);
+	}
+};
+
 /// @}
