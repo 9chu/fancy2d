@@ -520,8 +520,14 @@ IDirect3DVertexDeclaration9* f2dRenderDeviceImpl::RegisterVertexDeclare(f2dVerte
 				}
 			}
 
-			if(tHas)
+			/*
+				¸ÐÐ»ÆáºÚ¤ÎÈÐÌá³öissue
+			*/
+			if (tHas)
+			{
+				ElementSize = m_VDCache[i].VertexSize;
 				return m_VDCache[i].pVertexDeclare;
+			}
 		}
 	}
 
@@ -584,6 +590,7 @@ IDirect3DVertexDeclaration9* f2dRenderDeviceImpl::RegisterVertexDeclare(f2dVerte
 	tInfo.Hash = HashCode;
 	tInfo.pVertexDeclare = pVD;
 	tInfo.ElementData.resize(ElementCount);
+	tInfo.VertexSize = tOffset;
 	for(fuInt i = 0; i<ElementCount; ++i)
 	{
 		tInfo.ElementData[i] = pElement[i];

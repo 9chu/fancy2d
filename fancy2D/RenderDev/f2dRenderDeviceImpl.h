@@ -48,6 +48,7 @@ private:
 		fuInt Hash;
 		std::vector<f2dVertexElement> ElementData;
 		IDirect3DVertexDeclaration9* pVertexDeclare;
+		fuInt VertexSize;
 
 		VertexDeclareInfo();
 		VertexDeclareInfo(const VertexDeclareInfo& Org);
