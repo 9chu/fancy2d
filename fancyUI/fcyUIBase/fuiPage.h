@@ -106,15 +106,18 @@ private:
 	}
 	/// @brief     处理鼠标移动消息
 	/// @param[in] MousePos 相对于父控件（屏幕）的位置
-	void sendMouseMove(const fcyVec2& MousePos);
+	/// @return    消息是否有受体
+	bool sendMouseMove(const fcyVec2& MousePos);
 	/// @brief     处理鼠标按下消息
 	/// @param[in] Button   按钮
 	/// @param[in] MousePos 可选鼠标位置，重新发送消息到SendMouseMove
-	void sendMouseButtonDown(MOUSEBUTTON Button, fcyVec2* MousePos);
+	/// @return    消息是否有受体
+	bool sendMouseButtonDown(MOUSEBUTTON Button, fcyVec2* MousePos);
 	/// @brief     处理鼠标放开消息
 	/// @param[in] Button   按钮
 	/// @param[in] MousePos 可选鼠标位置，重新发送消息到SendMouseMove
-	void sendMouseButtonUp(MOUSEBUTTON Button, fcyVec2* MousePos);
+	/// @return    消息是否有受体
+	bool sendMouseButtonUp(MOUSEBUTTON Button, fcyVec2* MousePos);
 protected: // for fuiControl
 	/// @brief  注册一个控件
 	void RegisterControl(fuiControl* pControl);
@@ -152,7 +155,7 @@ public: // 接口实现
 	void Render(fuiGraphics* pGraph=NULL);
 public: // UI消息
 	/// @brief 处理f2d消息
-	void DealF2DMsg(const f2dMsg& Msg);
+	bool DealF2DMsg(const f2dMsg& Msg);
 public:
 	fuiPage(const std::wstring& Name, f2dRenderer* pRenderer, f2dGraphics2D* pGraph);
 protected:

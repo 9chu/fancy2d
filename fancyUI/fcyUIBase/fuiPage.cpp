@@ -468,7 +468,7 @@ void fuiPage::execStyleChanged(fuiControl* p)
 	}
 }
 
-void fuiPage::sendMouseMove(const fcyVec2& MousePos)
+bool fuiPage::sendMouseMove(const fcyVec2& MousePos)
 {
 	m_MouseLastPos = MousePos;
 
@@ -511,9 +511,11 @@ void fuiPage::sendMouseMove(const fcyVec2& MousePos)
 		// 计算当前控件原点
 		m_ControlOrigin = MousePos - m_ControlMousePos;
 	}
+
+	return (m_pLockMouseControl || m_pLastMouseMoveControl);
 }
 
-void fuiPage::sendMouseButtonDown(MOUSEBUTTON Button, fcyVec2* MousePos)
+bool fuiPage::sendMouseButtonDown(MOUSEBUTTON Button, fcyVec2* MousePos)
 {
 	// 发送全局消息
 	{
@@ -573,10 +575,13 @@ void fuiPage::sendMouseButtonDown(MOUSEBUTTON Button, fcyVec2* MousePos)
 			m_pLockMouseControl->ExecEvent(L"OnMouseRDown");
 			break;
 		}
+		return true;
 	}
+
+	return false;
 }
 
-void fuiPage::sendMouseButtonUp(MOUSEBUTTON Button, fcyVec2* MousePos)
+bool fuiPage::sendMouseButtonUp(MOUSEBUTTON Button, fcyVec2* MousePos)
 {
 	// 发送全局消息
 	{
@@ -614,7 +619,10 @@ void fuiPage::sendMouseButtonUp(MOUSEBUTTON Button, fcyVec2* MousePos)
 
 		if(m_MouseUnlockEvent == Button) // 解锁
 			m_pLockMouseControl = NULL;
+		return true;
 	}
+
+	return false;
 }
 
 void fuiPage::RegisterControl(fuiControl* pControl)
@@ -799,37 +807,31 @@ void fuiPage::Render(fuiGraphics* pGraph)
 	}
 }
 
-void fuiPage::DealF2DMsg(const f2dMsg& Msg)
+bool fuiPage::DealF2DMsg(const f2dMsg& Msg)
 {
 	switch(Msg.Type)
 	{
 	case F2DMSG_WINDOW_ONMOUSEMOVE:
-		sendMouseMove(fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
-		break;
+		return sendMouseMove(fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
 	case F2DMSG_WINDOW_ONMOUSELDOWN:
-		sendMouseButtonDown(fuiPage::MOUSEBUTTON_L, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
-		break;
+		return sendMouseButtonDown(fuiPage::MOUSEBUTTON_L, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
 	case F2DMSG_WINDOW_ONMOUSELUP:
-		sendMouseButtonUp(fuiPage::MOUSEBUTTON_L, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
-		break;
+		return sendMouseButtonUp(fuiPage::MOUSEBUTTON_L, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
 	case F2DMSG_WINDOW_ONMOUSERDOWN:
-		sendMouseButtonDown(fuiPage::MOUSEBUTTON_R, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
-		break;
+		return sendMouseButtonDown(fuiPage::MOUSEBUTTON_R, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
 	case F2DMSG_WINDOW_ONMOUSERUP:
-		sendMouseButtonUp(fuiPage::MOUSEBUTTON_R, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
-		break;
+		return sendMouseButtonUp(fuiPage::MOUSEBUTTON_R, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
 	case F2DMSG_WINDOW_ONMOUSEMDOWN:
-		sendMouseButtonDown(fuiPage::MOUSEBUTTON_M, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
-		break;
+		return sendMouseButtonDown(fuiPage::MOUSEBUTTON_M, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
 	case F2DMSG_WINDOW_ONMOUSEMUP:
-		sendMouseButtonUp(fuiPage::MOUSEBUTTON_M, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
-		break;
+		return sendMouseButtonUp(fuiPage::MOUSEBUTTON_M, &fcyVec2((float)(fLong)Msg.Param1, (float)(fLong)Msg.Param2));
 	case F2DMSG_WINDOW_ONKEYDOWN:
 		if(m_pFocus)
 		{
 			fuiKeyEventArgs tArgs;
 			tArgs.SetKeyCode(fuiPage::VKKeyToF2DKey((fuInt)Msg.Param1));
 			m_pFocus->ExecEvent(L"OnKeyDown", &tArgs);
+			return true;
 		}
 		break;
 	case F2DMSG_WINDOW_ONKEYUP:
@@ -838,6 +840,7 @@ void fuiPage::DealF2DMsg(const f2dMsg& Msg)
 			fuiKeyEventArgs tArgs;
 			tArgs.SetKeyCode(fuiPage::VKKeyToF2DKey((fuInt)Msg.Param1));
 			m_pFocus->ExecEvent(L"OnKeyUp", &tArgs);
+			return true;
 		}
 		break;
 	case F2DMSG_WINDOW_ONMOUSEWHEEL:
@@ -846,6 +849,7 @@ void fuiPage::DealF2DMsg(const f2dMsg& Msg)
 			fuiPositionEventArgs tArgs;
 			tArgs.SetPos(fcyVec2((float)*(fDouble*)&Msg.Param3, 0));
 			m_pFocus->ExecEvent(L"OnMouseWheel", &tArgs);
+			return true;
 		}
 		break;
 	case F2DMSG_WINDOW_ONCHARINPUT:
@@ -854,6 +858,7 @@ void fuiPage::DealF2DMsg(const f2dMsg& Msg)
 			fuiCharEventArgs tArgs;
 			tArgs.SetChar((fCharW)Msg.Param1);
 			m_pFocus->ExecEvent(L"OnCharInput", &tArgs);
+			return true;
 		}
 		break;
 	case F2DMSG_IME_ONCLOSE:
@@ -901,4 +906,5 @@ void fuiPage::DealF2DMsg(const f2dMsg& Msg)
 		}
 		break;
 	}
+	return false;
 }
