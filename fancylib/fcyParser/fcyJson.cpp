@@ -321,12 +321,16 @@ fcyJsonDict* fcyJsonDict::ToDict()
 	return this;
 }
 
-fcyJsonValue* fcyJsonDict::GetValue(fuInt Index)
+fcyJsonValue* fcyJsonDict::GetValue(fuInt Index, fcStrW* pKeyOut)
 {
 	if(Index > GetCount())
 		return NULL;
 	else
+	{
+		if (pKeyOut)
+			*pKeyOut = m_ObjList[Index].c_str();
 		return m_Cache[m_ObjList[Index]];
+	}
 }
 
 fcyJsonValue* fcyJsonDict::GetValue(fcStrW Name)

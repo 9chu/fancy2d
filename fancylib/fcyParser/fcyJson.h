@@ -158,10 +158,11 @@ protected:
 public:
 	fcyJsonDict* ToDict();
 public:
-	/// @brief     返回对象
-	/// @param[in] Index 对象索引
-	/// @return    返回对象指针，若索引越界返回NULL
-	fcyJsonValue* GetValue(fuInt Index);
+	/// @brief      返回对象
+	/// @param[in]  Index 对象索引
+	/// @param[out] pKeyOut 键
+	/// @return     返回对象指针，若索引越界返回NULL
+	fcyJsonValue* GetValue(fuInt Index, fcStrW* pKeyOut = NULL);
 
 	/// @brief     返回对象
 	/// @param[in] Name 对象键名
