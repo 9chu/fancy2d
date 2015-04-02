@@ -7,10 +7,8 @@
 f2dFontRendererImpl::f2dFontRendererImpl(f2dFontProvider* pProvider)
 	: m_pListener(NULL), m_pProvider(pProvider), m_FlipType(F2DSPRITEFLIP_NONE), m_ZValue(1.f)
 {
-	if(!m_pProvider)
-		throw fcyException("f2dFontRendererImpl::f2dFontRendererImpl", "Param 'pProvider' is null.");
-
-	m_pProvider->AddRef();
+	if (m_pProvider)
+		m_pProvider->AddRef();
 }
 
 f2dFontRendererImpl::~f2dFontRendererImpl()
@@ -84,12 +82,11 @@ fResult f2dFontRendererImpl::SetFontProvider(f2dFontProvider* pProvider)
 {
 	if(m_pProvider == pProvider)
 		return FCYERR_OK;
-	if(pProvider == NULL)
-		return FCYERR_INVAILDPARAM;
 
 	FCYSAFEKILL(m_pProvider);
 	m_pProvider = pProvider;
-	m_pProvider->AddRef();
+	if (m_pProvider)
+		m_pProvider->AddRef();
 
 	return FCYERR_OK;
 }
@@ -138,6 +135,9 @@ void f2dFontRendererImpl::SetFlipType(F2DSPRITEFLIP Type)
 
 fcyRect f2dFontRendererImpl::MeasureString(fcStrW String)
 {
+	if (!m_pProvider)
+		return fcyRect();
+
 	fcyVec2 tStartPos;
 	fcyRect tBoundBox(2048.f, 2048.f, 0.f, 0.f);
 	bool tMeasureable = false;
@@ -184,6 +184,9 @@ fcyRect f2dFontRendererImpl::MeasureString(fcStrW String)
 
 fFloat f2dFontRendererImpl::MeasureStringWidth(fcStrW String)
 {
+	if (!m_pProvider)
+		return 0.f;
+
 	fcyVec2 tStartPos;
 	
 	fuInt tCount = wcslen(String);
@@ -215,7 +218,7 @@ fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, const
 
 fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, const fcyVec2& StartPos, fcyVec2* PosOut)
 {
-	if(!pGraph || !pGraph->IsInRender())
+	if(!m_pProvider || !pGraph || !pGraph->IsInRender())
 		return FCYERR_ILLEGAL;
 
 	// --- 准备顶点 ---
@@ -296,7 +299,7 @@ fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt
 
 fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, fFloat Bias, const fcyVec2& StartPos, fcyVec2* PosOut)
 {
-	if(!pGraph || !pGraph->IsInRender())
+	if (!m_pProvider || !pGraph || !pGraph->IsInRender())
 		return FCYERR_ILLEGAL;
 
 	// --- 准备顶点 ---
