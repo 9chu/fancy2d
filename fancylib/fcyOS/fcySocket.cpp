@@ -2,6 +2,14 @@
 
 #include "../fcyException.h"
 
+/*
+	这个文件并没有什么卵用
+	为了编译通过还是先改一下
+*/
+#ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#endif
+
 #include <winsock2.h>
 #pragma comment(lib, "ws2_32.lib")
 

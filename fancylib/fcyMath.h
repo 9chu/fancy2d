@@ -512,17 +512,17 @@ public:
 			fFloat _21, _22, _23, _24;
 			fFloat _31, _32, _33, _34;
 			fFloat _41, _42, _43, _44;
-		};
-		fFloat m[4][4];  /// @brief 矩阵数据域
+		} m;
+		fFloat arr[4][4];  /// @brief 矩阵数据域
 	};
 public:
 	/// @brief 初始化为单位矩阵
 	fcyMatrix4()
 	{
-		_11=1.f;  _12=0.f;  _13=0.f;  _14=0.f;
-		_21=0.f;  _22=1.f;  _23=0.f;  _24=0.f;
-		_31=0.f;  _32=0.f;  _33=1.f;  _34=0.f;
-		_41=0.f;  _42=0.f;  _43=0.f;  _44=1.f;
+		m._11 = 1.f;  m._12 = 0.f;  m._13 = 0.f;  m._14 = 0.f;
+		m._21 = 0.f;  m._22 = 1.f;  m._23 = 0.f;  m._24 = 0.f;
+		m._31 = 0.f;  m._32 = 0.f;  m._33 = 1.f;  m._34 = 0.f;
+		m._41 = 0.f;  m._42 = 0.f;  m._43 = 0.f;  m._44 = 1.f;
 	};
 	/// @brief 使用自定义初值初始化矩阵
 	fcyMatrix4(fFloat m11,fFloat m12,fFloat m13,fFloat m14,
@@ -530,10 +530,10 @@ public:
 		fFloat m31,fFloat m32,fFloat m33,fFloat m34,
 		fFloat m41,fFloat m42,fFloat m43,fFloat m44)
 	{
-		_11=m11;  _12=m12;  _13=m13;  _14=m14;
-		_21=m21;  _22=m22;  _23=m23;  _24=m24;
-		_31=m31;  _32=m32;  _33=m33;  _34=m34;
-		_41=m41;  _42=m42;  _43=m43;  _44=m44;
+		m._11 = m11;  m._12 = m12;  m._13 = m13;  m._14 = m14;
+		m._21 = m21;  m._22 = m22;  m._23 = m23;  m._24 = m24;
+		m._31 = m31;  m._32 = m32;  m._33 = m33;  m._34 = m34;
+		m._41 = m41;  m._42 = m42;  m._43 = m43;  m._44 = m44;
 	};
 public:
 	/// @brief 设置新值
@@ -542,29 +542,29 @@ public:
 		fFloat m31,fFloat m32,fFloat m33,fFloat m34,
 		fFloat m41,fFloat m42,fFloat m43,fFloat m44)
 	{
-		_11=m11;  _12=m12;  _13=m13;  _14=m14;
-		_21=m21;  _22=m22;  _23=m23;  _24=m24;
-		_31=m31;  _32=m32;  _33=m33;  _34=m34;
-		_41=m41;  _42=m42;  _43=m43;  _44=m44;
+		m._11 = m11;  m._12 = m12;  m._13 = m13;  m._14 = m14;
+		m._21 = m21;  m._22 = m22;  m._23 = m23;  m._24 = m24;
+		m._31 = m31;  m._32 = m32;  m._33 = m33;  m._34 = m34;
+		m._41 = m41;  m._42 = m42;  m._43 = m43;  m._44 = m44;
 	};
 public:
 	/// @brief 矩阵相加
 	fcyMatrix4 operator+(const fcyMatrix4& right)const
 	{
 		return fcyMatrix4(
-			_11 + right._11, _12 + right._12, _13 + right._13, _14 + right._14,
-			_21 + right._21, _22 + right._22, _23 + right._23, _24 + right._24,
-			_31 + right._31, _32 + right._32, _33 + right._33, _34 + right._34,
-			_41 + right._41, _42 + right._42, _43 + right._43, _44 + right._44
+			m._11 + right.m._11, m._12 + right.m._12, m._13 + right.m._13, m._14 + right.m._14,
+			m._21 + right.m._21, m._22 + right.m._22, m._23 + right.m._23, m._24 + right.m._24,
+			m._31 + right.m._31, m._32 + right.m._32, m._33 + right.m._33, m._34 + right.m._34,
+			m._41 + right.m._41, m._42 + right.m._42, m._43 + right.m._43, m._44 + right.m._44
 			);
 	};
 	/// @brief 矩阵自加
 	fcyMatrix4& operator+=(const fcyMatrix4& right)
 	{
-		_11 += right._11; _12 += right._12; _13 += right._13; _14 += right._14;
-		_21 += right._21; _22 += right._22; _23 += right._23; _24 += right._24;
-		_31 += right._31; _32 += right._32; _33 += right._33; _34 += right._34;
-		_41 += right._41; _42 += right._42; _43 += right._43; _44 += right._44;
+		m._11 += right.m._11; m._12 += right.m._12; m._13 += right.m._13; m._14 += right.m._14;
+		m._21 += right.m._21; m._22 += right.m._22; m._23 += right.m._23; m._24 += right.m._24;
+		m._31 += right.m._31; m._32 += right.m._32; m._33 += right.m._33; m._34 += right.m._34;
+		m._41 += right.m._41; m._42 += right.m._42; m._43 += right.m._43; m._44 += right.m._44;
 
 		return *this;
 	};
@@ -572,19 +572,19 @@ public:
 	fcyMatrix4 operator-(const fcyMatrix4& right)const
 	{
 		return fcyMatrix4(
-			_11 - right._11, _12 - right._12, _13 - right._13, _14 - right._14,
-			_21 - right._21, _22 - right._22, _23 - right._23, _24 - right._24,
-			_31 - right._31, _32 - right._32, _33 - right._33, _34 - right._34,
-			_41 - right._41, _42 - right._42, _43 - right._43, _44 - right._44
+			m._11 - right.m._11, m._12 - right.m._12, m._13 - right.m._13, m._14 - right.m._14,
+			m._21 - right.m._21, m._22 - right.m._22, m._23 - right.m._23, m._24 - right.m._24,
+			m._31 - right.m._31, m._32 - right.m._32, m._33 - right.m._33, m._34 - right.m._34,
+			m._41 - right.m._41, m._42 - right.m._42, m._43 - right.m._43, m._44 - right.m._44
 			);
 	};
 	/// @brief 矩阵自减
 	fcyMatrix4& operator-=(const fcyMatrix4& right)
 	{
-		_11 -= right._11; _12 -= right._12; _13 -= right._13; _14 -= right._14;
-		_21 -= right._21; _22 -= right._22; _23 -= right._23; _24 -= right._24;
-		_31 -= right._31; _32 -= right._32; _33 -= right._33; _34 -= right._34;
-		_41 -= right._41; _42 -= right._42; _43 -= right._43; _44 -= right._44;
+		m._11 -= right.m._11; m._12 -= right.m._12; m._13 -= right.m._13; m._14 -= right.m._14;
+		m._21 -= right.m._21; m._22 -= right.m._22; m._23 -= right.m._23; m._24 -= right.m._24;
+		m._31 -= right.m._31; m._32 -= right.m._32; m._33 -= right.m._33; m._34 -= right.m._34;
+		m._41 -= right.m._41; m._42 -= right.m._42; m._43 -= right.m._43; m._44 -= right.m._44;
 
 		return *this;
 	};
@@ -592,34 +592,34 @@ public:
 	fcyMatrix4 operator*(const fcyMatrix4& right)const
 	{
 		return fcyMatrix4(
-			_11 * right._11 + _12 * right._21 + _13 * right._31 + _14 * right._41,
-			_11 * right._12 + _12 * right._22 + _13 * right._32 + _14 * right._42,
-			_11 * right._13 + _12 * right._23 + _13 * right._33 + _14 * right._43,
-			_11 * right._14 + _12 * right._24 + _13 * right._34 + _14 * right._44,
+			m._11 * right.m._11 + m._12 * right.m._21 + m._13 * right.m._31 + m._14 * right.m._41,
+			m._11 * right.m._12 + m._12 * right.m._22 + m._13 * right.m._32 + m._14 * right.m._42,
+			m._11 * right.m._13 + m._12 * right.m._23 + m._13 * right.m._33 + m._14 * right.m._43,
+			m._11 * right.m._14 + m._12 * right.m._24 + m._13 * right.m._34 + m._14 * right.m._44,
 
-			_21 * right._11 + _22 * right._21 + _23 * right._31 + _24 * right._41,
-			_21 * right._12 + _22 * right._22 + _23 * right._32 + _24 * right._42,
-			_21 * right._13 + _22 * right._23 + _23 * right._33 + _24 * right._43,
-			_21 * right._14 + _22 * right._24 + _23 * right._34 + _24 * right._44,
+			m._21 * right.m._11 + m._22 * right.m._21 + m._23 * right.m._31 + m._24 * right.m._41,
+			m._21 * right.m._12 + m._22 * right.m._22 + m._23 * right.m._32 + m._24 * right.m._42,
+			m._21 * right.m._13 + m._22 * right.m._23 + m._23 * right.m._33 + m._24 * right.m._43,
+			m._21 * right.m._14 + m._22 * right.m._24 + m._23 * right.m._34 + m._24 * right.m._44,
 
-			_31 * right._11 + _32 * right._21 + _33 * right._31 + _34 * right._41,
-			_31 * right._12 + _32 * right._22 + _33 * right._32 + _34 * right._42,
-			_31 * right._13 + _32 * right._23 + _33 * right._33 + _34 * right._43,
-			_31 * right._14 + _32 * right._24 + _33 * right._34 + _34 * right._44,
+			m._31 * right.m._11 + m._32 * right.m._21 + m._33 * right.m._31 + m._34 * right.m._41,
+			m._31 * right.m._12 + m._32 * right.m._22 + m._33 * right.m._32 + m._34 * right.m._42,
+			m._31 * right.m._13 + m._32 * right.m._23 + m._33 * right.m._33 + m._34 * right.m._43,
+			m._31 * right.m._14 + m._32 * right.m._24 + m._33 * right.m._34 + m._34 * right.m._44,
 
-			_41 * right._11 + _42 * right._21 + _43 * right._31 + _44 * right._41,
-			_41 * right._12 + _42 * right._22 + _43 * right._32 + _44 * right._42,
-			_41 * right._13 + _42 * right._23 + _43 * right._33 + _44 * right._43,
-			_41 * right._14 + _42 * right._24 + _43 * right._34 + _44 * right._44
+			m._41 * right.m._11 + m._42 * right.m._21 + m._43 * right.m._31 + m._44 * right.m._41,
+			m._41 * right.m._12 + m._42 * right.m._22 + m._43 * right.m._32 + m._44 * right.m._42,
+			m._41 * right.m._13 + m._42 * right.m._23 + m._43 * right.m._33 + m._44 * right.m._43,
+			m._41 * right.m._14 + m._42 * right.m._24 + m._43 * right.m._34 + m._44 * right.m._44
 			);
 	};
 	/// @brief 矩阵数乘
 	fcyMatrix4 operator*(const fFloat& right)const
 	{
-		return fcyMatrix4(_11 * right,_12 * right,_13 * right,_14 * right,
-			_21 * right,_22 * right,_23 * right,_24 * right,
-			_31 * right,_32 * right,_33 * right,_34 * right,
-			_41 * right,_42 * right,_43 * right,_44 * right );
+		return fcyMatrix4(m._11 * right, m._12 * right, m._13 * right, m._14 * right,
+			m._21 * right, m._22 * right, m._23 * right, m._24 * right,
+			m._31 * right, m._32 * right, m._33 * right, m._34 * right,
+			m._41 * right, m._42 * right, m._43 * right, m._44 * right);
 	};
 	/// @brief 矩阵自乘
 	fcyMatrix4& operator*=(const fcyMatrix4& right)
@@ -640,12 +640,12 @@ public:
 			剩下不变
 		*/
 		Set(
-			_11, _21, _31, 0.f,
-			_12, _22, _32, 0.f,
-			_13, _23, _33, 0.f,
-			-_41*_11-_42*_12-_43*_13,
-			-_41*_21-_42*_22-_43*_23,
-			- _41*_31-_42*_32-_43*_33,
+			m._11, m._21, m._31, 0.f,
+			m._12, m._22, m._32, 0.f,
+			m._13, m._23, m._33, 0.f,
+			-m._41*m._11 - m._42*m._12 - m._43*m._13,
+			-m._41*m._21 - m._42*m._22 - m._43*m._23,
+			-m._41*m._31 - m._42*m._32 - m._43*m._33,
 			1.f
 			);
 	};
@@ -653,10 +653,10 @@ public:
 	void Transpose()
 	{
 		Set(
-			_11,_21,_31,_41,
-			_12,_22,_32,_42,
-			_13,_23,_33,_43,
-			_14,_24,_34,_44
+			m._11, m._21, m._31, m._41,
+			m._12, m._22, m._32, m._42,
+			m._13, m._23, m._33, m._43,
+			m._14, m._24, m._34, m._44
 			);
 	};
 public:

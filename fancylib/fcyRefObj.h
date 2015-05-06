@@ -18,6 +18,8 @@ struct fcyRefObj
 	virtual void AddRef()=0;  ///< @brief 增加接口的引用计数
 	virtual void Release()=0; ///< @brief 减少接口的引用计数
 	                          ///< @note  当计数器置0时销毁对象
+
+	virtual ~fcyRefObj() {}
 };
 
 ////////////////////////////////////////////////////////////////////////////////

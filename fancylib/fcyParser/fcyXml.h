@@ -87,7 +87,7 @@ class fcyXmlAttributeIterator
 private:
 	std::map<std::wstring, std::wstring>::iterator i;
 public:
-	fcyXmlAttributeIterator& operator=(const fcyXmlAttributeIterator& Right) { i = Right.i; }
+	fcyXmlAttributeIterator& operator=(const fcyXmlAttributeIterator& Right) { i = Right.i; return *this; }
 	fBool operator==(const fcyXmlAttributeIterator& Right)const { return (i == Right.i); }
 	fBool operator!=(const fcyXmlAttributeIterator& Right)const { return (i != Right.i); }
 	fcyXmlAttributeIterator& operator--() { --i; return *this; }
@@ -157,7 +157,6 @@ public:
 class fcyXmlElement
 {
 	friend class fcyXmlDocument;
-	friend class fcyXmlElement;
 private:
 	// 保存父对象指针
 	fcyXmlDocument* m_pParent;

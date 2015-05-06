@@ -27,8 +27,8 @@ void fuiGraphics::PushClipRect(const fcyRect& Rect)
 
 	const fcyRect& tTop = m_ClipRect.top();
 	fcyRect tRect = Rect;
-	tRect.a += fcyVec2(m_TransMat._41, m_TransMat._42);
-	tRect.b += fcyVec2(m_TransMat._41, m_TransMat._42);
+	tRect.a += fcyVec2(m_TransMat.m._41, m_TransMat.m._42);
+	tRect.b += fcyVec2(m_TransMat.m._41, m_TransMat.m._42);
 
 	if(!tTop.Intersect(tRect, &tRect))
 		tRect = fcyRect();
@@ -56,8 +56,8 @@ void fuiGraphics::PushOffset(const fcyVec2& Offset)
 
 	m_Offsets.push(Offset);
 
-	m_TransMat._41 += Offset.x;
-	m_TransMat._42 += Offset.y;
+	m_TransMat.m._41 += Offset.x;
+	m_TransMat.m._42 += Offset.y;
 
 	m_pGraphics2D->SetWorldTransform(m_TransMat);
 }
@@ -67,8 +67,8 @@ void fuiGraphics::PopOffset()
 	if(!m_InRender)
 		return;
 
-	m_TransMat._41 -= m_Offsets.top().x;
-	m_TransMat._42 -= m_Offsets.top().y;
+	m_TransMat.m._41 -= m_Offsets.top().x;
+	m_TransMat.m._42 -= m_Offsets.top().y;
 
 	m_Offsets.pop();
 	

@@ -204,7 +204,7 @@ void fcyNet::ParseRespondHeader(fcStr Data, string& HTTPVersion, fuInt& Code, st
 	Code = 0;
 	Desc.clear();
 
-	while(tChar = Data[tPos])
+	while((tChar = Data[tPos]))
 	{
 		switch(tState)
 		{
@@ -385,7 +385,7 @@ void fcyNet::HTTPReadFile(fcStr URL, fcyStream** pDataOut)
 				RecvUntilCRLF(&tClient, tChunkData);
 
 				// 转换到10进制
-				sscanf_s(&tChunkData[0], "%x", &tChunkSize);
+				sscanf(&tChunkData[0], "%x", &tChunkSize);
 
 				// 读取数据
 				if(tChunkSize)
@@ -444,7 +444,7 @@ void fcyNet::HTTPReadFile(fcStr URL, fcyStream** pDataOut)
 			{
 				fChar tBuffer[128];
 				fuInt tReaded;
-				while(tReaded = tClient.Recv((fData)tBuffer, 128))
+				while((tReaded = tClient.Recv((fData)tBuffer, 128)))
 				{
 					pStream->WriteBytes((fData)tBuffer, tReaded, NULL);
 				}

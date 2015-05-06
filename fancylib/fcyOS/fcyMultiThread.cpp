@@ -29,30 +29,30 @@ HANDLE fcyBaseThread::GetHandle()
 fBool fcyBaseThread::Resume()
 {
 	// Ê§°Ü·µ»Ø-1
-	return ResumeThread(m_hThread)!=-1;
+	return ResumeThread(m_hThread) != (DWORD)-1;
 }
 
 fBool fcyBaseThread::Suspend()
 {
 	// Ê§°Ü·µ»Ø-1
-	return SuspendThread(m_hThread)!=-1;
+	return SuspendThread(m_hThread) != (DWORD)-1;
 }
 
 fBool fcyBaseThread::Wait(fInt TimeLimited)
 {
 	// Ê§°Ü·µ»Ø-1
-	return WaitForSingleObject(m_hThread, TimeLimited)!=-1;
+	return WaitForSingleObject(m_hThread, TimeLimited) != (DWORD)-1;
 }
 
 fBool fcyBaseThread::Terminate(fInt ExitCode)
 {
 	// Ê§°Ü·µ»Ø0
-	return TerminateThread(m_hThread, ExitCode)!=0;
+	return TerminateThread(m_hThread, ExitCode) != FALSE;
 }
 
 fuInt fcyBaseThread::GetExitCode()
 {
-	DWORD code = -1;
+	DWORD code = (DWORD)-1;
 	GetExitCodeThread(m_hThread, &code);
 	return code;
 }
@@ -71,7 +71,7 @@ fcyCriticalSection::~fcyCriticalSection()
 
 fBool fcyCriticalSection::TryLock()
 {
-	return TryEnterCriticalSection(&m_Section)!=0;
+	return TryEnterCriticalSection(&m_Section) != FALSE;
 }
 
 void fcyCriticalSection::Lock()
@@ -105,20 +105,20 @@ HANDLE fcyEvent::GetHandle()
 
 fBool fcyEvent::Set()
 {
-	return SetEvent(m_hEvent)!=0;
+	return SetEvent(m_hEvent) != FALSE;
 }
 
 fBool fcyEvent::Reset()
 {
-	return ResetEvent(m_hEvent)!=0;
+	return ResetEvent(m_hEvent) != FALSE;
 }
 
 fBool fcyEvent::Pulse()
 {
-	return PulseEvent(m_hEvent)!=0;
+	return PulseEvent(m_hEvent) != FALSE;
 }
 
 fBool fcyEvent::Wait(fInt TimeLimited)
 {
-	return WaitForSingleObject(m_hEvent, TimeLimited)!=-1;
+	return WaitForSingleObject(m_hEvent, TimeLimited) != (DWORD)-1;
 }

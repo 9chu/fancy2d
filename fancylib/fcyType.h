@@ -4,6 +4,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#if defined(_MSC_VER) && _MSC_VER < 1800
+#error Visual Stuidio earlier than 2013 is no long supported.
+#else
+#include <cstdint>
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // 基础数据类型
 ////////////////////////////////////////////////////////////////////////////////
@@ -13,13 +19,13 @@
 typedef bool                fBool;   ///< @brief 逻辑型
 typedef char                fChar;   ///< @brief 字符型
 typedef wchar_t             fCharW;  ///< @brief 宽字符
-typedef unsigned char       fByte;   ///< @brief 字节型
-typedef short               fShort;  ///< @brief 16位短整数
-typedef unsigned short      fuShort; ///< @brief 16位无符号短整数
-typedef int                 fInt;    ///< @brief 32位整数
-typedef unsigned int        fuInt;   ///< @brief 32位无符号整数
-typedef __int64             fLong;   ///< @brief 64位长整数
-typedef unsigned __int64    fuLong;  ///< @brief 64位无符号长整数
+typedef uint8_t             fByte;   ///< @brief 字节型
+typedef int16_t             fShort;  ///< @brief 16位短整数
+typedef uint16_t            fuShort; ///< @brief 16位无符号短整数
+typedef int32_t             fInt;    ///< @brief 32位整数
+typedef uint32_t            fuInt;   ///< @brief 32位无符号整数
+typedef int64_t             fLong;   ///< @brief 64位长整数
+typedef uint64_t            fuLong;  ///< @brief 64位无符号长整数
 typedef float               fFloat;  ///< @brief 浮点型
 typedef double              fDouble; ///< @brief 双精度浮点型
 typedef fChar*              fStr;    ///< @brief C式字符串

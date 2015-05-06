@@ -35,13 +35,13 @@ class fcyModelLabelFactory
 {
 public:
 	/// @brief ×Ô¶¯×¢²á
-	template<typename T>
+	template<typename T, typename U = fcyModelLabel>  // FIXME!
 	class AutoRegister
 	{
 	public:
 		AutoRegister()
 		{
-			fcyModelLabel::GetFactory().RegisterLabel<T>(FMM_MAKE_LABELNAME8(T::LABELNAME));
+			U::GetFactory().RegisterLabel<T>(FMM_MAKE_LABELNAME8(T::LABELNAME));
 		}
 	};
 public:

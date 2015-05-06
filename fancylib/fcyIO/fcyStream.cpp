@@ -256,8 +256,6 @@ fResult fcyMemStream::WriteBytes(fcData pSrc, fLen Length, fLen* pBytesWrite)
 	if(!m_bWritable)
 		return FCYERR_ILLEGAL;
 	
-	DWORD tRealWritten = 0;
-
 	if(pBytesWrite)
 		*pBytesWrite = 0;
 	if(Length == 0)
@@ -423,8 +421,6 @@ fResult fcyPartialStream::WriteBytes(fcData pSrc, fLen Length, fLen* pBytesWrite
 	if(!CanWrite())
 		return FCYERR_ILLEGAL;
 	
-	DWORD tRealWritten = 0;
-
 	if(pBytesWrite)
 		*pBytesWrite = 0;
 	if(Length == 0)
