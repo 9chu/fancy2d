@@ -3,6 +3,7 @@
 /// @brief fancy Socket·â×°
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include "../fcyType.h"
 #include "../fcyException.h"
 
