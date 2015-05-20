@@ -26,6 +26,8 @@ public:
 	fcStr GetSrc()const;     ///< @brief 获得异常来源
 	fcStr GetDesc()const;    ///< @brief 获得异常信息
 public:
+	/// @brief     空构造函数
+	fcyException();
 	/// @brief     构造函数
 	/// @warning   描述不得超过512字符
 	/// @param[in] Src     异常源

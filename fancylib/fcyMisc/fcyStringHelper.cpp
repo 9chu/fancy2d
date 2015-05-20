@@ -126,7 +126,7 @@ std::wstring fcyStringHelper::TimeToWideStr(fDouble Seconds)
 std::wstring fcyStringHelper::TrimLeft(const std::wstring &Org)
 { 
 	wstring tRet = Org;
-	wstring::iterator p = find_if_not(tRet.begin(), tRet.end(), ::isspace); 
+	wstring::iterator p = find_if_not(tRet.begin(), tRet.end(), ::iswspace); 
 	tRet.erase(tRet.begin(), p); 
 	return tRet;
 }
@@ -134,7 +134,7 @@ std::wstring fcyStringHelper::TrimLeft(const std::wstring &Org)
 std::wstring fcyStringHelper::TrimRight(const std::wstring &Org)
 {
 	wstring tRet = Org;
-	wstring::reverse_iterator p = find_if_not(tRet.rbegin(), tRet.rend(), isspace); 
+	wstring::reverse_iterator p = find_if_not(tRet.rbegin(), tRet.rend(), ::iswspace);
 	tRet.erase(p.base(), tRet.end()); 
 	return tRet; 
 }
@@ -147,7 +147,7 @@ std::wstring fcyStringHelper::Trim(const std::wstring &Org)
 std::string fcyStringHelper::TrimLeft(const std::string &Org)
 { 
 	string tRet = Org;
-	string::const_iterator p = find_if_not(tRet.begin(), tRet.end(), isspace); 
+	string::const_iterator p = find_if_not(tRet.begin(), tRet.end(), ::isspace); 
 	tRet.erase(tRet.begin(), p); 
 	return tRet;
 }
@@ -155,7 +155,7 @@ std::string fcyStringHelper::TrimLeft(const std::string &Org)
 std::string fcyStringHelper::TrimRight(const std::string &Org)
 {
 	string tRet = Org;
-	string::const_reverse_iterator p = find_if_not(tRet.rbegin(), tRet.rend(), isspace); 
+	string::const_reverse_iterator p = find_if_not(tRet.rbegin(), tRet.rend(), ::isspace); 
 	tRet.erase(p.base(), tRet.end()); 
 	return tRet; 
 }

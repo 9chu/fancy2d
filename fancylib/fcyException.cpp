@@ -6,6 +6,10 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+fcyException::fcyException()
+	: m_Time(0)
+{}
+
 fcyException::fcyException(fcStr Src, fcStr Desc, ...)
 {
 	char szText[512];
