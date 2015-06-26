@@ -18,8 +18,8 @@
 /// @addtogroup f2d引擎
 /// @{
 
-/// @brief F2D版本 0.5
-#define F2DVERSION ((fuInt)(0<<16 | 5))
+/// @brief F2D版本 0.6
+#define F2DVERSION ((fuInt)(0<<16 | 6))
 
 /// @brief 初始化错误接受器
 struct f2dInitialErrListener

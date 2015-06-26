@@ -811,7 +811,38 @@ fResult f2dRenderDeviceImpl::CreateTextureFromStream(f2dStream* pStream, fuInt W
 		else
 			*pOut = new f2dTexture2DStatic(this, pStream, Width, Height, HasMipmap);
 	}
+	catch (const std::bad_alloc&)
+	{
+		return FCYERR_OUTOFMEM;
+	}
 	catch(const fcyException& e)
+	{
+		m_pEngine->ThrowException(e);
+
+		return FCYERR_INTERNALERR;
+	}
+
+	return FCYERR_OK;
+}
+
+fResult f2dRenderDeviceImpl::CreateTextureFromMemory(fcData pMemory, fLen Size, fuInt Width, fuInt Height, fBool IsDynamic, fBool HasMipmap, f2dTexture2D** pOut)
+{
+	if (!pOut)
+		return FCYERR_INVAILDPARAM;
+	*pOut = NULL;
+
+	try
+	{
+		if (IsDynamic)
+			*pOut = new f2dTexture2DDynamic(this, pMemory, Size, Width, Height);
+		else
+			*pOut = new f2dTexture2DStatic(this, pMemory, Size, Width, Height, HasMipmap);
+	}
+	catch (const std::bad_alloc&)
+	{
+		return FCYERR_OUTOFMEM;
+	}
+	catch (const fcyException& e)
 	{
 		m_pEngine->ThrowException(e);
 

@@ -30,6 +30,7 @@ public: // 接口实现
 	fResult Unlock() { return FCYERR_NOTSUPPORT; }
 protected:
 	f2dTexture2DStatic(f2dRenderDevice* pDev, f2dStream* pStream, fuInt Width, fuInt Height, fBool HasMipmap);
+	f2dTexture2DStatic(f2dRenderDevice* pDev, fcData pMemory, fLen Size, fuInt Width, fuInt Height, fBool HasMipmap);
 	~f2dTexture2DStatic();
 };
 
@@ -65,6 +66,7 @@ public: // 接口实现
 protected:
 	f2dTexture2DDynamic(f2dRenderDevice* pDev, fuInt Width, fuInt Height);
 	f2dTexture2DDynamic(f2dRenderDevice* pDev, f2dStream* pStream, fuInt Width, fuInt Height);
+	f2dTexture2DDynamic(f2dRenderDevice* pDev, fcData pMemory, fLen Size, fuInt Width, fuInt Height);
 	~f2dTexture2DDynamic();
 };
 
