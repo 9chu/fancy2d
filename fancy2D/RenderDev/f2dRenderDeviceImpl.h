@@ -162,6 +162,8 @@ public: // 接口实现
 	fResult SetDepthStencilSurface(f2dDepthStencilSurface* pSurface);
 	fcyRect GetScissorRect();
 	fResult SetScissorRect(const fcyRect& pRect);
+	fcyRect GetViewport();
+	fResult SetViewport(fcyRect vp);
 
 	fResult SaveScreen(f2dStream* pStream);
 	fResult SaveTexture(f2dStream* pStream, f2dTexture2D* pTex);

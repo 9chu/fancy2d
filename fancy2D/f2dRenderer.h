@@ -87,13 +87,21 @@ struct f2dSprite :
 	/// @brief 绘制精灵
 	/// @param[in] pGraph 绘图对象指针
 	/// @param[in] Dest   目标矩形
-	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyRect& Dest)=0;
+	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyRect& Dest, fBool bAutoFixCoord = true) = 0;
 
 	/// @brief 绘制精灵
 	/// @param[in] pGraph 绘图对象指针
 	/// @param[in] Dest   目标矩形
 	/// @param[in] SubTex 子纹理区域[0~1, 0~1]
 	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyRect& Dest, const fcyRect& SubTex)=0;
+
+	/// @brief 绘制精灵
+	/// @param[in] pGraph 绘图对象指针
+	/// @param[in] v1     坐标1
+	/// @param[in] v2     坐标2
+	/// @param[in] v3     坐标3
+	/// @param[in] v4     坐标4
+	virtual fResult Draw(f2dGraphics2D* pGraph, fcyVec3 v1, fcyVec3 v2, fcyVec3 v3, fcyVec3 v4, fBool bAutoFixCoord = true) = 0;
 
 	/// @brief 绘制精灵
 	/// @param[in] pGraph 绘图对象指针
@@ -118,7 +126,7 @@ struct f2dSprite :
 	/// @param[in] Center   精灵显示中心
 	/// @param[in] Scale    缩放
 	/// @param[in] Rotation 顺时针旋转角度，弧度制。
-	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation)=0;
+	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation, fBool bAutoFixCoord = true) = 0;
 	
 	/// @brief 绘制精灵
 	/// @param[in] pGraph   绘图对象指针
@@ -127,6 +135,44 @@ struct f2dSprite :
 	/// @param[in] Rotation 顺时针旋转角度，弧度制。
 	/// @param[in] SubTex   子纹理区域[0~1, 0~1]
 	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation, const fcyRect& SubTex)=0;
+
+	/// @brief 绘制精灵
+	/// @note  该方法适应y轴翻转的情况
+	/// @param[in] pGraph 绘图对象指针
+	/// @param[in] Center 精灵显示中心
+	virtual fResult Draw2(f2dGraphics2D* pGraph, const fcyVec2& Center)=0;
+
+	/// @brief 绘制精灵
+	/// @note  该方法适应y轴翻转的情况
+	/// @param[in] pGraph 绘图对象指针
+	/// @param[in] Center 精灵显示中心
+	/// @param[in] Scale  缩放
+	virtual fResult Draw2(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale)=0;
+
+	/// @brief 绘制精灵
+	/// @note  该方法适应y轴翻转的情况
+	/// @param[in] pGraph 绘图对象指针
+	/// @param[in] Center 精灵显示中心
+	/// @param[in] Scale  缩放
+	/// @param[in] SubTex 子纹理区域[0~1, 0~1]
+	virtual fResult Draw2(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, const fcyRect& SubTex)=0;
+
+	/// @brief 绘制精灵
+	/// @note  该方法适应y轴翻转的情况
+	/// @param[in] pGraph   绘图对象指针
+	/// @param[in] Center   精灵显示中心
+	/// @param[in] Scale    缩放
+	/// @param[in] Rotation 顺时针旋转角度，弧度制。
+	virtual fResult Draw2(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation, fBool bAutoFixCoord = true) = 0;
+
+	/// @brief 绘制精灵
+	/// @note  该方法适应y轴翻转的情况
+	/// @param[in] pGraph   绘图对象指针
+	/// @param[in] Center   精灵显示中心
+	/// @param[in] Scale    缩放
+	/// @param[in] Rotation 顺时针旋转角度，弧度制。
+	/// @param[in] SubTex   子纹理区域[0~1, 0~1]
+	virtual fResult Draw2(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation, const fcyRect& SubTex)=0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

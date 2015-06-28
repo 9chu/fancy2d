@@ -611,6 +611,7 @@ struct f2dRenderDevice
 	virtual fcyVec2 EnumSupportResolution(fuInt Index)=0;
 
 	/// @brief     重设缓冲区
+	/// @note      该操作过后需要手动设置Graphics的矩阵和Viewport大小
 	/// @param[in] Width    缓冲区宽度
 	/// @param[in] Height   缓冲区高度
 	/// @param[in] Windowed 窗口化
@@ -751,6 +752,13 @@ struct f2dRenderDevice
 	/// @warning 矩形应当小于RenderTarget大小
 	/// @note    重新设置缓冲区大小时该值会被覆盖
 	virtual fResult SetScissorRect(const fcyRect& pRect)=0;
+
+	/// @brief 返回目前的Viewport
+	virtual fcyRect GetViewport()=0;
+
+	/// @brief     设置目前的Viewport
+	/// @param[in] vp 给定的视区
+	virtual fResult SetViewport(fcyRect vp)=0;
 
 	// --- 高级 ---
 	/// @brief     截屏
