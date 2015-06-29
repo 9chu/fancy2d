@@ -760,6 +760,12 @@ struct f2dRenderDevice
 	/// @param[in] vp 给定的视区
 	virtual fResult SetViewport(fcyRect vp)=0;
 
+	/// @brief 返回是否开启Z-buffer测试
+	virtual fBool IsZBufferEnabled()=0;
+
+	/// @brief 设置是否开启Z-buffer测试
+	virtual fResult SetZBufferEnable(fBool v)=0;
+
 	// --- 高级 ---
 	/// @brief     截屏
 	/// @note      以PNG形式保存

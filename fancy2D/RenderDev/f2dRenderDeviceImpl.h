@@ -81,6 +81,7 @@ private:
 
 	// 设备状态
 	bool m_bDevLost;                              // 设备丢失标志
+	bool m_bZBufferEnabled;                       // 是否开启Z-缓冲区
 	IDirect3DSurface9* m_pBackBuffer;             // 后备渲染目标
 	IDirect3DSurface9* m_pBackDepthBuffer;        // 后备深度模板缓冲
 	RECT m_ScissorRect;                           // 裁剪矩形
@@ -164,6 +165,8 @@ public: // 接口实现
 	fResult SetScissorRect(const fcyRect& pRect);
 	fcyRect GetViewport();
 	fResult SetViewport(fcyRect vp);
+	fBool IsZBufferEnabled();
+	fResult SetZBufferEnable(fBool v);
 
 	fResult SaveScreen(f2dStream* pStream);
 	fResult SaveTexture(f2dStream* pStream, f2dTexture2D* pTex);

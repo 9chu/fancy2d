@@ -38,7 +38,7 @@ f2dRenderDeviceImpl::f2dRenderDeviceImpl(f2dEngineImpl* pEngine, fuInt BackBuffe
 : m_pEngine(pEngine), m_pD3D9(NULL), m_pDev(NULL), m_hWnd((HWND)pEngine->GetMainWindow()->GetHandle()), 
 	m_pSyncTestObj(NULL), m_bDevLost(false), m_pBackBuffer(NULL), m_pBackDepthBuffer(NULL), m_pCurGraphics(NULL),
 	m_ListenerList(NULL), m_pWinSurface(NULL), m_pCurBackBuffer(NULL), m_pCurBackDepthBuffer(NULL),
-	m_pCurVertDecl(NULL), m_CreateThreadID(GetCurrentThreadId())
+	m_pCurVertDecl(NULL), m_CreateThreadID(GetCurrentThreadId()), m_bZBufferEnabled(true)
 {
 	ZeroMemory(&m_D3Dpp,sizeof(m_D3Dpp));
 	m_ScissorRect.left = 0;
@@ -235,9 +235,9 @@ void f2dRenderDeviceImpl::initState()
 
 	// --- 设置默认渲染状态 ---
 	m_pDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);   // 设置反面剔除
-	m_pDev->SetRenderState(D3DRS_LIGHTING, FALSE);         // 关闭光照
-	m_pDev->SetRenderState(D3DRS_ZENABLE, TRUE);           // 启动Z缓冲
-	m_pDev->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE); // 打开矩形裁剪功能
+	m_pDev->SetRenderState(D3DRS_LIGHTING, FALSE);    // 关闭光照
+	m_pDev->SetRenderState(D3DRS_ZENABLE, m_bZBufferEnabled);   // 启动Z缓冲
+	m_pDev->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);  // 打开矩形裁剪功能
 
 	// --- 设置ZBUFFER ---
 	m_pDev->SetRenderState(D3DRS_ZENABLE, TRUE); 
@@ -1162,6 +1162,25 @@ fResult f2dRenderDeviceImpl::SetViewport(fcyRect vp)
 		if (FAILED(m_pDev->SetViewport(&m_ViewPort)))
 			return FCYERR_INTERNALERR;
 	}
+	return FCYERR_OK;
+}
+
+fBool f2dRenderDeviceImpl::IsZBufferEnabled()
+{
+	return m_bZBufferEnabled;
+}
+
+fResult f2dRenderDeviceImpl::SetZBufferEnable(fBool v)
+{
+	if (v != m_bZBufferEnabled)
+	{
+		if (m_pCurGraphics && m_pCurGraphics->IsInRender())
+			m_pCurGraphics->Flush();
+		if (FAILED(m_pDev->SetRenderState(D3DRS_ZENABLE, v ? TRUE : FALSE)))
+			return FCYERR_INTERNALERR;
+		m_bZBufferEnabled = v;
+	}
+
 	return FCYERR_OK;
 }
 
