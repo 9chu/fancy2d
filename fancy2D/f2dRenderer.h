@@ -352,6 +352,13 @@ struct f2dFontRenderer :
 	/// @param[in] Type 翻转方式
 	virtual void SetFlipType(F2DSPRITEFLIP Type)=0;
 
+	/// @brief 获取字形缩放
+	virtual fcyVec2 GetScale()=0;
+
+	/// @brief 设置字形缩放
+	/// @note  该方法将影响MeasureString方法
+	virtual void SetScale(fcyVec2 Scale)=0;
+
 	/// @brief     测量一个字符串最终绘制的大小
 	/// @param[in] String 字符串
 	virtual fcyRect MeasureString(fcStrW String)=0;
@@ -381,7 +388,33 @@ struct f2dFontRenderer :
 	/// @param[in]  Bias     倾斜角，0为不倾斜
 	/// @param[in]  StartPos 绘制起始基准
 	/// @param[out] PosOut   绘制终止位置，可空
-	virtual fResult DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, fFloat Bias, const fcyVec2& StartPos, fcyVec2* PosOut)=0;
+	virtual fResult DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, fFloat Bias, const fcyVec2& StartPos, fcyVec2* PosOut) = 0;
+
+	/// @brief     绘制文字
+	/// @brief      该方法适应y轴向上的情况
+	/// @param[in] pGraph   渲染器
+	/// @param[in] Text     文字
+	/// @param[in] StartPos 绘制起始基准
+	virtual fResult DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, const fcyVec2& StartPos) = 0;
+
+	/// @brief     绘制文字
+	/// @brief      该方法适应y轴向上的情况
+	/// @param[in]  pGraph   渲染器
+	/// @param[in]  Text     文字
+	/// @param[in]  Count    字数，设为-1则为全部文字
+	/// @param[in]  StartPos 绘制起始基准
+	/// @param[out] PosOut   绘制终止位置，可空
+	virtual fResult DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, const fcyVec2& StartPos, fcyVec2* PosOut) = 0;
+
+	/// @brief      绘制文字
+	/// @brief      该方法适应y轴向上的情况
+	/// @param[in]  pGraph   渲染器
+	/// @param[in]  Text     文字
+	/// @param[in]  Count    字数，设为-1则为全部文字
+	/// @param[in]  Bias     倾斜角，0为不倾斜
+	/// @param[in]  StartPos 绘制起始基准
+	/// @param[out] PosOut   绘制终止位置，可空
+	virtual fResult DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, fFloat Bias, const fcyVec2& StartPos, fcyVec2* PosOut) = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

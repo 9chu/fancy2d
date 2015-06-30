@@ -20,6 +20,7 @@ protected:
 	F2DSPRITEFLIP m_FlipType;
 	fcyColor m_BlendColor[4];
 	fFloat m_ZValue;
+	fcyVec2 m_Scale;
 protected:
 	// 复制UV并翻转
 	void copyAndFlipUV(const f2dGlyphInfo& Info, f2dGraphics2DVertex DestArr[]);
@@ -37,6 +38,8 @@ public: // 接口实现
 	void SetColor(fuInt Index, const fcyColor& Color);
 	F2DSPRITEFLIP GetFlipType();
 	void SetFlipType(F2DSPRITEFLIP Type);
+	fcyVec2 GetScale();
+	void SetScale(fcyVec2 Scale);
 
 	fcyRect MeasureString(fcStrW String);
 	fFloat MeasureStringWidth(fcStrW String);
@@ -44,6 +47,10 @@ public: // 接口实现
 	fResult DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, const fcyVec2& StartPos);
 	fResult DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, const fcyVec2& StartPos, fcyVec2* PosOut);
 	fResult DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, fFloat Bias, const fcyVec2& StartPos, fcyVec2* PosOut);
+
+	fResult DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, const fcyVec2& StartPos);
+	fResult DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, const fcyVec2& StartPos, fcyVec2* PosOut);
+	fResult DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, fFloat Bias, const fcyVec2& StartPos, fcyVec2* PosOut);
 protected:
 	f2dFontRendererImpl(f2dFontProvider* pProvider);
 	~f2dFontRendererImpl();

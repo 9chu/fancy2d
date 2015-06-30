@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 f2dFontRendererImpl::f2dFontRendererImpl(f2dFontProvider* pProvider)
-	: m_pListener(NULL), m_pProvider(pProvider), m_FlipType(F2DSPRITEFLIP_NONE), m_ZValue(1.f)
+	: m_pListener(NULL), m_pProvider(pProvider), m_FlipType(F2DSPRITEFLIP_NONE), m_ZValue(1.f), m_Scale(1.f, 1.f)
 {
 	if (m_pProvider)
 		m_pProvider->AddRef();
@@ -133,6 +133,16 @@ void f2dFontRendererImpl::SetFlipType(F2DSPRITEFLIP Type)
 	m_FlipType = Type;
 }
 
+fcyVec2 f2dFontRendererImpl::GetScale()
+{
+	return m_Scale;
+}
+
+void f2dFontRendererImpl::SetScale(fcyVec2 Scale)
+{
+	m_Scale = Scale;
+}
+
 fcyRect f2dFontRendererImpl::MeasureString(fcStrW String)
 {
 	if (!m_pProvider)
@@ -162,8 +172,11 @@ fcyRect f2dFontRendererImpl::MeasureString(fcStrW String)
 				float tBottom = tStartPos.y + (tInfo.GlyphSize.y - tInfo.BrushPos.y);
 				float tLeft = tStartPos.x - tInfo.BrushPos.x;
 				float tWidth = tInfo.GlyphSize.x - tInfo.BrushPos.x;
-				if(tWidth < tInfo.Advance.x)
-					tWidth = tInfo.Advance.x;
+				if (i + 1 < tCount && String[i + 1] != L'\n')
+				{
+					if (tWidth < tInfo.Advance.x)
+						tWidth = tInfo.Advance.x;
+				}
 				float tRight = tStartPos.x + tWidth;
 
 				tBoundBox.a.x = FCYMIN(tBoundBox.a.x, tLeft);
@@ -176,8 +189,12 @@ fcyRect f2dFontRendererImpl::MeasureString(fcStrW String)
 		}
 	}
 
-	if(tMeasureable)
+	if (tMeasureable)
+	{
+		tBoundBox.b.x = tBoundBox.a.x + tBoundBox.GetWidth() * m_Scale.x;
+		tBoundBox.b.y = tBoundBox.a.y + tBoundBox.GetHeight() * m_Scale.y;
 		return tBoundBox;
+	}
 	else
 		return fcyRect();
 }
@@ -192,23 +209,23 @@ fFloat f2dFontRendererImpl::MeasureStringWidth(fcStrW String)
 	fuInt tCount = wcslen(String);
 
 	f2dGlyphInfo tInfo;
-	for(fuInt i = 0; i<tCount; ++i)
+	for(fuInt i = 0; i < tCount; ++i)
 	{
 		if(String[i] == L'\n')
-		{
 			tStartPos.x = 0;
-			tStartPos.y += m_pProvider->GetLineHeight();
-		}
 		else
 		{
-			if(FCYOK(m_pProvider->QueryGlyph(NULL, String[i], &tInfo)))
+			if (FCYOK(m_pProvider->QueryGlyph(NULL, String[i], &tInfo)))
 			{
-				tStartPos += tInfo.Advance;
+				if (i + 1 < tCount && String[i + 1] != L'\n')
+					tStartPos.x += tInfo.Advance.x;
+				else
+					tStartPos.x += tInfo.GlyphSize.x;
 			}
 		}
 	}
 
-	return tStartPos.x;
+	return tStartPos.x * m_Scale.x;
 }
 
 fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, const fcyVec2& StartPos)
@@ -235,8 +252,8 @@ fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt
 	if(Count != -1)
 		tCount = tCount < Count ? tCount : Count;
 
-	fcyVec2 tPos = StartPos;                        // 笔触位置
-	float tHeight = m_pProvider->GetLineHeight();   // 行高
+	fcyVec2 tPos = StartPos;  // 笔触位置
+	float tHeight = m_pProvider->GetLineHeight() * m_Scale.y;  // 行高
 
 	// --- 绘制每一个字符 ---
 	f2dTexture2D* pTex = m_pProvider->GetCacheTexture();
@@ -257,6 +274,13 @@ fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt
 		// 取出文字
 		if(FCYOK(m_pProvider->QueryGlyph(pGraph, Text[i], &tInfo)))
 		{
+			tInfo.Advance.x *= m_Scale.x;
+			tInfo.Advance.y *= m_Scale.y;
+			tInfo.BrushPos.x *= m_Scale.x;
+			tInfo.BrushPos.y *= m_Scale.y;
+			tInfo.GlyphSize.x *= m_Scale.x;
+			tInfo.GlyphSize.y *= m_Scale.y;
+
 			fBool tDraw;
 			if(m_pListener)
 				tDraw = m_pListener->OnGlyphBeginDraw(i, Text[i], tPos, tInfo.Advance);
@@ -316,8 +340,8 @@ fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt
 	if(Count != -1)
 		tCount = tCount < Count ? tCount : Count;
 
-	fcyVec2 tPos = StartPos;                        // 笔触位置
-	float tHeight = m_pProvider->GetLineHeight();   // 行高
+	fcyVec2 tPos = StartPos;  // 笔触位置
+	float tHeight = m_pProvider->GetLineHeight() * m_Scale.y;  // 行高
 
 	// Bias计算
 	Bias = tan(Bias);
@@ -341,6 +365,13 @@ fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt
 		// 取出文字
 		if(FCYOK(m_pProvider->QueryGlyph(pGraph, Text[i], &tInfo)))
 		{
+			tInfo.Advance.x *= m_Scale.x;
+			tInfo.Advance.y *= m_Scale.y;
+			tInfo.BrushPos.x *= m_Scale.x;
+			tInfo.BrushPos.y *= m_Scale.y;
+			tInfo.GlyphSize.x *= m_Scale.x;
+			tInfo.GlyphSize.y *= m_Scale.y;
+
 			fBool tDraw;
 			if(m_pListener)
 				tDraw = m_pListener->OnGlyphBeginDraw(i, Text[i], tPos, tInfo.Advance);
@@ -381,6 +412,195 @@ fResult f2dFontRendererImpl::DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt
 
 	// 返回新的位置
 	if(PosOut)
+		*PosOut = tPos;
+
+	return FCYERR_OK;
+}
+
+fResult f2dFontRendererImpl::DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, const fcyVec2& StartPos)
+{
+	return DrawTextW2(pGraph, Text, -1, StartPos, NULL);
+}
+
+fResult f2dFontRendererImpl::DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, const fcyVec2& StartPos, fcyVec2* PosOut)
+{
+	if (!m_pProvider || !pGraph || !pGraph->IsInRender())
+		return FCYERR_ILLEGAL;
+
+	// --- 准备顶点 ---
+	f2dGraphics2DVertex tVerts[4] =
+	{
+		{ 0.f, 0.f, m_ZValue, m_BlendColor[0].argb, 0.f, 0.f },
+		{ 0.f, 0.f, m_ZValue, m_BlendColor[1].argb, 0.f, 0.f },
+		{ 0.f, 0.f, m_ZValue, m_BlendColor[2].argb, 0.f, 0.f },
+		{ 0.f, 0.f, m_ZValue, m_BlendColor[3].argb, 0.f, 0.f }
+	};
+
+	// --- 计算需要绘制的数量 ---
+	fuInt tCount = wcslen(Text);                    // 字符数量
+	if (Count != -1)
+		tCount = tCount < Count ? tCount : Count;
+
+	fcyVec2 tPos = StartPos;  // 笔触位置
+	float tHeight = m_pProvider->GetLineHeight() * m_Scale.y;  // 行高
+
+	// --- 绘制每一个字符 ---
+	f2dTexture2D* pTex = m_pProvider->GetCacheTexture();
+	if (!pTex)
+		return FCYERR_INTERNALERR;
+
+	f2dGlyphInfo tInfo;
+	for (fuInt i = 0; i<tCount; ++i)
+	{
+		// 换行处理
+		if (Text[i] == L'\n')
+		{
+			tPos.x = StartPos.x;
+			tPos.y -= tHeight;
+			continue;
+		}
+
+		// 取出文字
+		if (FCYOK(m_pProvider->QueryGlyph(pGraph, Text[i], &tInfo)))
+		{
+			tInfo.Advance.x *= m_Scale.x;
+			tInfo.Advance.y *= -m_Scale.y;
+			tInfo.BrushPos.x *= m_Scale.x;
+			tInfo.BrushPos.y *= -m_Scale.y;
+			tInfo.GlyphSize.x *= m_Scale.x;
+			tInfo.GlyphSize.y *= -m_Scale.y;
+
+			fBool tDraw;
+			if (m_pListener)
+				tDraw = m_pListener->OnGlyphBeginDraw(i, Text[i], tPos, tInfo.Advance);
+			else
+				tDraw = true;
+
+			if (tDraw)
+			{
+				// 拷贝贴图uv信息并进行翻转处理
+				copyAndFlipUV(tInfo, tVerts);
+
+				// 计算位置矩形
+				tVerts[0].x = tPos.x - tInfo.BrushPos.x;
+				tVerts[0].y = tPos.y - tInfo.BrushPos.y;
+				tVerts[1].x = tVerts[0].x + tInfo.GlyphSize.x;
+				tVerts[1].y = tVerts[0].y;
+				tVerts[2].x = tVerts[0].x + tInfo.GlyphSize.x;
+				tVerts[2].y = tVerts[0].y + tInfo.GlyphSize.y;
+				tVerts[3].x = tVerts[0].x;
+				tVerts[3].y = tVerts[2].y;
+
+				if (m_pListener)
+					m_pListener->OnGlyphCalcuCoord(tVerts);
+
+				// 绘图
+				pGraph->DrawQuad(pTex, tVerts);
+			}
+
+			// 笔触位置后移
+			tPos += tInfo.Advance;
+		}
+	}
+
+	// 返回新的位置
+	if (PosOut)
+		*PosOut = tPos;
+
+	return FCYERR_OK;
+}
+
+fResult f2dFontRendererImpl::DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, fFloat Bias, const fcyVec2& StartPos, fcyVec2* PosOut)
+{
+	if (!m_pProvider || !pGraph || !pGraph->IsInRender())
+		return FCYERR_ILLEGAL;
+
+	// --- 准备顶点 ---
+	f2dGraphics2DVertex tVerts[4] =
+	{
+		{ 0.f, 0.f, m_ZValue, m_BlendColor[0].argb, 0.f, 0.f },
+		{ 0.f, 0.f, m_ZValue, m_BlendColor[1].argb, 0.f, 0.f },
+		{ 0.f, 0.f, m_ZValue, m_BlendColor[2].argb, 0.f, 0.f },
+		{ 0.f, 0.f, m_ZValue, m_BlendColor[3].argb, 0.f, 0.f }
+	};
+
+	// --- 计算需要绘制的数量 ---
+	fuInt tCount = wcslen(Text);                    // 字符数量
+	if (Count != -1)
+		tCount = tCount < Count ? tCount : Count;
+
+	fcyVec2 tPos = StartPos;  // 笔触位置
+	float tHeight = m_pProvider->GetLineHeight() * m_Scale.y;  // 行高
+
+	// Bias计算
+	Bias = tan(Bias);
+
+	// --- 绘制每一个字符 ---
+	f2dTexture2D* pTex = m_pProvider->GetCacheTexture();
+	if (!pTex)
+		return FCYERR_INTERNALERR;
+
+	f2dGlyphInfo tInfo;
+	for (fuInt i = 0; i<tCount; ++i)
+	{
+		// 换行处理
+		if (Text[i] == L'\n')
+		{
+			tPos.x = StartPos.x;
+			tPos.y -= tHeight;
+			continue;
+		}
+
+		// 取出文字
+		if (FCYOK(m_pProvider->QueryGlyph(pGraph, Text[i], &tInfo)))
+		{
+			tInfo.Advance.x *= m_Scale.x;
+			tInfo.Advance.y *= -m_Scale.y;
+			tInfo.BrushPos.x *= m_Scale.x;
+			tInfo.BrushPos.y *= -m_Scale.y;
+			tInfo.GlyphSize.x *= m_Scale.x;
+			tInfo.GlyphSize.y *= -m_Scale.y;
+
+			fBool tDraw;
+			if (m_pListener)
+				tDraw = m_pListener->OnGlyphBeginDraw(i, Text[i], tPos, tInfo.Advance);
+			else
+				tDraw = true;
+
+			if (tDraw)
+			{
+				// 拷贝贴图uv信息并进行翻转处理
+				copyAndFlipUV(tInfo, tVerts);
+
+				// 计算位置矩形
+				float tBias = Bias * tInfo.GlyphSize.y;
+
+				tVerts[0].x = tPos.x - tInfo.BrushPos.x;
+				tVerts[0].y = tPos.y - tInfo.BrushPos.y;
+				tVerts[1].x = tVerts[0].x + tInfo.GlyphSize.x;
+				tVerts[1].y = tVerts[0].y;
+				tVerts[2].x = tVerts[0].x + tInfo.GlyphSize.x;
+				tVerts[2].y = tVerts[0].y + tInfo.GlyphSize.y;
+				tVerts[3].x = tVerts[0].x;
+				tVerts[3].y = tVerts[2].y;
+
+				tVerts[0].x += tBias;
+				tVerts[1].x += tBias;
+
+				if (m_pListener)
+					m_pListener->OnGlyphCalcuCoord(tVerts);
+
+				// 绘图
+				pGraph->DrawQuad(pTex, tVerts);
+			}
+
+			// 笔触位置后移
+			tPos += tInfo.Advance;
+		}
+	}
+
+	// 返回新的位置
+	if (PosOut)
 		*PosOut = tPos;
 
 	return FCYERR_OK;
