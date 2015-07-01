@@ -143,7 +143,7 @@ void f2dFontRendererImpl::SetScale(fcyVec2 Scale)
 	m_Scale = Scale;
 }
 
-fcyRect f2dFontRendererImpl::MeasureString(fcStrW String)
+fcyRect f2dFontRendererImpl::MeasureString(fcStrW String, bool bStrictWidth)
 {
 	if (!m_pProvider)
 		return fcyRect();
@@ -171,12 +171,18 @@ fcyRect f2dFontRendererImpl::MeasureString(fcStrW String)
 				float tTop = tStartPos.y - tInfo.BrushPos.y;
 				float tBottom = tStartPos.y + (tInfo.GlyphSize.y - tInfo.BrushPos.y);
 				float tLeft = tStartPos.x - tInfo.BrushPos.x;
-				float tWidth = tInfo.GlyphSize.x - tInfo.BrushPos.x;
-				if (i + 1 < tCount && String[i + 1] != L'\n')
+				float tWidth;
+				if (bStrictWidth)
 				{
-					if (tWidth < tInfo.Advance.x)
-						tWidth = tInfo.Advance.x;
+					tWidth = tInfo.GlyphSize.x - tInfo.BrushPos.x;
+					if (i + 1 < tCount && String[i + 1] != L'\n')
+					{
+						if (tWidth < tInfo.Advance.x)
+							tWidth = tInfo.Advance.x;
+					}
 				}
+				else
+					tWidth = tInfo.Advance.x - tInfo.BrushPos.x;
 				float tRight = tStartPos.x + tWidth;
 
 				tBoundBox.a.x = FCYMIN(tBoundBox.a.x, tLeft);

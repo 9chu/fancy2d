@@ -334,9 +334,11 @@ bool f2dFontFileProvider::renderCache(FontCacheInfo* pCache, fCharW Char)
 				pColor[x].argb = 0x00000000;
 
 				// 在字体数据中
-				if(y >= s_Magin && y < s_Magin + tBitmap->rows)
-					if(x >= s_Magin && x < s_Magin + tBitmap->width)
+				if (y >= s_Magin && y < s_Magin + tBitmap->rows)
+				{
+					if (x >= s_Magin && x < s_Magin + tBitmap->width)
 						pColor[x].a = tSrcData[x - s_Magin];
+				}	
 			}
 
 			if(y >= s_Magin && y < s_Magin + tBitmap->rows)

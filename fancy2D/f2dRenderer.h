@@ -361,7 +361,8 @@ struct f2dFontRenderer :
 
 	/// @brief     测量一个字符串最终绘制的大小
 	/// @param[in] String 字符串
-	virtual fcyRect MeasureString(fcStrW String)=0;
+	/// @param[in] bStrictWidth 严格宽度
+	virtual fcyRect MeasureString(fcStrW String, bool bStrictWidth=true)=0;
 
 	/// @brief     测量一个字符串最终绘制的宽度
 	/// @param[in] String 字符串

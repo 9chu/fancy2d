@@ -41,7 +41,7 @@ public: // 接口实现
 	fcyVec2 GetScale();
 	void SetScale(fcyVec2 Scale);
 
-	fcyRect MeasureString(fcStrW String);
+	fcyRect MeasureString(fcStrW String, bool bStrictWidth);
 	fFloat MeasureStringWidth(fcStrW String);
 
 	fResult DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, const fcyVec2& StartPos);
