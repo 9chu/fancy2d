@@ -213,6 +213,9 @@
     <ClInclude Include="Renderer\f2dParticle.h">
       <Filter>Renderer\header</Filter>
     </ClInclude>
+    <ClInclude Include="Sound\f2dSoundBufferPull.h">
+      <Filter>Sound\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\f2dEngineImpl.cpp">
@@ -316,6 +319,9 @@
     </ClCompile>
     <ClCompile Include="Renderer\f2dParticle.cpp">
       <Filter>Renderer\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound\f2dSoundBufferPull.cpp">
+      <Filter>Sound\source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

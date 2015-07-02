@@ -115,7 +115,15 @@ struct f2dSoundSys
 	/// @param[in]  pDecoder     音频解码器，动态缓冲区会保存解码器指针，请不要将一个解码器用于多个缓冲区
 	/// @param[in]  bGlobalFocus 全局响应，设为true则当应用程序不被激活时仍然可以发出声音
 	/// @param[out] pOut         输出的音频缓冲区指针
-	virtual fResult CreateDynamicBuffer(f2dSoundDecoder* pDecoder, fBool bGlobalFocus, f2dSoundBuffer** pOut)=0;
+	virtual fResult CreateDynamicBuffer(f2dSoundDecoder* pDecoder, fBool bGlobalFocus, f2dSoundBuffer** pOut) = 0;
+
+	/// @brief      创建推流器
+	/// @note       推流器用于混音输出，只有Play和Pause有效，其余函数均不起作用
+	/// @param[in]  pDecoder            绑定的解码器
+	/// @param[in]  iBufferSampleCount  缓冲区存储的采样数
+	/// @param[in]  bGlobalFocus        全局响应，设为true则当应用程序不被激活时仍然可以发出声音
+	/// @param[out] pOut                输出的音频缓冲区指针
+	virtual fResult CreatePullBuffer(f2dSoundDecoder* pDecoder, fuInt iBufferSampleCount, fBool bGlobalFocus, f2dSoundBuffer** pOut) = 0;
 
 	/// @brief      创建精灵音效
 	/// @note       提供音效播放功能，会把PCM数据读取到内存中

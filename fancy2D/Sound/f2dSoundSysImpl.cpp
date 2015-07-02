@@ -2,6 +2,7 @@
 
 #include "f2dSoundBufferStatic.h"
 #include "f2dSoundBufferDynamic.h"
+#include "f2dSoundBufferPull.h"
 #include "f2dSoundSpriteImpl.h"
 
 #include "f2dWaveDecoder.h"
@@ -92,6 +93,28 @@ fResult f2dSoundSysImpl::CreateDynamicBuffer(f2dSoundDecoder* pDecoder, fBool bG
 		pBuffer = new f2dSoundBufferDynamic(m_pDSound8, pDecoder, bGlobalFocus);
 	}
 	catch(const fcyException& e)
+	{
+		m_pEngine->ThrowException(e);
+		return FCYERR_INTERNALERR;
+	}
+
+	*pOut = pBuffer;
+	return FCYERR_OK;
+}
+
+fResult f2dSoundSysImpl::CreatePullBuffer(f2dSoundDecoder* pDecoder, fuInt iBufferSampleCount, fBool bGlobalFocus, f2dSoundBuffer** pOut)
+{
+	if (!pDecoder || !pOut)
+		return FCYERR_INVAILDPARAM;
+
+	*pOut = NULL;
+	f2dSoundBuffer* pBuffer = NULL;
+
+	try
+	{
+		pBuffer = new f2dSoundBufferPull(m_pDSound8, pDecoder, iBufferSampleCount, bGlobalFocus);
+	}
+	catch (const fcyException& e)
 	{
 		m_pEngine->ThrowException(e);
 		return FCYERR_INTERNALERR;

@@ -219,6 +219,7 @@
     <ClInclude Include="Renderer\f2dRendererImpl.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sound\f2dSoundBufferDynamic.h" />
+    <ClInclude Include="Sound\f2dSoundBufferPull.h" />
     <ClInclude Include="Sound\f2dSoundBufferStatic.h" />
     <ClInclude Include="Sound\f2dSoundSpriteImpl.h" />
     <ClInclude Include="Sound\f2dSoundSysAPI.h" />
@@ -255,6 +256,7 @@
     <ClCompile Include="RenderDev\f2dTextureImpl.cpp" />
     <ClCompile Include="Renderer\f2dRendererImpl.cpp" />
     <ClCompile Include="Sound\f2dSoundBufferDynamic.cpp" />
+    <ClCompile Include="Sound\f2dSoundBufferPull.cpp" />
     <ClCompile Include="Sound\f2dSoundBufferStatic.cpp" />
     <ClCompile Include="Sound\f2dSoundSpriteImpl.cpp" />
     <ClCompile Include="Sound\f2dSoundSysAPI.cpp" />
