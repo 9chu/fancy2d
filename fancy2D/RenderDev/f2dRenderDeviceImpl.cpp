@@ -236,11 +236,10 @@ void f2dRenderDeviceImpl::initState()
 	// --- 设置默认渲染状态 ---
 	m_pDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);   // 设置反面剔除
 	m_pDev->SetRenderState(D3DRS_LIGHTING, FALSE);    // 关闭光照
-	m_pDev->SetRenderState(D3DRS_ZENABLE, m_bZBufferEnabled);   // 启动Z缓冲
 	m_pDev->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);  // 打开矩形裁剪功能
 
 	// --- 设置ZBUFFER ---
-	m_pDev->SetRenderState(D3DRS_ZENABLE, TRUE); 
+	m_pDev->SetRenderState(D3DRS_ZENABLE, m_bZBufferEnabled);
 	m_pDev->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	m_pDev->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
