@@ -368,6 +368,10 @@ fResult f2dRenderDeviceImpl::Present()
 	if(m_pBackBuffer)
 	{
 		m_pDev->SetRenderTarget(0, m_pBackBuffer);
+
+		// 此时vp已发生变化，跟踪新的vp
+		m_pDev->GetViewport(&m_ViewPort);
+
 		FCYSAFEKILL(m_pBackBuffer);
 		FCYSAFEKILL(m_pCurBackBuffer);
 	}
@@ -1057,6 +1061,10 @@ fResult f2dRenderDeviceImpl::SetRenderTarget(f2dTexture2D* pTex)
 	{
 		FCYSAFEKILL(m_pCurBackBuffer);
 		m_pDev->SetRenderTarget(0, m_pBackBuffer);
+
+		// 此时vp已发生变化，跟踪新的vp
+		m_pDev->GetViewport(&m_ViewPort);
+
 		FCYSAFEKILL(m_pBackBuffer);
 		return FCYERR_OK;
 	}
@@ -1070,6 +1078,9 @@ fResult f2dRenderDeviceImpl::SetRenderTarget(f2dTexture2D* pTex)
 		m_pDev->GetRenderTarget(0, &m_pBackBuffer);
 
 	m_pDev->SetRenderTarget(0, ((f2dTexture2DRenderTarget*)m_pCurBackBuffer)->GetSurface());
+
+	// 此时vp已发生变化，跟踪新的vp
+	m_pDev->GetViewport(&m_ViewPort);
 
 	return FCYERR_OK;
 }

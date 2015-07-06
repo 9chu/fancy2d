@@ -129,16 +129,18 @@ fResult f2dGraphics3DImpl::RenderPostEffect()
 	// ×¼±¸¶¥µã
 	float tWidth = (float)m_pParent->GetBufferWidth();
 	float tHeight = (float)m_pParent->GetBufferHeight();
+	float tVPWidthFixed = 0.5f / tWidth;
+	float tVPHeightFixed = 0.5f / tHeight;
 	struct VertType
 	{
 		fcyVec4 Pos;
 		fcyVec2 Tex;
 	} tVertexArr[4] = 
 	{
-		{ fcyVec4(0.f, 0.f, 0.f, 1.f), fcyVec2(0.f, 0.f) },
-		{ fcyVec4(tWidth, 0.f, 0.f, 1.f), fcyVec2(1.f, 0.f) },
-		{ fcyVec4(tWidth, tHeight, 0.f, 1.f), fcyVec2(1.f, 1.f) },
-		{ fcyVec4(0.f, tHeight, 0.f, 1.f), fcyVec2(0.f, 1.f) }
+		{ fcyVec4(0.f, 0.f, 0.f, 1.f), fcyVec2(0.f + tVPWidthFixed, 0.f + tVPHeightFixed) },
+		{ fcyVec4(tWidth, 0.f, 0.f, 1.f), fcyVec2(1.f + tVPWidthFixed, 0.f + tVPHeightFixed) },
+		{ fcyVec4(tWidth, tHeight, 0.f, 1.f), fcyVec2(1.f + tVPWidthFixed, 1.f + tVPHeightFixed) },
+		{ fcyVec4(0.f, tHeight, 0.f, 1.f), fcyVec2(0.f + tVPWidthFixed, 1.f + tVPHeightFixed) }
 	};
 
 	m_pParent->SubmitVD(NULL);
