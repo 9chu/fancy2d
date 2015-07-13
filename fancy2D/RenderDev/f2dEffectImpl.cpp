@@ -122,7 +122,7 @@ f2dEffectImpl::f2dEffectImpl(f2dRenderDeviceImpl* pDev, f2dStream* pStream, fBoo
 	FCYSAFEDELARR(tCodes);
 
 	//  ß∞‹¥¶¿Ì
-	if(FAILED(tHR))
+	if (FAILED(tHR) || !pEffect)
 	{
 		if(pErr)
 		{

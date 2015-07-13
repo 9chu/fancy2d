@@ -598,7 +598,10 @@ protected: // 设备丢失
 		for(std::unordered_map<D3DXHANDLE, f2dTexture*>::iterator i = m_CachedTex.begin();
 			i != m_CachedTex.end(); ++i)
 		{
-			m_pEffect->SetTexture(i->first, (IDirect3DBaseTexture9*)i->second->GetHandle());
+			if (i->second->GetHandle())
+				m_pEffect->SetTexture(i->first, (IDirect3DBaseTexture9*)i->second->GetHandle());
+			else
+				m_pEffect->SetTexture(i->first, NULL);
 		}
 
 		if(m_pCurTechnique)
@@ -614,7 +617,14 @@ public: // 内部公开
 	void SetCachedTex(D3DXHANDLE pHandle, f2dTexture* pTex)
 	{
 		FCYSAFEKILL(m_CachedTex[pHandle]);
-		m_CachedTex[pHandle] = pTex;
+		if (!pTex)
+		{
+			auto i = m_CachedTex.find(pHandle);
+			if (i != m_CachedTex.end())
+				m_CachedTex.erase(i);
+		}	
+		else
+			m_CachedTex[pHandle] = pTex;
 		if(pTex)
 			pTex->AddRef();
 	}
