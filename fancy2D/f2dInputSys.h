@@ -292,36 +292,44 @@ struct f2dInputKeyboard : public f2dInputDevice
 struct f2dInputJoystickEventListener
 {
 	/// @brief     按钮按下
+	/// @param[in] p     手柄指针
 	/// @param[in] Index 按键索引
-	virtual void OnJoystickBtnDown(fuInt Index) {}
+	virtual void OnJoystickBtnDown(f2dInputJoystick* p, fuInt Index) {}
 
 	/// @brief     按钮放开
+	/// @param[in] p     手柄指针
 	/// @param[in] Index 按键索引
-	virtual void OnJoystickBtnUp(fuInt Index) {}
+	virtual void OnJoystickBtnUp(f2dInputJoystick* p, fuInt Index) {}
 
 	/// @brief     X轴位置变化
+	/// @param[in] p     手柄指针
 	/// @param[in] Value 新的位置
-	virtual void OnJoystickXAxisPosChange(fFloat Value) {}
+	virtual void OnJoystickXAxisPosChange(f2dInputJoystick* p, fFloat Value) {}
 
 	/// @brief     Y轴位置变化
+	/// @param[in] p     手柄指针
 	/// @param[in] Value 新的位置
-	virtual void OnJoystickYAxisPosChange(fFloat Value) {}
+	virtual void OnJoystickYAxisPosChange(f2dInputJoystick* p, fFloat Value) {}
 
 	/// @brief     Z轴位置变化
+	/// @param[in] p     手柄指针
 	/// @param[in] Value 新的位置
-	virtual void OnJoystickZAxisPosChange(fFloat Value) {}
+	virtual void OnJoystickZAxisPosChange(f2dInputJoystick* p, fFloat Value) {}
 
 	/// @brief     X轴旋转变化
+	/// @param[in] p     手柄指针
 	/// @param[in] Value 新的位置
-	virtual void OnJoystickXAxisRotationChange(fFloat Value) {}
+	virtual void OnJoystickXAxisRotationChange(f2dInputJoystick* p, fFloat Value) {}
 
 	/// @brief     Y轴旋转变化
+	/// @param[in] p     手柄指针
 	/// @param[in] Value 新的位置
-	virtual void OnJoystickYAxisRotationChange(fFloat Value) {}
+	virtual void OnJoystickYAxisRotationChange(f2dInputJoystick* p, fFloat Value) {}
 
 	/// @brief     Z轴旋转变化
+	/// @param[in] p     手柄指针
 	/// @param[in] Value 新的位置
-	virtual void OnJoystickZAxisRotationChange(fFloat Value) {}
+	virtual void OnJoystickZAxisRotationChange(f2dInputJoystick* p, fFloat Value) {}
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -26,14 +26,14 @@ protected:
 	protected:
 		f2dEngineImpl* m_pEngine;
 	public:
-		void OnJoystickBtnDown(fuInt Index);
-		void OnJoystickBtnUp(fuInt Index);
-		void OnJoystickXAxisPosChange(fFloat Value);
-		void OnJoystickYAxisPosChange(fFloat Value);
-		void OnJoystickZAxisPosChange(fFloat Value);
-		void OnJoystickXAxisRotationChange(fFloat Value);
-		void OnJoystickYAxisRotationChange(fFloat Value);
-		void OnJoystickZAxisRotationChange(fFloat Value);
+		void OnJoystickBtnDown(f2dInputJoystick* p, fuInt Index);
+		void OnJoystickBtnUp(f2dInputJoystick* p, fuInt Index);
+		void OnJoystickXAxisPosChange(f2dInputJoystick* p, fFloat Value);
+		void OnJoystickYAxisPosChange(f2dInputJoystick* p, fFloat Value);
+		void OnJoystickZAxisPosChange(f2dInputJoystick* p, fFloat Value);
+		void OnJoystickXAxisRotationChange(f2dInputJoystick* p, fFloat Value);
+		void OnJoystickYAxisRotationChange(f2dInputJoystick* p, fFloat Value);
+		void OnJoystickZAxisRotationChange(f2dInputJoystick* p, fFloat Value);
 	public:
 		DefaultListener(f2dInputSysImpl* pInputSys);
 	};
