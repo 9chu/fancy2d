@@ -1204,15 +1204,6 @@ fResult f2dRenderDeviceImpl::SaveScreen(f2dStream* pStream)
 
 	IDirect3DSurface9* pSurface = NULL;
 
-	HRESULT tHR = m_pDev->CreateOffscreenPlainSurface(GetBufferWidth(), GetBufferHeight(),
-		D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pSurface, NULL);
-
-	if(FAILED(tHR))
-	{
-		m_pEngine->ThrowException(fcyWin32COMException("f2dRenderDeviceImpl::SaveScreen", "CreateOffscreenPlainSurface Failed.", tHR));
-		return FCYERR_INTERNALERR;
-	}
-
 	if(FAILED(m_pDev->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pSurface)))
 	{
 		FCYSAFEKILL(pSurface);
@@ -1220,7 +1211,7 @@ fResult f2dRenderDeviceImpl::SaveScreen(f2dStream* pStream)
 	}
 
 	ID3DXBuffer* pDataBuffer = NULL;
-	tHR = m_API.DLLEntry_D3DXSaveSurfaceToFileInMemory(&pDataBuffer, D3DXIFF_PNG, pSurface, NULL, NULL);
+	HRESULT tHR = m_API.DLLEntry_D3DXSaveSurfaceToFileInMemory(&pDataBuffer, D3DXIFF_PNG, pSurface, NULL, NULL);
 	FCYSAFEKILL(pSurface);
 	if(FAILED(tHR))
 	{
