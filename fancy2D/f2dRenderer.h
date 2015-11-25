@@ -87,13 +87,21 @@ struct f2dSprite :
 	/// @brief 绘制精灵
 	/// @param[in] pGraph 绘图对象指针
 	/// @param[in] Dest   目标矩形
-	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyRect& Dest)=0;
+	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyRect& Dest, fBool bAutoFixCoord = true) = 0;
 
 	/// @brief 绘制精灵
 	/// @param[in] pGraph 绘图对象指针
 	/// @param[in] Dest   目标矩形
 	/// @param[in] SubTex 子纹理区域[0~1, 0~1]
 	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyRect& Dest, const fcyRect& SubTex)=0;
+
+	/// @brief 绘制精灵
+	/// @param[in] pGraph 绘图对象指针
+	/// @param[in] v1     坐标1
+	/// @param[in] v2     坐标2
+	/// @param[in] v3     坐标3
+	/// @param[in] v4     坐标4
+	virtual fResult Draw(f2dGraphics2D* pGraph, fcyVec3 v1, fcyVec3 v2, fcyVec3 v3, fcyVec3 v4, fBool bAutoFixCoord = true) = 0;
 
 	/// @brief 绘制精灵
 	/// @param[in] pGraph 绘图对象指针
@@ -118,7 +126,7 @@ struct f2dSprite :
 	/// @param[in] Center   精灵显示中心
 	/// @param[in] Scale    缩放
 	/// @param[in] Rotation 顺时针旋转角度，弧度制。
-	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation)=0;
+	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation, fBool bAutoFixCoord = true) = 0;
 	
 	/// @brief 绘制精灵
 	/// @param[in] pGraph   绘图对象指针
@@ -127,6 +135,44 @@ struct f2dSprite :
 	/// @param[in] Rotation 顺时针旋转角度，弧度制。
 	/// @param[in] SubTex   子纹理区域[0~1, 0~1]
 	virtual fResult Draw(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation, const fcyRect& SubTex)=0;
+
+	/// @brief 绘制精灵
+	/// @note  该方法适应y轴翻转的情况
+	/// @param[in] pGraph 绘图对象指针
+	/// @param[in] Center 精灵显示中心
+	virtual fResult Draw2(f2dGraphics2D* pGraph, const fcyVec2& Center)=0;
+
+	/// @brief 绘制精灵
+	/// @note  该方法适应y轴翻转的情况
+	/// @param[in] pGraph 绘图对象指针
+	/// @param[in] Center 精灵显示中心
+	/// @param[in] Scale  缩放
+	virtual fResult Draw2(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale)=0;
+
+	/// @brief 绘制精灵
+	/// @note  该方法适应y轴翻转的情况
+	/// @param[in] pGraph 绘图对象指针
+	/// @param[in] Center 精灵显示中心
+	/// @param[in] Scale  缩放
+	/// @param[in] SubTex 子纹理区域[0~1, 0~1]
+	virtual fResult Draw2(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, const fcyRect& SubTex)=0;
+
+	/// @brief 绘制精灵
+	/// @note  该方法适应y轴翻转的情况
+	/// @param[in] pGraph   绘图对象指针
+	/// @param[in] Center   精灵显示中心
+	/// @param[in] Scale    缩放
+	/// @param[in] Rotation 顺时针旋转角度，弧度制。
+	virtual fResult Draw2(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation, fBool bAutoFixCoord = true) = 0;
+
+	/// @brief 绘制精灵
+	/// @note  该方法适应y轴翻转的情况
+	/// @param[in] pGraph   绘图对象指针
+	/// @param[in] Center   精灵显示中心
+	/// @param[in] Scale    缩放
+	/// @param[in] Rotation 顺时针旋转角度，弧度制。
+	/// @param[in] SubTex   子纹理区域[0~1, 0~1]
+	virtual fResult Draw2(f2dGraphics2D* pGraph, const fcyVec2& Center, const fcyVec2& Scale, fFloat Rotation, const fcyRect& SubTex)=0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -306,9 +352,17 @@ struct f2dFontRenderer :
 	/// @param[in] Type 翻转方式
 	virtual void SetFlipType(F2DSPRITEFLIP Type)=0;
 
+	/// @brief 获取字形缩放
+	virtual fcyVec2 GetScale()=0;
+
+	/// @brief 设置字形缩放
+	/// @note  该方法将影响MeasureString方法
+	virtual void SetScale(fcyVec2 Scale)=0;
+
 	/// @brief     测量一个字符串最终绘制的大小
 	/// @param[in] String 字符串
-	virtual fcyRect MeasureString(fcStrW String)=0;
+	/// @param[in] bStrictWidth 严格宽度
+	virtual fcyRect MeasureString(fcStrW String, bool bStrictWidth=true)=0;
 
 	/// @brief     测量一个字符串最终绘制的宽度
 	/// @param[in] String 字符串
@@ -335,7 +389,33 @@ struct f2dFontRenderer :
 	/// @param[in]  Bias     倾斜角，0为不倾斜
 	/// @param[in]  StartPos 绘制起始基准
 	/// @param[out] PosOut   绘制终止位置，可空
-	virtual fResult DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, fFloat Bias, const fcyVec2& StartPos, fcyVec2* PosOut)=0;
+	virtual fResult DrawTextW(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, fFloat Bias, const fcyVec2& StartPos, fcyVec2* PosOut) = 0;
+
+	/// @brief     绘制文字
+	/// @brief      该方法适应y轴向上的情况
+	/// @param[in] pGraph   渲染器
+	/// @param[in] Text     文字
+	/// @param[in] StartPos 绘制起始基准
+	virtual fResult DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, const fcyVec2& StartPos) = 0;
+
+	/// @brief     绘制文字
+	/// @brief      该方法适应y轴向上的情况
+	/// @param[in]  pGraph   渲染器
+	/// @param[in]  Text     文字
+	/// @param[in]  Count    字数，设为-1则为全部文字
+	/// @param[in]  StartPos 绘制起始基准
+	/// @param[out] PosOut   绘制终止位置，可空
+	virtual fResult DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, const fcyVec2& StartPos, fcyVec2* PosOut) = 0;
+
+	/// @brief      绘制文字
+	/// @brief      该方法适应y轴向上的情况
+	/// @param[in]  pGraph   渲染器
+	/// @param[in]  Text     文字
+	/// @param[in]  Count    字数，设为-1则为全部文字
+	/// @param[in]  Bias     倾斜角，0为不倾斜
+	/// @param[in]  StartPos 绘制起始基准
+	/// @param[out] PosOut   绘制终止位置，可空
+	virtual fResult DrawTextW2(f2dGraphics2D* pGraph, fcStrW Text, fuInt Count, fFloat Bias, const fcyVec2& StartPos, fcyVec2* PosOut) = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

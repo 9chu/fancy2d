@@ -157,6 +157,11 @@ fcyMemStream::~fcyMemStream()
 {
 }
 
+fData fcyMemStream::GetInternalBuffer()
+{
+	return (fData)m_Data.data();
+}
+
 fBool fcyMemStream::CanWrite()
 {
 	return m_bWritable;

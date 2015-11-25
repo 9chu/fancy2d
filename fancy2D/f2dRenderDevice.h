@@ -611,6 +611,7 @@ struct f2dRenderDevice
 	virtual fcyVec2 EnumSupportResolution(fuInt Index)=0;
 
 	/// @brief     重设缓冲区
+	/// @note      该操作过后需要手动设置Graphics的矩阵和Viewport大小
 	/// @param[in] Width    缓冲区宽度
 	/// @param[in] Height   缓冲区高度
 	/// @param[in] Windowed 窗口化
@@ -639,6 +640,17 @@ struct f2dRenderDevice
 	/// @param[out] pOut      输出的纹理指针
 	virtual fResult CreateTextureFromStream(f2dStream* pStream, fuInt Width, fuInt Height, fBool IsDynamic, fBool HasMipmap, f2dTexture2D** pOut)=0;
 	
+	/// @brief      从内存区域创建纹理
+	/// @note       可以选择性创建动态/静态纹理
+	/// @param[in]  pMemory   内存区域
+	/// @param[in]  Size      内存区域大小
+	/// @param[in]  Width     宽度，设为0将使用数据流中图像默认宽度
+	/// @param[in]  Height    高度，设为0将使用数据流中图像默认高度
+	/// @param[in]  IsDynamic 是否为动态纹理
+	/// @param[in]  HasMipmap 创建Mipmap链，用于加快图像渲染，对动态纹理和渲染目标无效。推荐设为true
+	/// @param[out] pOut      输出的纹理指针
+	virtual fResult CreateTextureFromMemory(fcData pMemory, fLen Size, fuInt Width, fuInt Height, fBool IsDynamic, fBool HasMipmap, f2dTexture2D** pOut) = 0;
+
 	/// @brief      创建一个动态纹理
 	/// @note       动态纹理之中的数据会在设备丢失之后消失。
 	/// @param[in]  Width  宽度
@@ -740,6 +752,19 @@ struct f2dRenderDevice
 	/// @warning 矩形应当小于RenderTarget大小
 	/// @note    重新设置缓冲区大小时该值会被覆盖
 	virtual fResult SetScissorRect(const fcyRect& pRect)=0;
+
+	/// @brief 返回目前的Viewport
+	virtual fcyRect GetViewport()=0;
+
+	/// @brief     设置目前的Viewport
+	/// @param[in] vp 给定的视区
+	virtual fResult SetViewport(fcyRect vp)=0;
+
+	/// @brief 返回是否开启Z-buffer测试
+	virtual fBool IsZBufferEnabled()=0;
+
+	/// @brief 设置是否开启Z-buffer测试
+	virtual fResult SetZBufferEnable(fBool v)=0;
 
 	// --- 高级 ---
 	/// @brief     截屏

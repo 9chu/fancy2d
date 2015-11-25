@@ -10,50 +10,50 @@
 f2dInputJoystickImpl::DefaultListener::DefaultListener(f2dInputSysImpl* pInputSys)
 	: m_pEngine(pInputSys->GetEngine()) {}
 
-void f2dInputJoystickImpl::DefaultListener::OnJoystickBtnDown(fuInt Index)
+void f2dInputJoystickImpl::DefaultListener::OnJoystickBtnDown(f2dInputJoystick* p, fuInt Index)
 {
-	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONBUTTONDOWN, Index);
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONBUTTONDOWN, Index, (fuLong)p);
 }
 
-void f2dInputJoystickImpl::DefaultListener::OnJoystickBtnUp(fuInt Index)
+void f2dInputJoystickImpl::DefaultListener::OnJoystickBtnUp(f2dInputJoystick* p, fuInt Index)
 {
-	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONBUTTONUP, Index);
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONBUTTONUP, Index, (fuLong)p);
 }
 
-void f2dInputJoystickImpl::DefaultListener::OnJoystickXAxisPosChange(fFloat Value)
+void f2dInputJoystickImpl::DefaultListener::OnJoystickXAxisPosChange(f2dInputJoystick* p, fFloat Value)
 {
 	fDouble tValue = Value;
-	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONXPOSCHANGE, *(fuLong*)&tValue);
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONXPOSCHANGE, *(fuLong*)&tValue, (fuLong)p);
 }
 
-void f2dInputJoystickImpl::DefaultListener::OnJoystickYAxisPosChange(fFloat Value)
+void f2dInputJoystickImpl::DefaultListener::OnJoystickYAxisPosChange(f2dInputJoystick* p, fFloat Value)
 {
 	fDouble tValue = Value;
-	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONYPOSCHANGE, *(fuLong*)&tValue);
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONYPOSCHANGE, *(fuLong*)&tValue, (fuLong)p);
 }
 
-void f2dInputJoystickImpl::DefaultListener::OnJoystickZAxisPosChange(fFloat Value)
+void f2dInputJoystickImpl::DefaultListener::OnJoystickZAxisPosChange(f2dInputJoystick* p, fFloat Value)
 {
 	fDouble tValue = Value;
-	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONZPOSCHANGE, *(fuLong*)&tValue);
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONZPOSCHANGE, *(fuLong*)&tValue, (fuLong)p);
 }
 
-void f2dInputJoystickImpl::DefaultListener::OnJoystickXAxisRotationChange(fFloat Value)
+void f2dInputJoystickImpl::DefaultListener::OnJoystickXAxisRotationChange(f2dInputJoystick* p, fFloat Value)
 {
 	fDouble tValue = Value;
-	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONXROTCHANGE, *(fuLong*)&tValue);
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONXROTCHANGE, *(fuLong*)&tValue, (fuLong)p);
 }
 
-void f2dInputJoystickImpl::DefaultListener::OnJoystickYAxisRotationChange(fFloat Value)
+void f2dInputJoystickImpl::DefaultListener::OnJoystickYAxisRotationChange(f2dInputJoystick* p, fFloat Value)
 {
 	fDouble tValue = Value;
-	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONYROTCHANGE, *(fuLong*)&tValue);
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONYROTCHANGE, *(fuLong*)&tValue, (fuLong)p);
 }
 
-void f2dInputJoystickImpl::DefaultListener::OnJoystickZAxisRotationChange(fFloat Value)
+void f2dInputJoystickImpl::DefaultListener::OnJoystickZAxisRotationChange(f2dInputJoystick* p, fFloat Value)
 {
 	fDouble tValue = Value;
-	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONZROTCHANGE, *(fuLong*)&tValue);
+	m_pEngine->SendMsg(F2DMSG_JOYSTICK_ONZROTCHANGE, *(fuLong*)&tValue, (fuLong)p);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -322,37 +322,37 @@ fResult f2dInputJoystickImpl::UpdateState()
 			tValue = ((int)tRawData[i].dwData - m_lXHalf) / (float)(m_lXHalfLen);
 			m_lX = tValue;
 			if(m_pListener)
-				m_pListener->OnJoystickXAxisPosChange(tValue);
+				m_pListener->OnJoystickXAxisPosChange(this, tValue);
 			break;
 		case DIJOFS_Y:
 			tValue = ((int)tRawData[i].dwData - m_lYHalf) / (float)(m_lYHalfLen);
 			m_lY = tValue;
 			if(m_pListener)
-				m_pListener->OnJoystickYAxisPosChange(tValue);
+				m_pListener->OnJoystickYAxisPosChange(this, tValue);
 			break;
 		case DIJOFS_Z:
 			tValue = ((int)tRawData[i].dwData - m_lZHalf) / (float)(m_lZHalfLen);
 			m_lZ = tValue;
 			if(m_pListener)
-				m_pListener->OnJoystickZAxisPosChange(tValue);
+				m_pListener->OnJoystickZAxisPosChange(this, tValue);
 			break;
 		case DIJOFS_RX:
 			tValue = ((int)tRawData[i].dwData - m_lRxHalf) / (float)(m_lRxHalfLen);
 			m_lRx = tValue;
 			if(m_pListener)
-				m_pListener->OnJoystickXAxisRotationChange(tValue);
+				m_pListener->OnJoystickXAxisRotationChange(this, tValue);
 			break;
 		case DIJOFS_RY:
 			tValue = ((int)tRawData[i].dwData - m_lRyHalf) / (float)(m_lRyHalfLen);
 			m_lRy = tValue;
 			if(m_pListener)
-				m_pListener->OnJoystickYAxisRotationChange(tValue);
+				m_pListener->OnJoystickYAxisRotationChange(this, tValue);
 			break;
 		case DIJOFS_RZ:
 			tValue = ((int)tRawData[i].dwData - m_lRzHalf) / (float)(m_lRzHalfLen);
 			m_lRz = tValue;
 			if(m_pListener)
-				m_pListener->OnJoystickZAxisRotationChange(tValue);
+				m_pListener->OnJoystickZAxisRotationChange(this, tValue);
 			break;
 		case DIJOFS_SLIDER(0):
 			m_Slider[0] = tRawData[i].dwData;
@@ -379,9 +379,9 @@ fResult f2dInputJoystickImpl::UpdateState()
 				m_ButtonDown[tRawData[i].dwOfs - DIJOFS_BUTTON0] = tDown;
 				if(m_pListener)
 					if(tDown)
-						m_pListener->OnJoystickBtnDown(tRawData[i].dwOfs - DIJOFS_BUTTON0);
+						m_pListener->OnJoystickBtnDown(this, tRawData[i].dwOfs - DIJOFS_BUTTON0);
 					else
-						m_pListener->OnJoystickBtnUp(tRawData[i].dwOfs - DIJOFS_BUTTON0);
+						m_pListener->OnJoystickBtnUp(this, tRawData[i].dwOfs - DIJOFS_BUTTON0);
 			}
 		}
 	}

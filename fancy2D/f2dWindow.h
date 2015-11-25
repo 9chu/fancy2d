@@ -237,8 +237,9 @@ struct f2dWindow
 	/// @brief ÉèÖÃÖÃ¶¥
 	virtual fResult SetTopMost(fBool TopMost)=0;
 	
-	/// @brief Òş²ØÊó±ê
-	virtual void HideMouse(fBool bShow)=0;
+	/// @brief     Òş²ØÊó±ê
+	/// @param[in] bHide ÊÇ·ñÒş²ØÊó±ê
+	virtual void HideMouse(fBool bHide)=0;
 
 	/// @brief Òş²ØIME
 	virtual fBool IsHideIME()=0;

@@ -57,6 +57,42 @@ f2dTexture2DStatic::f2dTexture2DStatic(f2dRenderDevice* pDev, f2dStream* pStream
 		m_Height = tInfo.Height;
 }
 
+f2dTexture2DStatic::f2dTexture2DStatic(f2dRenderDevice* pDev, fcData pMemory, fLen Size, fuInt Width, fuInt Height, fBool HasMipmap)
+	: m_Width(Width), m_Height(Height), m_pTex(NULL)
+{
+	if (!pMemory)
+		throw fcyException("f2dTexture2DStatic::f2dTexture2DStatic", "Param 'pMemory' is null.");
+
+	// 创建Texture
+	D3DXIMAGE_INFO tInfo;
+
+	HRESULT tHR = ((f2dRenderDeviceImpl*)pDev)->GetAPI().DLLEntry_D3DXCreateTextureFromFileInMemoryEx(
+		(IDirect3DDevice9*)pDev->GetHandle(),
+		pMemory,
+		(fuInt)Size,
+		Width == 0 ? D3DX_DEFAULT_NONPOW2 : Width,
+		Height == 0 ? D3DX_DEFAULT_NONPOW2 : Height,
+		HasMipmap ? D3DX_DEFAULT : 1,
+		0,
+		D3DFMT_A8R8G8B8,
+		D3DPOOL_MANAGED,
+		D3DX_FILTER_TRIANGLE | D3DX_FILTER_DITHER,
+		D3DX_FILTER_TRIANGLE | D3DX_FILTER_DITHER,
+		0,
+		&tInfo,
+		NULL,
+		&m_pTex
+	);
+	
+	if (FAILED(tHR))
+		throw fcyWin32COMException("f2dTexture2DStatic::f2dTexture2DStatic", "D3DXCreateTextureFromFileInMemoryEx Failed.", tHR);
+
+	if (Width == 0)
+		m_Width = tInfo.Width;
+	if (Height == 0)
+		m_Height = tInfo.Height;
+}
+
 f2dTexture2DStatic::~f2dTexture2DStatic()
 {
 	FCYSAFEKILL(m_pTex);
@@ -123,6 +159,44 @@ f2dTexture2DDynamic::f2dTexture2DDynamic(f2dRenderDevice* pDev, f2dStream* pStre
 	if(Width == 0)
 		m_Width = tInfo.Width;
 	if(Height == 0)
+		m_Height = tInfo.Height;
+
+	// 追加监听器
+	m_pParent->AttachListener(this);
+}
+
+f2dTexture2DDynamic::f2dTexture2DDynamic(f2dRenderDevice* pDev, fcData pMemory, fLen Size, fuInt Width, fuInt Height)
+	: m_pParent(pDev), m_Width(Width), m_Height(Height), m_pTex(NULL)
+{
+	if (!pMemory)
+		throw fcyException("f2dTexture2DDynamic::f2dTexture2DDynamic", "Param 'pMemory' is null.");
+
+	// 创建Texture
+	D3DXIMAGE_INFO tInfo;
+	HRESULT tHR = ((f2dRenderDeviceImpl*)pDev)->GetAPI().DLLEntry_D3DXCreateTextureFromFileInMemoryEx(
+		(IDirect3DDevice9*)pDev->GetHandle(),
+		pMemory,
+		(fuInt)Size,
+		Width == 0 ? D3DX_DEFAULT_NONPOW2 : Width,
+		Height == 0 ? D3DX_DEFAULT_NONPOW2 : Height,
+		1,
+		D3DUSAGE_DYNAMIC,
+		D3DFMT_A8R8G8B8,
+		D3DPOOL_DEFAULT,
+		D3DX_FILTER_TRIANGLE | D3DX_FILTER_DITHER,
+		D3DX_FILTER_TRIANGLE | D3DX_FILTER_DITHER,
+		0,
+		&tInfo,
+		NULL,
+		&m_pTex
+	);
+
+	if (FAILED(tHR))
+		throw fcyWin32COMException("f2dTexture2DDynamic::f2dTexture2DDynamic", "D3DXCreateTextureFromFileInMemoryEx Failed.", tHR);
+
+	if (Width == 0)
+		m_Width = tInfo.Width;
+	if (Height == 0)
 		m_Height = tInfo.Height;
 
 	// 追加监听器

@@ -139,6 +139,8 @@ public: // 接口实现
 	void Lock();
 	fResult TryLock();
 	void Unlock();
+public: // 扩展接口
+	fData GetInternalBuffer();
 public:
 	/// @brief     构造函数
 	/// @param[in] Src       数据源，置为NULL则不从数据源拷贝

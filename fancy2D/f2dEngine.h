@@ -113,14 +113,14 @@ enum F2DMSGTYPE
 	F2DMSG_KEYBOARD_ONKEYUP   = 70,       ///< @brief 按键放开 (F2DINPUTKEYCODE Key)
 	F2DMSG_KEYBOARD_ONKEYDOWN = 71,       ///< @brief 按键按下 (F2DINPUTKEYCODE Key)
 
-	F2DMSG_JOYSTICK_ONBUTTONUP   = 80,    ///< @brief 手柄按键放开 (fuInt Index)
-	F2DMSG_JOYSTICK_ONBUTTONDOWN = 81,    ///< @brief 手柄按键按下 (fuInt Index)
-	F2DMSG_JOYSTICK_ONXPOSCHANGE = 82,    ///< @brief X轴位置改变  (fDouble Value)
-	F2DMSG_JOYSTICK_ONYPOSCHANGE = 83,    ///< @brief Y轴位置改变  (fDouble Value)
-	F2DMSG_JOYSTICK_ONZPOSCHANGE = 84,    ///< @brief Z轴位置改变  (fDouble Value)
-	F2DMSG_JOYSTICK_ONXROTCHANGE = 85,    ///< @brief X轴旋转改变  (fDouble Value)
-	F2DMSG_JOYSTICK_ONYROTCHANGE = 86,    ///< @brief Y轴旋转改变  (fDouble Value)
-	F2DMSG_JOYSTICK_ONZROTCHANGE = 87     ///< @brief Z轴旋转改变  (fDouble Value)
+	F2DMSG_JOYSTICK_ONBUTTONUP   = 80,    ///< @brief 手柄按键放开 (fuInt Index, f2dInputJoystick*)
+	F2DMSG_JOYSTICK_ONBUTTONDOWN = 81,    ///< @brief 手柄按键按下 (fuInt Index, f2dInputJoystick*)
+	F2DMSG_JOYSTICK_ONXPOSCHANGE = 82,    ///< @brief X轴位置改变  (fDouble Value, f2dInputJoystick*)
+	F2DMSG_JOYSTICK_ONYPOSCHANGE = 83,    ///< @brief Y轴位置改变  (fDouble Value, f2dInputJoystick*)
+	F2DMSG_JOYSTICK_ONZPOSCHANGE = 84,    ///< @brief Z轴位置改变  (fDouble Value, f2dInputJoystick*)
+	F2DMSG_JOYSTICK_ONXROTCHANGE = 85,    ///< @brief X轴旋转改变  (fDouble Value, f2dInputJoystick*)
+	F2DMSG_JOYSTICK_ONYROTCHANGE = 86,    ///< @brief Y轴旋转改变  (fDouble Value, f2dInputJoystick*)
+	F2DMSG_JOYSTICK_ONZROTCHANGE = 87     ///< @brief Z轴旋转改变  (fDouble Value, f2dInputJoystick*)
 };
 
 ////////////////////////////////////////////////////////////////////////////////

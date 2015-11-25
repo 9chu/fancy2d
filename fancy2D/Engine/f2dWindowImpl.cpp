@@ -832,7 +832,7 @@ fResult f2dWindowImpl::SetTopMost(fBool TopMost)
 			return FCYERR_OK;
 }
 
-void f2dWindowImpl::HideMouse(fBool bShow)
+void f2dWindowImpl::HideMouse(fBool bHide)
 {
-	ShowCursor((BOOL)!bShow);
+	ShowCursor((BOOL)!bHide);
 }

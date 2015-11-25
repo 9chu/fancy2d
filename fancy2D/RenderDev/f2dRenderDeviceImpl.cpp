@@ -38,7 +38,7 @@ f2dRenderDeviceImpl::f2dRenderDeviceImpl(f2dEngineImpl* pEngine, fuInt BackBuffe
 : m_pEngine(pEngine), m_pD3D9(NULL), m_pDev(NULL), m_hWnd((HWND)pEngine->GetMainWindow()->GetHandle()), 
 	m_pSyncTestObj(NULL), m_bDevLost(false), m_pBackBuffer(NULL), m_pBackDepthBuffer(NULL), m_pCurGraphics(NULL),
 	m_ListenerList(NULL), m_pWinSurface(NULL), m_pCurBackBuffer(NULL), m_pCurBackDepthBuffer(NULL),
-	m_pCurVertDecl(NULL), m_CreateThreadID(GetCurrentThreadId())
+	m_pCurVertDecl(NULL), m_CreateThreadID(GetCurrentThreadId()), m_bZBufferEnabled(true)
 {
 	ZeroMemory(&m_D3Dpp,sizeof(m_D3Dpp));
 	m_ScissorRect.left = 0;
@@ -114,6 +114,13 @@ f2dRenderDeviceImpl::f2dRenderDeviceImpl(f2dEngineImpl* pEngine, fuInt BackBuffe
 	m_DevName = tIdentify.Description;
 
 	// --- 初始化渲染状态 ---
+	m_ViewPort.Width = GetBufferWidth();
+	m_ViewPort.Height = GetBufferHeight();
+	m_ViewPort.MaxZ = 1.0f;
+	m_ViewPort.MinZ = 0.0f;
+	m_ViewPort.X = 0;
+	m_ViewPort.Y = 0;
+
 	m_ScissorRect.left = 0;
 	m_ScissorRect.top = 0;
 	m_ScissorRect.right = GetBufferWidth();
@@ -224,23 +231,15 @@ HRESULT f2dRenderDeviceImpl::doTestCooperativeLevel()
 void f2dRenderDeviceImpl::initState()
 {
 	// --- 初始化视口 ---
-	m_ViewPort.Width = GetBufferWidth();
-	m_ViewPort.Height = GetBufferHeight();
-	m_ViewPort.MaxZ = 1.0f;
-	m_ViewPort.MinZ = 0.0f;
-	m_ViewPort.X = 0;
-	m_ViewPort.Y = 0;
-
 	m_pDev->SetViewport(&m_ViewPort);
 
 	// --- 设置默认渲染状态 ---
-	m_pDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);   // 设置反面剔除
-	m_pDev->SetRenderState(D3DRS_LIGHTING, FALSE);         // 关闭光照
-	m_pDev->SetRenderState(D3DRS_ZENABLE, TRUE);           // 启动Z缓冲
-	m_pDev->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE); // 打开矩形裁剪功能
+	m_pDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);   // 设置反面剔除
+	m_pDev->SetRenderState(D3DRS_LIGHTING, FALSE);    // 关闭光照
+	m_pDev->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);  // 打开矩形裁剪功能
 
 	// --- 设置ZBUFFER ---
-	m_pDev->SetRenderState(D3DRS_ZENABLE, TRUE); 
+	m_pDev->SetRenderState(D3DRS_ZENABLE, m_bZBufferEnabled);
 	m_pDev->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	m_pDev->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
@@ -369,6 +368,10 @@ fResult f2dRenderDeviceImpl::Present()
 	if(m_pBackBuffer)
 	{
 		m_pDev->SetRenderTarget(0, m_pBackBuffer);
+
+		// 此时vp已发生变化，跟踪新的vp
+		m_pDev->GetViewport(&m_ViewPort);
+
 		FCYSAFEKILL(m_pBackBuffer);
 		FCYSAFEKILL(m_pCurBackBuffer);
 	}
@@ -407,7 +410,11 @@ fResult f2dRenderDeviceImpl::SubmitCurGraphics(f2dGraphics* pGraph, bool bDirty)
 		SubmitWorldMat(pGraph->GetWorldTransform());
 		SubmitLookatMat(pGraph->GetViewTransform());
 		SubmitProjMat(pGraph->GetProjTransform());
+		m_pDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);   // 新行为：若为2D渲染器，则关闭剔除
 	}
+	else
+		m_pDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);   // 新行为：若为3D渲染器，则启用逆时针剔除
+
 	SubmitBlendState(pGraph->GetBlendState());
 
 	m_pCurGraphics = pGraph;
@@ -811,7 +818,38 @@ fResult f2dRenderDeviceImpl::CreateTextureFromStream(f2dStream* pStream, fuInt W
 		else
 			*pOut = new f2dTexture2DStatic(this, pStream, Width, Height, HasMipmap);
 	}
+	catch (const std::bad_alloc&)
+	{
+		return FCYERR_OUTOFMEM;
+	}
 	catch(const fcyException& e)
+	{
+		m_pEngine->ThrowException(e);
+
+		return FCYERR_INTERNALERR;
+	}
+
+	return FCYERR_OK;
+}
+
+fResult f2dRenderDeviceImpl::CreateTextureFromMemory(fcData pMemory, fLen Size, fuInt Width, fuInt Height, fBool IsDynamic, fBool HasMipmap, f2dTexture2D** pOut)
+{
+	if (!pOut)
+		return FCYERR_INVAILDPARAM;
+	*pOut = NULL;
+
+	try
+	{
+		if (IsDynamic)
+			*pOut = new f2dTexture2DDynamic(this, pMemory, Size, Width, Height);
+		else
+			*pOut = new f2dTexture2DStatic(this, pMemory, Size, Width, Height, HasMipmap);
+	}
+	catch (const std::bad_alloc&)
+	{
+		return FCYERR_OUTOFMEM;
+	}
+	catch (const fcyException& e)
 	{
 		m_pEngine->ThrowException(e);
 
@@ -968,26 +1006,41 @@ fResult f2dRenderDeviceImpl::CreateMeshData(f2dVertexElement* pVertElement, fuIn
 
 fResult f2dRenderDeviceImpl::Clear(const fcyColor& BackBufferColor, fFloat ZValue)
 {
+	if (m_pCurGraphics && m_pCurGraphics->IsInRender())
+		m_pCurGraphics->Flush();
+
 	return FAILED(m_pDev->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, BackBufferColor.argb, ZValue, 0))?FCYERR_INTERNALERR:FCYERR_OK;
 }
 
 fResult f2dRenderDeviceImpl::Clear(const fcyColor& BackBufferColor, fFloat ZValue, fuInt StencilValue)
 {
+	if (m_pCurGraphics && m_pCurGraphics->IsInRender())
+		m_pCurGraphics->Flush();
+
 	return FAILED(m_pDev->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET | D3DCLEAR_STENCIL, BackBufferColor.argb, ZValue, StencilValue))?FCYERR_INTERNALERR:FCYERR_OK;
 }
 
 fResult f2dRenderDeviceImpl::ClearColor(const fcyColor& BackBufferColor)
 {
+	if (m_pCurGraphics && m_pCurGraphics->IsInRender())
+		m_pCurGraphics->Flush();
+
 	return FAILED(m_pDev->Clear(0, NULL, D3DCLEAR_TARGET, BackBufferColor.argb, 1.f, 0))?FCYERR_INTERNALERR:FCYERR_OK;
 }
 
 fResult f2dRenderDeviceImpl::ClearZBuffer(fFloat Value)
 {
+	if (m_pCurGraphics && m_pCurGraphics->IsInRender())
+		m_pCurGraphics->Flush();
+
 	return FAILED(m_pDev->Clear(0, NULL, D3DCLEAR_ZBUFFER, 0, Value, 0))?FCYERR_INTERNALERR:FCYERR_OK;
 }
 
 fResult f2dRenderDeviceImpl::ClearStencilBuffer(fuInt StencilValue)
 {
+	if (m_pCurGraphics && m_pCurGraphics->IsInRender())
+		m_pCurGraphics->Flush();
+
 	return FAILED(m_pDev->Clear(0, NULL, D3DCLEAR_STENCIL, 0, 0, StencilValue))?FCYERR_INTERNALERR:FCYERR_OK;
 }
 
@@ -998,6 +1051,9 @@ f2dTexture2D* f2dRenderDeviceImpl::GetRenderTarget()
 
 fResult f2dRenderDeviceImpl::SetRenderTarget(f2dTexture2D* pTex)
 {
+	if (m_pCurGraphics && m_pCurGraphics->IsInRender())
+		m_pCurGraphics->Flush();
+
 	if(m_pCurBackBuffer == pTex)
 		return FCYERR_OK;
 
@@ -1005,6 +1061,10 @@ fResult f2dRenderDeviceImpl::SetRenderTarget(f2dTexture2D* pTex)
 	{
 		FCYSAFEKILL(m_pCurBackBuffer);
 		m_pDev->SetRenderTarget(0, m_pBackBuffer);
+
+		// 此时vp已发生变化，跟踪新的vp
+		m_pDev->GetViewport(&m_ViewPort);
+
 		FCYSAFEKILL(m_pBackBuffer);
 		return FCYERR_OK;
 	}
@@ -1019,6 +1079,9 @@ fResult f2dRenderDeviceImpl::SetRenderTarget(f2dTexture2D* pTex)
 
 	m_pDev->SetRenderTarget(0, ((f2dTexture2DRenderTarget*)m_pCurBackBuffer)->GetSurface());
 
+	// 此时vp已发生变化，跟踪新的vp
+	m_pDev->GetViewport(&m_ViewPort);
+
 	return FCYERR_OK;
 }
 
@@ -1029,6 +1092,9 @@ f2dDepthStencilSurface* f2dRenderDeviceImpl::GetDepthStencilSurface()
 
 fResult f2dRenderDeviceImpl::SetDepthStencilSurface(f2dDepthStencilSurface* pSurface)
 {
+	if (m_pCurGraphics && m_pCurGraphics->IsInRender())
+		m_pCurGraphics->Flush();
+
 	if(m_pCurBackDepthBuffer == pSurface)
 		return FCYERR_OK;
 
@@ -1059,6 +1125,9 @@ fcyRect f2dRenderDeviceImpl::GetScissorRect()
 
 fResult f2dRenderDeviceImpl::SetScissorRect(const fcyRect& pRect)
 {
+	if (m_pCurGraphics && m_pCurGraphics->IsInRender())
+		m_pCurGraphics->Flush();
+
 	m_ScissorRect.left = (int)pRect.a.x;
 	m_ScissorRect.top = (int)pRect.a.y;
 	m_ScissorRect.right = (int)pRect.b.x;
@@ -1068,6 +1137,61 @@ fResult f2dRenderDeviceImpl::SetScissorRect(const fcyRect& pRect)
 		return FCYERR_INTERNALERR;
 	else
 		return FCYERR_OK;
+}
+
+fcyRect f2dRenderDeviceImpl::GetViewport()
+{
+	return fcyRect(
+		(float)m_ViewPort.X,
+		(float)m_ViewPort.Y,
+		(float)(m_ViewPort.X + m_ViewPort.Width),
+		(float)(m_ViewPort.Y + m_ViewPort.Height)
+	);
+}
+
+fResult f2dRenderDeviceImpl::SetViewport(fcyRect vp)
+{
+	if (m_pCurGraphics && m_pCurGraphics->IsInRender())
+		m_pCurGraphics->Flush();
+
+	if (!vp.Intersect(fcyRect(0, 0, (float)GetBufferWidth(), (float)GetBufferHeight()), &vp))
+		return FCYERR_ILLEGAL;
+
+	DWORD tNewX = (DWORD)vp.a.x;
+	DWORD tNewY = (DWORD)vp.a.y;
+	DWORD tNewW = (DWORD)vp.GetWidth();
+	DWORD tNewH = (DWORD)vp.GetHeight();
+
+	if (tNewX != m_ViewPort.X || tNewY != m_ViewPort.Y || tNewW != m_ViewPort.Width || tNewH != m_ViewPort.Height)
+	{
+		m_ViewPort.X = tNewX;
+		m_ViewPort.Y = tNewY;
+		m_ViewPort.Width = tNewW;
+		m_ViewPort.Height = tNewH;
+
+		if (FAILED(m_pDev->SetViewport(&m_ViewPort)))
+			return FCYERR_INTERNALERR;
+	}
+	return FCYERR_OK;
+}
+
+fBool f2dRenderDeviceImpl::IsZBufferEnabled()
+{
+	return m_bZBufferEnabled;
+}
+
+fResult f2dRenderDeviceImpl::SetZBufferEnable(fBool v)
+{
+	if (v != m_bZBufferEnabled)
+	{
+		if (m_pCurGraphics && m_pCurGraphics->IsInRender())
+			m_pCurGraphics->Flush();
+		if (FAILED(m_pDev->SetRenderState(D3DRS_ZENABLE, v ? TRUE : FALSE)))
+			return FCYERR_INTERNALERR;
+		m_bZBufferEnabled = v;
+	}
+
+	return FCYERR_OK;
 }
 
 fResult f2dRenderDeviceImpl::SaveScreen(f2dStream* pStream)
@@ -1080,15 +1204,6 @@ fResult f2dRenderDeviceImpl::SaveScreen(f2dStream* pStream)
 
 	IDirect3DSurface9* pSurface = NULL;
 
-	HRESULT tHR = m_pDev->CreateOffscreenPlainSurface(GetBufferWidth(), GetBufferHeight(),
-		D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pSurface, NULL);
-
-	if(FAILED(tHR))
-	{
-		m_pEngine->ThrowException(fcyWin32COMException("f2dRenderDeviceImpl::SaveScreen", "CreateOffscreenPlainSurface Failed.", tHR));
-		return FCYERR_INTERNALERR;
-	}
-
 	if(FAILED(m_pDev->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pSurface)))
 	{
 		FCYSAFEKILL(pSurface);
@@ -1096,7 +1211,7 @@ fResult f2dRenderDeviceImpl::SaveScreen(f2dStream* pStream)
 	}
 
 	ID3DXBuffer* pDataBuffer = NULL;
-	tHR = m_API.DLLEntry_D3DXSaveSurfaceToFileInMemory(&pDataBuffer, D3DXIFF_PNG, pSurface, NULL, NULL);
+	HRESULT tHR = m_API.DLLEntry_D3DXSaveSurfaceToFileInMemory(&pDataBuffer, D3DXIFF_PNG, pSurface, NULL, NULL);
 	FCYSAFEKILL(pSurface);
 	if(FAILED(tHR))
 	{
