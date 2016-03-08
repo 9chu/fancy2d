@@ -54,7 +54,7 @@ f2dInputSysImpl::~f2dInputSysImpl()
 		while(i != m_pObjList.end())
 		{
 			char tTextBuffer[256];
-			sprintf_s(tTextBuffer, "Unrelease input device at %x", *i);
+			sprintf_s(tTextBuffer, "Unrelease input device at %p", *i);
 #ifdef _DEBUG
 			fcyDebug::Trace("[ @ f2dInputSysImpl::~f2dInputSysImpl ] %s\n", tTextBuffer);
 #endif

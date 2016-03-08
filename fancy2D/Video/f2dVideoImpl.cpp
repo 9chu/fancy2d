@@ -159,7 +159,7 @@ void f2dVideoImpl::registerDebug()
     if (SUCCEEDED(GetRunningObjectTable(0, &objectTable))) 
 	{
 		WCHAR wsz[256];
-		swprintf_s(wsz, L"FilterGraph %08p pid %08x", (DWORD_PTR)m_pFilterGraph, GetCurrentProcessId());
+		swprintf_s(wsz, L"FilterGraph %08p pid %08x", (void*)m_pFilterGraph, GetCurrentProcessId());
 		HRESULT hr = CreateItemMoniker(L"!", wsz, &pMoniker);
 		if (SUCCEEDED(hr)) 
 		{

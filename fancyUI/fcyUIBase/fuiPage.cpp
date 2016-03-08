@@ -321,7 +321,7 @@ fuiPage::~fuiPage()
 		while(i != m_ControlMap.end())
 		{
 			char tTextBuffer[256];
-			sprintf_s(tTextBuffer, "Unrelease UI control object at %x", i->second);
+			sprintf_s(tTextBuffer, "Unrelease UI control object at %p", i->second);
 			fcyDebug::Trace("[ @ fuiPage::~fuiPage ] %s\n", tTextBuffer);
 
 			++i;

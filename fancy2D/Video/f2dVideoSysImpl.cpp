@@ -20,16 +20,20 @@ f2dVideoSysImpl::~f2dVideoSysImpl()
 GUID f2dVideoSysImpl::strToGUID(fcStrW pGUIDStr)
 {
 	GUID tRet = { 0 };
-	int tData[8] = { 0 };
+	int tData[11] = { 0 };
 
 	swscanf_s(pGUIDStr, L"%08x-%04x-%04x-%02x%02x-%2x%2x%2x%2x%2x%2x", 
-		&tRet.Data1, &tRet.Data2, &tRet.Data3,
-		&tData[0], &tData[1],
-		&tData[2], &tData[3],
-		&tData[4], &tData[5],
-		&tData[6], &tData[7]);
+		&tData[0], &tData[1], &tData[2],
+		&tData[3], &tData[4],
+		&tData[5], &tData[6],
+		&tData[7], &tData[8],
+		&tData[9], &tData[10]);
 
-	for(int i = 0; i<8; ++i)
+	tRet.Data1 = tData[0];
+	tRet.Data2 = tData[1];
+	tRet.Data3 = tData[2];
+
+	for(int i = 3; i < 11; ++i)
 		tRet.Data4[i] = tData[i];
 
 	return tRet;
