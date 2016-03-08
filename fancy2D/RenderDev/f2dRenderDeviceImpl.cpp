@@ -161,7 +161,7 @@ f2dRenderDeviceImpl::~f2dRenderDeviceImpl()
 		{
 			// 报告可能的对象泄漏
 			char tTextBuffer[256];
-			sprintf_s(tTextBuffer, "Unrelease listener object at %x", p);
+			sprintf_s(tTextBuffer, "Unrelease listener object at %p", p);
 #ifdef _DEBUG
 			fcyDebug::Trace("[ @ f2dRenderDeviceImpl::~f2dRenderDeviceImpl ] %s\n", tTextBuffer);
 #endif
@@ -1302,7 +1302,7 @@ fResult f2dRenderDeviceImpl::UpdateScreenToWindow(fcyColor KeyColor, fByte Alpha
 	// 窗口大小
 	SIZE szWin = { tWinRect.right - tWinRect.left, tWinRect.bottom - tWinRect.top };
 	// DC表面大小
-	RECT tDCSurface = { 0, 0, tBackWidth, tBackHeight };
+	RECT tDCSurface = { 0, 0, (LONG)tBackWidth, (LONG)tBackHeight };
 	BLENDFUNCTION stBlend = { AC_SRC_OVER, 0, Alpha, AC_SRC_ALPHA };
 	
 	// === 拷贝BackSurface ===
