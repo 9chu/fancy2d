@@ -170,5 +170,8 @@
     <ClCompile Include="src\cid\cidload.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\base\ftwinfnt.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

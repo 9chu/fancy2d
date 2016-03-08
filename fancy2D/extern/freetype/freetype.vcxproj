@@ -46,6 +46,7 @@
     <ClCompile Include="src\base\ftsynth.c" />
     <ClCompile Include="src\base\ftsystem.c" />
     <ClCompile Include="src\base\fttype1.c" />
+    <ClCompile Include="src\base\ftwinfnt.c" />
     <ClCompile Include="src\base\ftxf86.c" />
     <ClCompile Include="src\bdf\bdf.c" />
     <ClCompile Include="src\cache\ftcache.c" />
