@@ -738,6 +738,9 @@ fResult f2dRenderDeviceImpl::SetBufferSize(fuInt Width, fuInt Height, fBool Wind
 		m_ScissorRect.right = GetBufferWidth();
 		m_ScissorRect.bottom = GetBufferHeight();
 
+		m_ViewPort.Width = GetBufferWidth();
+		m_ViewPort.Height = GetBufferHeight();
+
 		initState();
 
 		sendDevResetMsg();
