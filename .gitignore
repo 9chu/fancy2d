@@ -34,3 +34,4 @@ cloc.bat
 /tools/FMMMetadataEditor/obj
 *.suo
 /*.opendb
+/fancy2D.VC.db
