@@ -43,8 +43,8 @@ public: // 公开
 			fuInt tTimeToSleep = (fuInt)((m_FrameDelay - tElapsedTime) * 1000.);
 
 			// Sleep限速
-			if(tTimeToSleep > 1)
-				Sleep(tTimeToSleep - 1);
+			if(tTimeToSleep > 2)
+				Sleep(tTimeToSleep - 2);
 
 			// 自旋精确限速
 			while((tElapsedTime = Watch.GetElpased()) < m_FrameDelay) {}
