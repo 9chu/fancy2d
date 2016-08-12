@@ -150,7 +150,7 @@ f2dEffectImpl::f2dEffectImpl(f2dRenderDeviceImpl* pDev, f2dStream* pStream, fBoo
 		}
 		else
 		{
-			fcyWin32COMException("f2dEffectImpl::f2dEffectImpl", "D3DXCreateEffectEx failed.", tHR);
+			throw fcyWin32COMException("f2dEffectImpl::f2dEffectImpl", "D3DXCreateEffectEx failed.", tHR);
 		}
 	}
 
