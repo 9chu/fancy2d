@@ -1,5 +1,18 @@
 ﻿fancy2D
 ===================================
+
+  **警告：该项目已封存并不再进行后续维护**
+  
+  **警告：考虑到引入了第三方文件导致混乱的版权问题和代码极差的可维护性**
+
+  **警告：该项目极有可能在日后被删除**
+
+  **WARNING: The author is working on a new project.**
+
+  **WARNING: This project is no longer in maintenance.**
+
+  **WARNING: DO NOT use it.**
+
 fancy2D是一款开源的Windows平台上的C++2D游戏封装框架，通过对DirectX进行封装提供了以下功能：
 
 * 基于Direct3D9封装的2D图形绘制API，包括精灵动画、粒子等，并封装了简易的fx接口，为简单3D绘制提供可能；
