@@ -35,3 +35,4 @@ cloc.bat
 *.suo
 /*.opendb
 /fancy2D.VC.db
+.vs/
