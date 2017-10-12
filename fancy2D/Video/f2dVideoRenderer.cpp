@@ -426,7 +426,7 @@ HRESULT f2dVideoRenderer::DoRenderSample(IMediaSample *pMediaSample)
 
 	m_Lock.Unlock();
 
-	m_TimeTotal += (float)m_Watch.GetElpased();
+	m_TimeTotal += (float)m_Watch.GetElapsed();
 	m_DataTotal += pMediaSample->GetActualDataLength();
 	m_FPSTotal ++;
 	m_Watch.Reset();

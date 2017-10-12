@@ -800,12 +800,13 @@ void f2dWindowImpl::MoveToCenter()
 
 	// 获得原始大小
 	fcyRect tRect = GetRect();
-	fuInt tHalfW = (int)tRect.GetWidth() / 2;
-	fuInt tHalfH = (int)tRect.GetHeight() / 2;
+	fuInt tHalfW = static_cast<int>(tRect.GetWidth() / 2);
+	fuInt tHalfH = static_cast<int>(tRect.GetHeight() / 2);
+	float tLeft = static_cast<float>(tScreenHalfW - tHalfW);
+	float tTop = static_cast<float>(tScreenHalfH - tHalfH);
 
 	// 重新计算坐标
-	tRect = fcyRect((float)tScreenHalfW - tHalfW, (float)tScreenHalfH - tHalfH, 
-		(float)tScreenHalfW + tHalfW, (float)tScreenHalfH + tHalfH);
+	tRect = fcyRect(tLeft, tTop, tLeft + tRect.GetWidth(), tTop + tRect.GetHeight());
 
 	SetRect(tRect);
 }

@@ -22,7 +22,7 @@ public:
 	void Pause();        ///< @brief 暂停
 	void Resume();       ///< @brief 继续
 	void Reset();        ///< @brief 归零
-	fDouble GetElpased(); ///< @brief 获得流逝时间
+	fDouble GetElapsed(); ///< @brief 获得流逝时间
 	                      ///< @note  以秒为单位
 public:
 	fcyStopWatch();

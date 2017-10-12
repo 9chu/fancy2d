@@ -462,7 +462,7 @@ void f2dEngineImpl::Run_SingleThread(fuInt UpdateMaxFPS)
 				if(tMsg.message == WM_QUIT)
 					SendMsg(F2DMSG_APP_ONEXIT);
 			}
-			tMsgTime = tMsgTimer.GetElpased();
+			tMsgTime = tMsgTimer.GetElapsed();
 		}
 
 		// ¸üÐÂFPS

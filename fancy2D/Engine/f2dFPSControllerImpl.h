@@ -35,7 +35,7 @@ public: // 公开
 	/// @note  获得两个时间点之间的流逝时间并更新FPS计数器
 	fDouble Update(fcyStopWatch& Watch)
 	{
-		fDouble tElapsedTime = Watch.GetElpased();
+		fDouble tElapsedTime = Watch.GetElapsed();
 
 		// FPS限制
 		if(m_FPSMax && tElapsedTime < m_FrameDelay)
@@ -47,10 +47,10 @@ public: // 公开
 				Sleep(tTimeToSleep - 2);
 
 			// 自旋精确限速
-			while((tElapsedTime = Watch.GetElpased()) < m_FrameDelay) {}
+			while((tElapsedTime = Watch.GetElapsed()) < m_FrameDelay) {}
 		}
 
-		tElapsedTime = Watch.GetElpased();
+		tElapsedTime = Watch.GetElapsed();
 		Watch.Reset();
 
 		m_TotalFrame++;
